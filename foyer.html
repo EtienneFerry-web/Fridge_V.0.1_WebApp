@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Foyer - Fridge</title>
+    <!-- Bootstrap 5.3.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons 1.11.3 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Design System Fridge -->
+    <link rel="stylesheet" href="assets/script/styles.css">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="home.html">FRIDGE</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                aria-controls="navbarMain" aria-expanded="false" aria-label="Ouvrir la navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarMain">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="home.html">Accueil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="search.html">Recettes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="planning.html">Planning</a></li>
+                    <li class="nav-item"><a class="nav-link" href="stock.html">Stock</a></li>
+                    <li class="nav-item"><a class="nav-link" href="courses.html">Courses</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="foyer.html" aria-current="page">Mon Foyer</a></li>
+                    <li class="nav-item ms-lg-3">
+                        <a class="btn btn-outline-light btn-sm" href="userProfil.html">
+                            <i class="bi bi-person-circle me-1"></i> Mon Compte
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+        <div class="container">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="home.html"><i class="bi bi-house me-1"></i>Accueil</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Mon Foyer</li>
+            </ol>
+        </div>
+    </nav>
+
+    <main class="container py-4 py-md-5">
+
+        <!-- En-tête -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+            <div>
+                <h1 class="h2 fw-bold mb-1">
+                    <i class="bi bi-people-fill me-2 text-primary"></i>Mon Foyer
+                </h1>
+                <p class="text-muted mb-0">Découvrez les repas partagés par les membres de votre foyer.</p>
+            </div>
+            <!-- Membres du foyer -->
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="text-muted small">Foyer :</span>
+                <div class="d-flex gap-1" id="foyerMembersAvatars">
+                    <!-- Avatars injectés par JS -->
+                </div>
+                <span class="badge bg-secondary rounded-pill" id="foyerMemberCount">0 membres</span>
+            </div>
+        </div>
+
+        <!-- Filtres rapides -->
+        <div class="d-flex flex-wrap gap-2 mb-4" role="group" aria-label="Filtrer par membre">
+            <button class="btn btn-sm btn-primary active" data-filter="all" onclick="filterByMember(this, 'all')">
+                Tous les membres
+            </button>
+            <!-- Boutons de filtre injectés dynamiquement par JS -->
+            <div id="memberFilterBtns" class="d-flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- Grille des repas du foyer -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4 mb-5" id="foyerMealsGrid">
+            <!-- Cartes injectées par JS -->
+        </div>
+
+        <!-- État vide -->
+        <div id="foyerEmptyState" class="text-center py-5 d-none">
+            <i class="bi bi-people display-4 text-muted"></i>
+            <p class="mt-3 text-muted">Aucun repas partagé dans votre foyer pour l'instant.</p>
+            <a href="search.html" class="btn btn-primary mt-2">Parcourir les recettes</a>
+        </div>
+
+    </main>
+
+    <footer class="bg-dark text-white mt-auto py-4">
+        <div class="container">
+            <div class="row align-items-center text-center text-md-start">
+                <div class="col-md-6">
+                    <h5 class="fw-bold mb-0">FRIDGE</h5>
+                    <p class="small mb-0 text-secondary">Cuisinez intelligemment avec ce que vous avez.</p>
+                </div>
+                <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                    <a href="#" class="text-white-50 text-decoration-none small px-2">Mentions légales</a>
+                    <a href="#" class="text-white-50 text-decoration-none small px-2">Contact</a>
+                    <div class="mt-2 small text-white-50">© 2026 FRIDGE. Tous droits réservés.</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/script.js"></script>
+    <script>
+    // ============================================================
+    // FOYER — données mock (à remplacer par un appel API)
+    // Logique : on filtre par foyer_id === utilisateur connecté
+    // ============================================================
+
+    const CURRENT_USER = { id: 1, name: 'Jean Dupont', foyer_id: 42 };
+
+    // Simulation d'une base de données d'utilisateurs et de repas
+    const MOCK_USERS = [
+        { id: 1, name: 'Jean Dupont',   foyer_id: 42, avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=60&h=60' },
+        { id: 2, name: 'Marie Dupont',  foyer_id: 42, avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=60&h=60' },
+        { id: 3, name: 'Lucas Martin',  foyer_id: 42, avatar: 'https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=60&h=60' },
+        { id: 4, name: 'Sophie Girard', foyer_id: 99, avatar: '' }, // autre foyer — ne doit PAS apparaître
+    ];
+
+    const MOCK_MEALS = [
+        { id: 1, author_id: 1, title: 'Poulet rôti aux herbes', time: '90 min', difficulty: 'Facile',   img: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=60', date: '2026-04-07' },
+        { id: 2, author_id: 2, title: 'Salade César maison',    time: '15 min', difficulty: 'Facile',   img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=60', date: '2026-04-06' },
+        { id: 3, author_id: 1, title: 'Ramen maison',           time: '45 min', difficulty: 'Moyenne',  img: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=400&q=60', date: '2026-04-05' },
+        { id: 4, author_id: 3, title: 'Tarte aux pommes',       time: '60 min', difficulty: 'Moyenne',  img: 'https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?auto=format&fit=crop&w=400&q=60', date: '2026-04-05' },
+        { id: 5, author_id: 2, title: 'Pancakes moelleux',      time: '20 min', difficulty: 'Facile',   img: 'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&w=400&q=60', date: '2026-04-04' },
+        { id: 6, author_id: 3, title: 'Bowl quinoa & avocat',   time: '20 min', difficulty: 'Facile',   img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=60', date: '2026-04-03' },
+        { id: 7, author_id: 4, title: 'Repas autre foyer',      time: '30 min', difficulty: 'Facile',   img: '', date: '2026-04-02' }, // ne doit pas apparaître
+    ];
+
+    function escapeHtml(str) {
+        return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // Membres du même foyer que l'utilisateur connecté
+    const foyerMembers = MOCK_USERS.filter(u => u.foyer_id === CURRENT_USER.foyer_id);
+
+    // Repas postés par les membres du foyer
+    const foyerMemberIds = new Set(foyerMembers.map(u => u.id));
+    const foyerMeals = MOCK_MEALS.filter(m => foyerMemberIds.has(m.author_id));
+
+    // Index auteurs pour lookup rapide
+    const usersById = Object.fromEntries(MOCK_USERS.map(u => [u.id, u]));
+
+    // --- Avatars membres ---
+    function renderMemberAvatars() {
+        const container = document.getElementById('foyerMembersAvatars');
+        document.getElementById('foyerMemberCount').textContent = foyerMembers.length + ' membre' + (foyerMembers.length > 1 ? 's' : '');
+        container.innerHTML = foyerMembers.map(u => `
+            <img src="${escapeHtml(u.avatar)}" alt="${escapeHtml(u.name)}"
+                 title="${escapeHtml(u.name)}"
+                 class="rounded-circle border border-2 border-white shadow-sm"
+                 style="width:32px;height:32px;object-fit:cover;margin-left:-8px;">
+        `).join('');
+    }
+
+    // --- Boutons de filtre membres ---
+    function renderMemberFilters() {
+        const container = document.getElementById('memberFilterBtns');
+        container.innerHTML = foyerMembers.map(u => `
+            <button class="btn btn-sm btn-outline-secondary" data-filter="${escapeHtml(String(u.id))}"
+                    onclick="filterByMember(this, '${escapeHtml(String(u.id))}')">${escapeHtml(u.name)}</button>
+        `).join('');
+    }
+
+    // --- Carte repas ---
+    function buildMealCard(meal) {
+        const author = usersById[meal.author_id];
+        const authorName = author ? escapeHtml(author.name) : 'Inconnu';
+        const authorAvatar = author && author.avatar ? escapeHtml(author.avatar) : '';
+        const isMe = meal.author_id === CURRENT_USER.id;
+        return `
+        <div class="col">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="${escapeHtml(meal.img)}" alt="${escapeHtml(meal.title)}"
+                     class="card-img-top" style="aspect-ratio:4/3;object-fit:cover;">
+                <div class="card-body d-flex flex-column p-3">
+                    <h3 class="h6 fw-bold mb-1">${escapeHtml(meal.title)}</h3>
+                    <div class="d-flex gap-2 flex-wrap mb-2">
+                        <span class="badge bg-light text-dark border small"><i class="bi bi-clock me-1"></i>${escapeHtml(meal.time)}</span>
+                        <span class="badge bg-light text-dark border small">${escapeHtml(meal.difficulty)}</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mt-auto pt-2 border-top">
+                        ${authorAvatar ? `<img src="${authorAvatar}" alt="${authorName}" class="rounded-circle" style="width:24px;height:24px;object-fit:cover;">` : '<i class="bi bi-person-circle text-muted"></i>'}
+                        <span class="small text-muted">${authorName}${isMe ? ' <span class="badge bg-primary-subtle text-primary small">Moi</span>' : ''}</span>
+                        <span class="ms-auto small text-muted">${escapeHtml(meal.date)}</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 p-3 pt-0">
+                    <a href="recipe.html" class="btn btn-outline-primary btn-sm w-100">
+                        Voir la recette <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // --- Rendu de la grille ---
+    let activeFilter = 'all';
+
+    function renderGrid() {
+        const grid = document.getElementById('foyerMealsGrid');
+        const emptyState = document.getElementById('foyerEmptyState');
+        const filtered = activeFilter === 'all'
+            ? foyerMeals
+            : foyerMeals.filter(m => String(m.author_id) === activeFilter);
+
+        if (filtered.length === 0) {
+            grid.innerHTML = '';
+            emptyState.classList.remove('d-none');
+        } else {
+            emptyState.classList.add('d-none');
+            grid.innerHTML = filtered.map(buildMealCard).join('');
+        }
+    }
+
+    function filterByMember(btn, memberId) {
+        activeFilter = memberId;
+        // mise à jour des états actifs
+        document.querySelectorAll('[data-filter]').forEach(b => {
+            b.classList.remove('active', 'btn-primary', 'btn-secondary');
+            b.classList.add(b.dataset.filter === 'all' ? 'btn-outline-primary' : 'btn-outline-secondary');
+        });
+        btn.classList.add('active');
+        btn.classList.remove('btn-outline-primary', 'btn-outline-secondary');
+        btn.classList.add(memberId === 'all' ? 'btn-primary' : 'btn-secondary');
+        renderGrid();
+    }
+
+    // --- Init ---
+    document.addEventListener('DOMContentLoaded', () => {
+        renderMemberAvatars();
+        renderMemberFilters();
+        renderGrid();
+    });
+    </script>
+</body>
+</html>
