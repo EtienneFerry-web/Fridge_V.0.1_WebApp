@@ -1459,3 +1459,171 @@ footer .text-white-50:hover {
 .valid-feedback::before {
   content: "✓ ";
 }
+
+/* ============================================================
+   STOCK — styles spécifiques à la page Mon Stock
+   ============================================================ */
+
+.stock-badge-warning { background-color: #fff3cd; color: #856404; }
+.stock-badge-low     { background-color: rgba(187, 68, 48, 0.12); color: #962e1f; }
+.stock-badge-ok      { background-color: var(--teal-light); color: var(--teal-text); }
+
+.stock-text-warning  { color: #856404; }
+.stock-icon-ok       { color: var(--teal-text); }
+.stock-icon-low      { color: #962e1f; }
+.stock-icon-warning  { color: #856404; }
+
+.stock-item-card {
+    border-left: 4px solid transparent !important;
+    transition: var(--transition-normal);
+}
+.stock-item-card:hover       { transform: translateX(3px); }
+
+.stock-card-expired {
+    border-left-color: var(--tomato-jam) !important;
+    background-color: rgba(187, 68, 48, 0.03) !important;
+}
+.stock-card-warning {
+    border-left-color: #f0a500 !important;
+    background-color: rgba(240, 165, 0, 0.03) !important;
+}
+.stock-card-low {
+    border-left-color: var(--tomato-dark) !important;
+    background-color: rgba(150, 46, 31, 0.03) !important;
+}
+
+#totalBadge,
+#lowStockBadge { font-weight: 600; letter-spacing: 0.02em; }
+
+/* ============================================================
+   COURSES — styles spécifiques à la page Liste de Courses
+   ============================================================ */
+
+.courses-badge-checked {
+    background-color: var(--teal-light);
+    color: var(--teal-text);
+    font-weight: 600;
+}
+
+/* ---------- Groupes par rayon ---------- */
+
+.courses-group {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: var(--transition-normal);
+}
+.courses-group-done         { opacity: 0.65; }
+.courses-group-header       { background-color: var(--linen-mid); border-bottom: 1px solid rgba(35,31,32,.07); }
+.courses-group-progress     { width: 80px; height: 6px; background-color: rgba(35,31,32,.10); border-radius: 3px; }
+
+/* ---------- Badges de catégorie ---------- */
+
+.courses-cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .8rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: .01em;
+}
+.courses-cat-green  { background: #d4edda;                      color: #155724;             }
+.courses-cat-yellow { background: #fff3cd;                      color: #856404;             }
+.courses-cat-red    { background: rgba(187,68,48,.12);          color: #962e1f;             }
+.courses-cat-brown  { background: #f5e6d0;                      color: #6d3a1f;             }
+.courses-cat-orange { background: #fde8d0;                      color: #7d3c00;             }
+.courses-cat-blue   { background: var(--teal-light);            color: var(--teal-text);    }
+.courses-cat-ice    { background: #e8f4fd;                      color: #0d6efd;             }
+.courses-cat-pink   { background: #fce4ec;                      color: #880e4f;             }
+.courses-cat-grey   { background: var(--linen-dark);            color: var(--grey-warm);    }
+
+/* ---------- Articles ---------- */
+
+.courses-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(35,31,32,.06);
+    transition: background-color .15s ease;
+}
+.courses-item:last-child    { border-bottom: none; }
+.courses-item:hover         { background-color: rgba(187,68,48,.03); }
+
+.courses-item-label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    padding: 14px 16px;
+    cursor: pointer;
+    min-height: 56px;
+    margin: 0;
+}
+
+.courses-checkbox {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    border-radius: 6px !important;
+    border: 2px solid rgba(35,31,32,.25) !important;
+    cursor: pointer;
+}
+.courses-checkbox:checked {
+    background-color: var(--tomato-jam) !important;
+    border-color: var(--tomato-jam) !important;
+}
+
+.courses-item-text          { display: flex; flex-direction: column; gap: 1px; }
+
+.courses-item-name {
+    font-weight: 600;
+    font-size: .95rem;
+    color: var(--shadow-grey);
+    line-height: 1.3;
+    transition: var(--transition-fast);
+}
+.courses-item-detail        { font-size: .82rem; color: var(--grey-warm); }
+
+.courses-item-checked .courses-item-name   { text-decoration: line-through; color: var(--grey-subtle); }
+.courses-item-checked .courses-item-detail { color: var(--grey-subtle); }
+
+/* ---------- Bouton supprimer ---------- */
+
+.courses-delete-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--grey-subtle);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    margin-right: 6px;
+}
+.courses-delete-btn:hover,
+.courses-delete-btn:focus-visible {
+    background-color: rgba(187,68,48,.10);
+    color: var(--tomato-jam);
+}
+.courses-delete-btn:focus-visible {
+    outline: 2px solid var(--tomato-jam);
+    outline-offset: 2px;
+}
+
+/* ---------- Barre de progression ---------- */
+
+.progress                   { background-color: rgba(35,31,32,.08); border-radius: 10px; overflow: hidden; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 576px) {
+    .courses-item-label     { padding: 12px 14px; }
+}
+

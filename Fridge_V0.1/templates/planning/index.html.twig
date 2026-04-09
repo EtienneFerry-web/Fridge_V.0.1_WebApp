@@ -76,10 +76,12 @@
         <div class="d-flex gap-2 mb-4">
             <div class="input-group input-group-sm flex-grow-1">
                 <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                <input type="text" id="searchInput" class="form-control"
+                {# id renommé planningSearchInput pour éviter le conflit avec stock/courses #}
+                <input type="text" id="planningSearchInput" class="form-control"
                     placeholder="Rechercher..." oninput="applyFilters()">
             </div>
-            <select id="sortSelect" class="form-select form-select-sm w-auto" onchange="applyFilters()">
+            {# id renommé planningSortSelect pour la même raison #}
+            <select id="planningSortSelect" class="form-select form-select-sm w-auto" onchange="applyFilters()">
                 <option value="az">A-Z</option>
                 <option value="za">Z-A</option>
                 <option value="cat">Catégorie</option>
@@ -95,4 +97,9 @@
 
 {% include '_partials/footer.html.twig' %}
 
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ asset('planning.js') }}" defer></script>
 {% endblock %}

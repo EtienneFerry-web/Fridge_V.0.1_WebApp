@@ -1,20 +1,231 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello StockController!{% endblock %}
+{% block title %}Mon Stock - Fridge{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+{% include '_partials/header.html.twig' %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/src/Controller/StockController.php</code></li>
-        <li>Your template at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/templates/stock/index.html.twig</code></li>
-    </ul>
+<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Mon Stock</li>
+        </ol>
+    </div>
+</nav>
+
+<main class="container py-4 py-md-5">
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="h2 fw-bold mb-1">
+                <i class="bi bi-basket3 me-2 text-primary"></i>Mon Stock d'Ingrédients
+            </h1>
+            <p class="text-muted mb-0">Gérez vos ingrédients et ne soyez plus jamais pris au dépourvu.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+            <span class="badge rounded-pill bg-primary fs-6 px-3 py-2" id="totalBadge">
+                <i class="bi bi-box-seam me-1"></i><span id="totalCount">0</span> article(s)
+            </span>
+            <span class="badge rounded-pill bg-danger fs-6 px-3 py-2 d-none" id="lowStockBadge">
+                <i class="bi bi-exclamation-triangle me-1"></i><span id="lowStockCount">0</span> en rupture
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        {# =====================================================
+           COLONNE GAUCHE : FORMULAIRE D'AJOUT / MODIFICATION
+           ===================================================== #}
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm border-0 position-sticky" style="top: 85px;">
+                <div class="card-body p-4">
+
+                    <h2 class="h5 fw-bold mb-4 d-flex align-items-center gap-2" id="formTitle">
+                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white"
+                            style="width:32px; height:32px; font-size:1rem;">
+                            <i class="bi bi-plus-lg"></i>
+                        </span>
+                        Ajouter un ingrédient
+                    </h2>
+
+                    <form id="stockForm" class="needs-validation" novalidate>
+
+                        <input type="hidden" id="editId" value="">
+
+                        <div class="mb-3">
+                            <label for="ingredientName" class="form-label">
+                                Nom de l'ingrédient
+                                <span class="required-mark" aria-hidden="true">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                <input type="text" id="ingredientName" class="form-control"
+                                    placeholder="ex : Farine, Tomates..." required minlength="2" autocomplete="off">
+                                <div class="invalid-feedback">Le nom doit contenir au moins 2 caractères.</div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-7">
+                                <label for="ingredientQty" class="form-label">
+                                    Quantité <span class="required-mark" aria-hidden="true">*</span>
+                                </label>
+                                <input type="number" id="ingredientQty" class="form-control"
+                                    placeholder="ex : 500" min="0" step="0.01" required>
+                                <div class="invalid-feedback">Entrez une quantité valide (≥ 0).</div>
+                            </div>
+                            <div class="col-5">
+                                <label for="ingredientUnit" class="form-label">Unité</label>
+                                <select id="ingredientUnit" class="form-select">
+                                    <option value="unité">unité</option>
+                                    <option value="g">g</option>
+                                    <option value="kg">kg</option>
+                                    <option value="mL">mL</option>
+                                    <option value="L">L</option>
+                                    <option value="cL">cL</option>
+                                    <option value="tbsp">c. à soupe</option>
+                                    <option value="tsp">c. à café</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ingredientThreshold" class="form-label">
+                                Seuil d'alerte stock bas
+                                <i class="bi bi-info-circle text-muted ms-1" data-bs-toggle="tooltip"
+                                    title="En dessous de ce seuil, l'ingrédient sera signalé comme faible."></i>
+                            </label>
+                            <input type="number" id="ingredientThreshold" class="form-control"
+                                placeholder="ex : 100" min="0" step="0.01" value="0">
+                            <div class="form-text">Laisser à 0 pour désactiver l'alerte.</div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="ingredientExpiry" class="form-label">Date de péremption</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                <input type="date" id="ingredientExpiry" class="form-control">
+                            </div>
+                            <div class="form-text">Optionnel — pour les produits périssables.</div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="submitBtn">
+                                <i class="bi bi-plus-circle me-2"></i>Ajouter au stock
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary d-none" id="cancelEditBtn"
+                                onclick="cancelEdit()">
+                                <i class="bi bi-x-circle me-2"></i>Annuler la modification
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        {# =====================================================
+           COLONNE DROITE : LISTE DU STOCK
+           ===================================================== #}
+        <div class="col-12 col-lg-8">
+
+            <div class="card shadow-sm border-0 mb-3">
+                <div class="card-body p-3">
+                    <div class="row g-2 align-items-center">
+                        <div class="col-12 col-sm-6">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="search" id="searchInput" class="form-control"
+                                    placeholder="Rechercher un ingrédient..." oninput="renderStock()">
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <select id="filterStatus" class="form-select" onchange="renderStock()">
+                                <option value="all">Tous</option>
+                                <option value="low">Stock bas</option>
+                                <option value="expired">Périmé</option>
+                                <option value="ok">OK</option>
+                            </select>
+                        </div>
+                        <div class="col-6 col-sm-3">
+                            <select id="sortBy" class="form-select" onchange="renderStock()">
+                                <option value="name">Nom A-Z</option>
+                                <option value="expiry">Péremption</option>
+                                <option value="qty">Quantité</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-3 small">
+                <span class="d-flex align-items-center gap-1">
+                    <span class="badge bg-danger rounded-pill">périmé</span> Date dépassée
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <span class="badge stock-badge-warning rounded-pill">bientôt</span> Péremption &lt; 7j
+                </span>
+                <span class="d-flex align-items-center gap-1">
+                    <span class="badge stock-badge-low rounded-pill">stock bas</span> Sous le seuil d'alerte
+                </span>
+            </div>
+
+            <div id="stockList">
+                <div id="emptyState" class="text-center py-5">
+                    <i class="bi bi-basket display-3 text-muted d-block mb-3"></i>
+                    <h3 class="h5 text-muted">Votre stock est vide</h3>
+                    <p class="text-muted small mb-0">Ajoutez votre premier ingrédient via le formulaire.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+{# =====================================================
+   MODAL DE CONFIRMATION DE SUPPRESSION
+   ===================================================== #}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white" id="deleteModalLabel">
+                    <i class="bi bi-trash me-2"></i>Confirmer la suppression
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                Voulez-vous vraiment supprimer <strong id="deleteIngredientName"></strong> de votre stock ?
+                Cette action est irréversible.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-1"></i>Annuler
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmDeleteBtn">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+{% include '_partials/footer.html.twig' %}
+
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="{{ asset('script/script.js') }}" defer></script>
 {% endblock %}
