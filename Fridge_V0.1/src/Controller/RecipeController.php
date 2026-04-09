@@ -15,4 +15,13 @@ final class RecipeController extends AbstractController
             'controller_name' => 'RecipeController',
         ]);
     }
+
+    #[Route('/recipe/{id}', name: 'app_recipe_show', requirements: ['id' => '\d+'])]
+    public function show(int $id): Response
+    {
+        // Stub — will be implemented with the Recipe feature
+        return $this->render('recipe/index.html.twig', [
+            'controller_name' => 'RecipeController',
+        ]);
+    }
 }

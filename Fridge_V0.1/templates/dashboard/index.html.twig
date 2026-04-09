@@ -201,7 +201,7 @@
                                         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40"
                                             class="rounded-circle me-3" width="40" height="40"
                                             alt="Avatar {{ user.strUsername }}">
-                                        <a href="{{ path('app_user_profil', {id: user.id}) }}"
+                                        <a href="{{ path('app_user_profil_by_id', {id: user.id}) }}"
                                             class="text-decoration-none text-dark fw-bold">
                                             {{ user.strFirstname }} {{ user.strName }}
                                         </a>
@@ -290,7 +290,7 @@
                                 </a>
                                 <span class="small text-muted">
                                     Proposé par
-                                    <a href="{{ path('app_user_profil', {id: recipe.author.id}) }}">
+                                    <a href="{{ path('app_user_profil_by_id', {id: recipe.author.id}) }}">
                                         {{ recipe.author.strFirstname }} {{ recipe.author.strName }}
                                     </a>
                                 </span>
@@ -335,7 +335,7 @@
                     <div class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-md-3">
-                                <a href="{{ path('app_user_profil', {id: report.author.id}) }}"
+                                <a href="{{ path('app_user_profil_by_id', {id: report.author.id}) }}"
                                     class="text-decoration-none text-dark d-flex align-items-center gap-2">
                                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40"
                                         class="rounded-circle" width="30" height="30"

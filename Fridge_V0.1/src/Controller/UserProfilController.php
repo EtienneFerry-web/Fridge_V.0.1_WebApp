@@ -15,4 +15,11 @@ final class UserProfilController extends AbstractController
     {
         return $this->render('user/profil.html.twig');
     }
+
+    #[Route('/user/profil/{id}', name: 'app_user_profil_by_id')]
+    public function show(int $id): Response
+    {
+        // Stub — will be implemented with the User management feature
+        return $this->render('user/profil.html.twig');
+    }
 }

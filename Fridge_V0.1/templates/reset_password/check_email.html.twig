@@ -1,11 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Password Reset Email Sent{% endblock %}
+{% block title %}Réinitialisation envoyée - Fridge{% endblock %}
 
 {% block body %}
-    <p>
-        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
-        This link will expire in {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
-    </p>
-    <p>If you don't receive an email please check your spam folder or <a href="{{ path('app_forgot_password_request') }}">try again</a>.</p>
+    {% include '_partials/header.html.twig' %}
+
+    <main class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="card shadow-sm p-4">
+                    <div class="card-body">
+                        {# Aspect visuel : une icône pour le côté "social/moderne" de Fridge #}
+                        <div class="mb-4">
+                            <i class="bi bi-envelope-check text-success" style="font-size: 3rem;"></i>
+                        </div>
+
+                        <h2 class="mb-4">Vérifiez votre boîte mail</h2>
+
+                        <p class="text-muted">
+                            Si un compte correspondant à votre adresse email existe, un message vient de vous être envoyé avec un lien de réinitialisation.
+                        </p>
+
+                        <div class="alert alert-info mt-4" role="alert">
+                            {# Utilisation des filtres de traduction imposés par le bundle #}
+                            Ce lien expirera dans : 
+                            <strong>{{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}</strong>.
+                        </div>
+
+                        <hr class="my-4">
+
+                        <p class="small text-secondary">
+                            Vous n'avez rien reçu ? <br>
+                            Vérifiez vos spams ou <a href="{{ path('app_forgot_password_request') }}" class="text-decoration-none">réessayez ici</a>.
+                        </p>
+                        
+                        <div class="mt-3">
+                            <a href="{{ path('app_login') }}" class="btn btn-outline-primary">Retour à la connexion</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {% include '_partials/footer.html.twig' %}
 {% endblock %}
