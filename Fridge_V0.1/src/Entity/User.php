@@ -12,7 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['strEmail'])]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['strEmail'], message: 'There is already an account with this email')]
+#[UniqueEntity(fields: ['strUsername'], message: 'This pseudo is already taken')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -51,9 +52,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    // --- ID ---
+
     public function getId(): ?int
     {
         return $this->intId;
+    }
+
+    // --- EMAIL ---
+
+    public function getStrEmail(): ?string
+    {
+        return $this->strEmail;
+    }
+
+    public function setStrEmail(string $strEmail): static
+    {
+        $this->strEmail = $strEmail;
+        return $this;
     }
 
     public function getEmail(): ?string
@@ -61,10 +77,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->strEmail;
     }
 
-    public function setEmail(string $strEmail): static
-    {
-        $this->strEmail = $strEmail;
+    // --- NAME ---
 
+    public function getStrName(): ?string
+    {
+        return $this->strName;
+    }
+
+    public function setStrName(string $strName): static
+    {
+        $this->strName = $strName;
+        return $this;
+    }
+
+    // --- FIRSTNAME ---
+
+    public function getStrFirstname(): ?string
+    {
+        return $this->strFirstname;
+    }
+
+    public function setStrFirstname(string $strFirstname): static
+    {
+        $this->strFirstname = $strFirstname;
+        return $this;
+    }
+
+    // --- USERNAME (PSEUDO) ---
+
+    public function getStrUsername(): ?string
+    {
+        return $this->strUsername;
+    }
+
+    public function setStrUsername(string $strUsername): static
+    {
+        $this->strUsername = $strUsername;
         return $this;
     }
 
@@ -87,7 +135,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
 
-        return array_unique($arrRoles);
+        return array_unique($roles);
     }
 
     /**

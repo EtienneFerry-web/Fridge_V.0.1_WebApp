@@ -1,23 +1,91 @@
+{# templates/registration/register.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Inscription - Fridge{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+    {# Import du Header via _partials #}
+    {% include '_partials/header.html.twig' %}
 
-    <h1>Register</h1>
+<main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                
+                <section class="card shadow-sm border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <h1 class="text-center h2 mb-3">Inscription</h1>
+                        <p class="text-center text-muted mb-4 small">
+                            Créez votre compte en quelques secondes et débloquez des fonctionnalités exclusives !
+                        </p>
+                        
+                        {# Affichage des erreurs #}
+                        {% for flash_error in app.flashes('verify_email_error') %}
+                            <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+                        {% endfor %}
 
-    {{ form_errors(registrationForm) }}
+                        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="nom" class="form-label">Nom <span class="required-mark">*</span></label>
+                                    
+                                    {{ form_widget(registrationForm.strName, {
+                                        'attr': {'class': 'form-control', 'placeholder': 'Dupont', 'autocomplete': 'family-name'}
+                                    }) }}
+                                    <div class="text-danger small">{{ form_errors(registrationForm.strName) }}</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="prenom" class="form-label">Prénom <span class="required-mark">*</span></label>
+                                    {{ form_widget(registrationForm.strFirstname, {
+                                        'attr': {'class': 'form-control', 'placeholder': 'Marie', 'autocomplete': 'given-name'}
+                                    }) }}
+                                    <div class="text-danger small">{{ form_errors(registrationForm.strFirstname) }}</div>
+                                </div>
+                            </div>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+                            <div class="mb-3">
+                                <label for="pseudo" class="form-label">Pseudo <span class="required-mark">*</span></label>
+                                {{ form_widget(registrationForm.strUsername, {
+                                    'attr': {'class': 'form-control', 'placeholder': 'marie_cuisine', 'autocomplete': 'username'}
+                                }) }}
+                                <div class="text-danger small">{{ form_errors(registrationForm.strUsername) }}</div>
+                            </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Adresse e-mail <span class="required-mark">*</span></label>
+                                {{ form_widget(registrationForm.strEmail, {
+                                    'attr': {'class': 'form-control', 'placeholder': 'marie@exemple.com', 'autocomplete': 'email'}
+                                }) }}
+                                <div class="text-danger small">{{ form_errors(registrationForm.strEmail) }}</div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="pwd" class="form-label">Mot de passe <span class="required-mark">*</span></label>
+                                    {{ form_widget(registrationForm.plainPassword, {
+                                        'attr': {'class': 'form-control', 'placeholder': '••••••••', 'autocomplete': 'new-password'}
+                                    }) }}
+                                    <div class="form-text">8 caractères minimum.</div>
+                                    <div class="text-danger small">{{ form_errors(registrationForm.plainPassword) }}</div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button class="btn btn-primary btn-lg" type="submit">Créer mon compte <i class="bi bi-arrow-right ms-1"></i></button>
+                            </div>
+
+                            <p class="text-center mt-3 small text-muted">
+                                Déjà membre ? <a href="{{ path('app_login') }}" class="text-decoration-none">Connectez-vous</a>
+                            </p>
+                        {{ form_end(registrationForm) }}
+
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    {# Import du Footer via _partials #}
+    {% include '_partials/footer.html.twig' %}
 {% endblock %}
