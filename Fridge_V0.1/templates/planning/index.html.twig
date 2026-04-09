@@ -1,20 +1,98 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PlanningController!{% endblock %}
+{% block title %}Mon Planning - Fridge{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+{% include '_partials/header.html.twig' %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/src/Controller/PlanningController.php</code></li>
-        <li>Your template at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/templates/planning/index.html.twig</code></li>
-    </ul>
+<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Mon Planning</li>
+        </ol>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <section class="mb-5">
+        <div class="bg-white p-4 rounded-3 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h1 class="h4 fw-bold mb-0 text-uppercase">
+                    <i class="bi bi-calendar-range me-2 text-primary"></i>Planning de la semaine
+                </h1>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-danger btn-sm" onclick="clearPlanning()">
+                        <i class="bi bi-trash3 me-1"></i>Vider
+                    </button>
+                    <button class="btn btn-success btn-sm">
+                        <i class="bi bi-check2-circle me-1"></i>Sauvegarder
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle table-planning">
+                    <thead>
+                        <tr>
+                            <th>Lun</th>
+                            <th>Mar</th>
+                            <th>Mer</th>
+                            <th>Jeu</th>
+                            <th>Ven</th>
+                            <th>Sam</th>
+                            <th>Dim</th>
+                        </tr>
+                    </thead>
+                    <tbody id="planningBody">
+                        {# Généré par JS #}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+
+<div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
+<div id="recipeModal" class="recipe-modal">
+    <div class="modal-header-custom">
+        <h5 class="mb-0 fw-bold">Choisir une recette</h5>
+        <button class="btn btn-close" onclick="closeModal()"></button>
+    </div>
+
+    <div class="modal-tabs">
+        <button class="tab-btn active" data-tab="likes" onclick="switchTab('likes')">
+            <i class="bi bi-heart-fill text-danger me-2"></i>Mes Likes
+        </button>
+        <button class="tab-btn" data-tab="favoris" onclick="switchTab('favoris')">
+            <i class="bi bi-star-fill text-warning me-2"></i>Mes Favoris
+        </button>
+    </div>
+
+    <div class="modal-body-custom p-4 flex-grow-1 overflow-auto">
+        <div class="d-flex gap-2 mb-4">
+            <div class="input-group input-group-sm flex-grow-1">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchInput" class="form-control"
+                    placeholder="Rechercher..." oninput="applyFilters()">
+            </div>
+            <select id="sortSelect" class="form-select form-select-sm w-auto" onchange="applyFilters()">
+                <option value="az">A-Z</option>
+                <option value="za">Z-A</option>
+                <option value="cat">Catégorie</option>
+            </select>
+        </div>
+
+        <div id="recipeGrid" class="recipe-grid d-grid gap-3"
+            style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));">
+            {# Généré par JS #}
+        </div>
+    </div>
 </div>
+
+{% include '_partials/footer.html.twig' %}
+
 {% endblock %}
