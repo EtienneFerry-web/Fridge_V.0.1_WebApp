@@ -34,7 +34,7 @@ class RegistrationController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
 
             // encode the plain password
-            $user->setStrPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             $entityManager->persist($user);
             $entityManager->flush();
@@ -43,14 +43,14 @@ class RegistrationController extends AbstractController
         $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
                     ->from(new Address('no-reply@fridge.com', 'Fridge Bot'))
-                    ->to((string) $user->getEmail())
+                    ->to((string) $user->getStrEmail())
                     ->subject('Confirmez votre compte Fridge')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
             // do anything else you need here, like send an email
-
-            return $this->redirectToRoute('_preview_error');
+            $this->addFlash('success', 'Compte créé ! Vérifiez votre email pour l\'activer.');
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('registration/register.html.twig', [

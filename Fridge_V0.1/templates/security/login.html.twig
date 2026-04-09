@@ -18,7 +18,7 @@
                             Heureux de vous revoir ! Connectez-vous pour accéder à votre frigo et vos recettes.
                         </p>
                         
-                        <form method="post" id="loginForm" class="needs-validation" novalidate>
+                        <form method="post" action="{{ path('app_login') }}" id="loginForm" class="needs-validation" novalidate>
                             
                             {# Gestion des erreurs d'authentification #}
                             {% if error %}
@@ -40,7 +40,7 @@
                                 <label for="inputEmail" class="form-label">Adresse e-mail <span class="required-mark" aria-hidden="true">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="form-control" placeholder="marie@exemple.com" required autocomplete="email" autofocus>
+                                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" placeholder="marie@exemple.com" required autocomplete="email" autofocus>
                                 </div>
                             </div>
 
@@ -48,7 +48,7 @@
                                 <label for="inputPassword" class="form-label">Mot de passe <span class="required-mark" aria-hidden="true">*</span></label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" name="_password" id="inputPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+                                    <input type="password" name="password" id="inputPassword" class="form-control" placeholder="••••••••" required autocomplete="current-password">
                                 </div>
                             </div>
 
