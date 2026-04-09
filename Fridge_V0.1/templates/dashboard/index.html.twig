@@ -1,20 +1,430 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DashboardController!{% endblock %}
+{% block title %}Dashboard Admin - Fridge{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/src/Controller/DashboardController.php</code></li>
-        <li>Your template at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/templates/dashboard/index.html.twig</code></li>
+{% include '_partials/header.html.twig' %}
+
+<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Administration</li>
+        </ol>
+    </div>
+</nav>
+
+<main class="container py-4 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-bold text-dark">
+            <i class="bi bi-speedometer2 me-2 text-primary"></i>Tableau de bord
+        </h1>
+    </div>
+
+    {# =====================================================
+       ONGLETS DE NAVIGATION
+       ===================================================== #}
+    <ul class="nav nav-pills admin-nav mb-4" id="adminTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="home-tab" data-bs-toggle="tab"
+                data-bs-target="#home" type="button" role="tab">
+                <i class="bi bi-house-door me-2"></i>Vue Globale
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="users-tab" data-bs-toggle="tab"
+                data-bs-target="#users" type="button" role="tab">
+                <i class="bi bi-people me-2"></i>Utilisateurs
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="recipes-tab" data-bs-toggle="tab"
+                data-bs-target="#recipes" type="button" role="tab">
+                <i class="bi bi-journal-text me-2"></i>Recettes
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="reports-tab" data-bs-toggle="tab"
+                data-bs-target="#reports" type="button" role="tab">
+                <i class="bi bi-flag me-2"></i>Signalements
+                {% if stats.reportsCount > 0 %}
+                    <span class="badge bg-danger rounded-pill ms-1">{{ stats.reportsCount }}</span>
+                {% endif %}
+            </button>
+        </li>
     </ul>
+
+    <div class="tab-content" id="adminTabsContent">
+
+        {# =====================================================
+           ONGLET : VUE GLOBALE
+           ===================================================== #}
+        <div class="tab-pane fade show active" id="home" role="tabpanel">
+
+            <div class="row g-4 mb-5">
+                <div class="col-md-4">
+                    <div class="admin-card stat-card p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="text-muted small text-uppercase fw-bold mb-1">Total Likes</h4>
+                            <h2 class="display-5 fw-bold text-dark mb-0">{{ stats.totalLikes }}</h2>
+                        </div>
+                        <i class="bi bi-heart-fill stat-icon text-danger"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="admin-card stat-card p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="text-muted small text-uppercase fw-bold mb-1">Recettes Publiées</h4>
+                            <h2 class="display-5 fw-bold text-dark mb-0">{{ stats.totalRecipes }}</h2>
+                        </div>
+                        <i class="bi bi-journal-check stat-icon text-success"></i>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="admin-card stat-card p-4 d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="text-muted small text-uppercase fw-bold mb-1">Commentaires</h4>
+                            <h2 class="display-5 fw-bold text-dark mb-0">{{ stats.totalComments }}</h2>
+                        </div>
+                        <i class="bi bi-chat-dots-fill stat-icon text-info"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="admin-card h-100">
+                        <div class="bg-light p-3 border-bottom">
+                            <h5 class="fw-bold mb-0 text-uppercase" style="font-size: 0.9rem;">
+                                <i class="bi bi-star-fill text-warning me-2"></i>Recettes les plus likées
+                            </h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for recipe in topLikedRecipes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ path('app_recipe_show', {id: recipe.id}) }}"
+                                    class="text-decoration-none text-dark fw-bold">
+                                    {{ recipe.title }}
+                                </a>
+                                <div class="text-end">
+                                    <span class="badge bg-danger rounded-pill me-2">
+                                        <i class="bi bi-heart-fill me-1"></i>{{ recipe.likesCount }}
+                                    </span>
+                                    <span class="badge bg-secondary rounded-pill">
+                                        <i class="bi bi-chat me-1"></i>{{ recipe.commentsCount }}
+                                    </span>
+                                </div>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item text-muted fst-italic small">Aucune recette.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="admin-card h-100">
+                        <div class="bg-light p-3 border-bottom">
+                            <h5 class="fw-bold mb-0 text-uppercase" style="font-size: 0.9rem;">
+                                <i class="bi bi-clock-history text-primary me-2"></i>Derniers ajouts
+                            </h5>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            {% for recipe in latestRecipes %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ path('app_recipe_show', {id: recipe.id}) }}"
+                                    class="text-decoration-none text-dark fw-bold">
+                                    {{ recipe.title }}
+                                </a>
+                                <span class="text-muted small">{{ recipe.createdAt | ago }}</span>
+                            </li>
+                            {% else %}
+                            <li class="list-group-item text-muted fst-italic small">Aucune recette.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# =====================================================
+           ONGLET : UTILISATEURS
+           ===================================================== #}
+        <div class="tab-pane fade" id="users" role="tabpanel">
+
+            <div class="admin-filter mb-4 p-3 bg-white rounded shadow-sm">
+                <form method="GET" class="row g-2 align-items-center">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input class="form-control" type="search" name="q"
+                                placeholder="Rechercher un pseudo..."
+                                value="{{ app.request.query.get('q') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="role">
+                            <option value="all" {{ app.request.query.get('role') == 'all' ? 'selected' }}>Tous les rôles</option>
+                            <option value="ROLE_ADMIN" {{ app.request.query.get('role') == 'ROLE_ADMIN' ? 'selected' }}>Administrateurs</option>
+                            <option value="ROLE_MODO"  {{ app.request.query.get('role') == 'ROLE_MODO'  ? 'selected' }}>Modérateurs</option>
+                            <option value="ROLE_USER"  {{ app.request.query.get('role') == 'ROLE_USER'  ? 'selected' }}>Utilisateurs standards</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Filtrer</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="admin-card">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Utilisateur</th>
+                                <th>Rôle</th>
+                                <th class="text-end pe-4">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td class="ps-4 fw-bold text-muted">#{{ user.id }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40"
+                                            class="rounded-circle me-3" width="40" height="40"
+                                            alt="Avatar {{ user.strUsername }}">
+                                        <a href="{{ path('app_user_profil', {id: user.id}) }}"
+                                            class="text-decoration-none text-dark fw-bold">
+                                            {{ user.strFirstname }} {{ user.strName }}
+                                        </a>
+                                    </div>
+                                </td>
+                                <td>
+                                    <form method="POST" action="{{ path('app_admin_user_role', {id: user.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('admin_role_' ~ user.id) }}">
+                                        <select class="form-select form-select-sm w-auto" name="role"
+                                            onchange="this.form.submit()">
+                                            <option value="ROLE_USER"  {{ 'ROLE_USER'  in user.roles ? 'selected' }}>Utilisateur</option>
+                                            <option value="ROLE_MODO"  {{ 'ROLE_MODO'  in user.roles ? 'selected' }}>Modérateur</option>
+                                            <option value="ROLE_ADMIN" {{ 'ROLE_ADMIN' in user.roles ? 'selected' }}>Administrateur</option>
+                                        </select>
+                                    </form>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <a href="{{ path('app_admin_user_edit', {id: user.id}) }}"
+                                        class="btn btn-sm btn-outline-dark me-1">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-outline-warning me-1"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalBan"
+                                        data-pseudo="{{ user.strFirstname }} {{ user.strName }}"
+                                        data-id="{{ user.id }}">
+                                        <i class="bi bi-slash-circle"></i> Bannir
+                                    </button>
+                                    <a href="{{ path('app_admin_user_delete', {id: user.id}) }}"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Supprimer cet utilisateur ?')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted py-4 fst-italic">
+                                    Aucun utilisateur trouvé.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# =====================================================
+           ONGLET : RECETTES
+           ===================================================== #}
+        <div class="tab-pane fade" id="recipes" role="tabpanel">
+
+            <div class="admin-filter d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 p-3 bg-white rounded shadow-sm">
+                <form method="GET" class="d-flex gap-2 flex-grow-1" style="max-width: 600px;">
+                    <input class="form-control" type="search" name="q"
+                        placeholder="Rechercher une recette..."
+                        value="{{ app.request.query.get('q') }}">
+                    <select class="form-select w-auto" name="category">
+                        <option value="0">Toutes catégories</option>
+                        <option value="1" {{ app.request.query.get('category') == '1' ? 'selected' }}>Entrées</option>
+                        <option value="2" {{ app.request.query.get('category') == '2' ? 'selected' }}>Plats</option>
+                        <option value="3" {{ app.request.query.get('category') == '3' ? 'selected' }}>Desserts</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary flex-shrink-0">Recherche</button>
+                </form>
+                <a href="{{ path('app_admin_recipe_new') }}" class="btn btn-success fw-bold">
+                    <i class="bi bi-plus-lg me-1"></i>Créer une recette
+                </a>
+            </div>
+
+            <h5 class="fw-bold mb-3 text-dark">
+                <i class="bi bi-hourglass-split me-2"></i>En attente de validation
+            </h5>
+
+            <div class="admin-card mb-5 border border-warning shadow-sm overflow-hidden">
+                <ul class="list-group list-group-flush">
+                    {% for recipe in pendingRecipes %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-white">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fw-bold text-muted">#{{ recipe.id }}</span>
+                            <div>
+                                <a href="{{ path('app_recipe_show', {id: recipe.id}) }}"
+                                    class="text-decoration-none text-dark fw-bold d-block">
+                                    {{ recipe.title }}
+                                </a>
+                                <span class="small text-muted">
+                                    Proposé par
+                                    <a href="{{ path('app_user_profil', {id: recipe.author.id}) }}">
+                                        {{ recipe.author.strFirstname }} {{ recipe.author.strName }}
+                                    </a>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <a href="{{ path('app_recipe_show', {id: recipe.id}) }}"
+                                class="btn btn-sm btn-outline-dark">
+                                <i class="bi bi-eye"></i> Voir
+                            </a>
+                            <a href="{{ path('app_admin_recipe_reject', {id: recipe.id}) }}"
+                                class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-lg"></i> Refuser
+                            </a>
+                            <a href="{{ path('app_admin_recipe_approve', {id: recipe.id}) }}"
+                                class="btn btn-sm btn-success">
+                                <i class="bi bi-check-lg"></i> Valider
+                            </a>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item text-muted fst-italic small py-3 text-center">
+                        Aucune recette en attente.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        {# =====================================================
+           ONGLET : SIGNALEMENTS
+           ===================================================== #}
+        <div class="tab-pane fade" id="reports" role="tabpanel">
+
+            <h5 class="fw-bold mb-3">
+                <i class="bi bi-chat-left-text me-2 text-danger"></i>Commentaires signalés
+            </h5>
+
+            {% for report in reports %}
+            <div class="admin-card mb-4 border-start border-4 border-danger">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <a href="{{ path('app_user_profil', {id: report.author.id}) }}"
+                                    class="text-decoration-none text-dark d-flex align-items-center gap-2">
+                                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40"
+                                        class="rounded-circle" width="30" height="30"
+                                        alt="Avatar {{ report.author.strUsername }}">
+                                    <span class="fw-bold">{{ report.author.strUsername }}</span>
+                                </a>
+                            </div>
+                            <div class="col-md-5 border-start">
+                                <p class="mb-1 fw-bold text-danger small">Raison : {{ report.reason }}</p>
+                                <p class="mb-0 small fst-italic">"{{ report.comment.content | slice(0, 80) }}…"</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <a href="{{ path('app_admin_user_ban', {id: report.author.id}) }}"
+                                    class="btn btn-sm btn-outline-danger me-1" title="Bannir">
+                                    <i class="bi bi-slash-circle"></i>
+                                </a>
+                                <a href="{{ path('app_admin_comment_hide', {id: report.comment.id}) }}"
+                                    class="btn btn-sm btn-outline-warning me-1" title="Masquer le commentaire">
+                                    <i class="bi bi-eye-slash"></i>
+                                </a>
+                                <a href="{{ path('app_admin_comment_delete', {id: report.comment.id}) }}"
+                                    class="btn btn-sm btn-outline-danger me-1" title="Supprimer le commentaire">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                <a href="{{ path('app_admin_report_dismiss', {id: report.id}) }}"
+                                    class="btn btn-sm btn-success" title="Ignorer le signalement">
+                                    <i class="bi bi-check-lg"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-check-circle display-3 d-block mb-3"></i>
+                <p class="fst-italic">Aucun signalement en attente.</p>
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </div>
+</main>
+
+{% include '_partials/footer.html.twig' %}
+
+{# =====================================================
+   MODAL : BANNISSEMENT
+   ===================================================== #}
+<div class="modal fade" id="modalBan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form method="POST" action="{{ path('app_admin_user_ban_confirm') }}" class="modal-content border-0 shadow">
+        <input type="hidden" name="_token" value="{{ csrf_token('admin_ban') }}">
+            <input type="hidden" name="userId" id="banUserId">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Bannir l'utilisateur
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p>Vous êtes sur le point de bannir :
+                    <strong id="modalPseudoDisplay" class="text-dark"></strong>
+                </p>
+                <div class="mb-3">
+                    <label for="banReason" class="form-label fw-bold">Raison du bannissement :</label>
+                    <textarea class="form-control" name="reason" id="banReason" rows="3"
+                        placeholder="Raison..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="submit" class="btn btn-danger">Confirmer le ban</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+// Injecte le pseudo et l'ID dans la modale de bannissement
+document.getElementById('modalBan').addEventListener('show.bs.modal', function (e) {
+    const btn = e.relatedTarget;
+    document.getElementById('modalPseudoDisplay').textContent = btn.dataset.pseudo;
+    document.getElementById('banUserId').value                = btn.dataset.id;
+});
+</script>
 {% endblock %}
