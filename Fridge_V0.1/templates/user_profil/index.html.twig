@@ -1,20 +1,110 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello UserProfilController!{% endblock %}
+{% block title %}Mon Profil - Fridge{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    {# 1. HEADER #}
+    {% include '_partials/header.html.twig' %}
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <main class="container py-4">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/src/Controller/UserProfilController.php</code></li>
-        <li>Your template at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/templates/user_profil/index.html.twig</code></li>
-    </ul>
-</div>
+        {# 2. FIL D'ARIANE #}
+        <nav aria-label="Fil d'ariane">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Mon Profil</li>
+            </ol>
+        </nav>
+
+        {# 3. CARTE UTILISATEUR #}
+        <section id="user" class="bg-white shadow-sm rounded-3 p-4 mb-4">
+            <div class="row align-items-center text-center text-md-start">
+
+                <div class="col-8 col-md-3 col-lg-2 mx-auto mb-3 mb-md-0">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150"
+                         alt="Photo de profil"
+                         class="img-fluid rounded-circle border border-4 border-light shadow-sm">
+                </div>
+
+                <div class="col-12 col-md-9 col-lg-10">
+                    <h1 class="h2 fw-bold mb-1">
+                        {{ app.user.strFirstname }} {{ app.user.strName }}
+                    </h1>
+                    <p class="text-muted mb-1 small">@{{ app.user.strUsername }}</p>
+                    <p class="text-muted mb-3 small fst-italic">"Cuisiner est un art, mais manger est un plaisir."</p>
+
+                    <div class="mt-3 d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                        <a href="{{ path('app_edit_user_profil') }}" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-gear me-1"></i> Paramètres
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        {# 4. MES LIKES #}
+        <section class="bg-white shadow-sm rounded-3 p-4 mb-4">
+            <h2 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-heart-fill text-danger"></i> Mes Likes
+            </h2>
+
+            
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                {% set placeholderLikes = [
+                    { title: 'Salade César',     time: '15', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300' },
+                    { title: 'Pancakes moelleux', time: '20', image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7bb7445?w=300' },
+                    { title: 'Ramen maison',      time: '45', image: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=300' }
+                ] %}
+
+                {% for recipe in placeholderLikes %}
+                    <div class="col">
+                        {% include 'components/_recipe_card.html.twig' with {
+                            title: recipe.title,
+                            time: recipe.time,
+                            image: recipe.image
+                        } %}
+                    </div>
+                {% else %}
+                    <p class="text-muted small">Vous n'avez pas encore liké de recettes.</p>
+                {% endfor %}
+            </div>
+        </section>
+
+        {# 5. MES FAVORIS #}
+        <section class="bg-white shadow-sm rounded-3 p-4 mb-4">
+            <h2 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-bookmark-star-fill text-warning"></i> Mes Favoris
+            </h2>
+
+            
+            {% set placeholderFavs = [
+                { title: 'Tarte aux pommes normande',        category: 'Desserts',    time: '60', image: 'https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=60' },
+                { title: 'Bowl végétarien quinoa & avocat',  category: 'Végétarien',  time: '20', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=60' },
+                { title: 'Poulet rôti aux herbes',           category: 'Plats',       time: '90', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=60' }
+            ] %}
+
+            <ul class="list-group list-group-flush">
+                {% for fav in placeholderFavs %}
+                    <li class="list-group-item px-0 d-flex align-items-center gap-3">
+                        <img src="{{ fav.image }}" alt="{{ fav.title }}"
+                             class="rounded-2" style="width:48px;height:48px;object-fit:cover;">
+                        <div class="flex-grow-1 min-w-0">
+                            <p class="mb-0 fw-medium small text-truncate">{{ fav.title }}</p>
+                            <span class="text-muted small">{{ fav.category }} · {{ fav.time }} min</span>
+                        </div>
+                        <a href="{{ path('app_recipe') }}" class="btn btn-sm btn-outline-dark flex-shrink-0">Voir</a>
+                    </li>
+                {% else %}
+                    <p class="text-muted small mt-2">Vous n'avez pas encore ajouté de favoris.</p>
+                {% endfor %}
+            </ul>
+        </section>
+
+    </main>
+
+    {# 6. FOOTER #}
+    {% include '_partials/footer.html.twig' %}
 {% endblock %}

@@ -5,14 +5,14 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_USER')]
 final class UserProfilController extends AbstractController
 {
     #[Route('/user/profil', name: 'app_user_profil')]
     public function index(): Response
     {
-        return $this->render('user_profil/index.html.twig', [
-            'controller_name' => 'UserProfilController',
-        ]);
+        return $this->render('user/profil.html.twig');
     }
 }
