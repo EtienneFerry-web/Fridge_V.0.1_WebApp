@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['strEmail'])]
 #[UniqueEntity(fields: ['strEmail'], message: 'There is already an account with this email')]
 #[UniqueEntity(fields: ['strUsername'], message: 'This pseudo is already taken')]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -51,6 +52,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private bool $isVerified = false;
+
+    #[ORM\Column(name: 'user_date_inscription', type: 'datetime_immutable')]
+    private ?\DateTimeImmutable $dateInscription = null;
+
+    #[ORM\Column(name: 'user_date_suppression', type: 'datetime_immutable', nullable: true)]
+    private ?\DateTimeImmutable $dateSuppression = null;
 
     // --- ID ---
 
@@ -179,5 +186,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->isVerified = $isVerified;
 
         return $this;
+    }
+
+    // --- DATE INSCRIPTION ---
+
+    public function getDateInscription(): ?\DateTimeImmutable
+    {
+        return $this->dateInscription;
+    }
+
+    public function setDateInscription(\DateTimeImmutable $dateInscription): static
+    {
+        $this->dateInscription = $dateInscription;
+        return $this;
+    }
+
+    // --- DATE SUPPRESSION ---
+
+    public function getDateSuppression(): ?\DateTimeImmutable
+    {
+        return $this->dateSuppression;
+    }
+
+    public function setDateSuppression(?\DateTimeImmutable $dateSuppression): static
+    {
+        $this->dateSuppression = $dateSuppression;
+        return $this;
+    }
+    
+    #[ORM\PrePersist]
+    public function initDateInscription(): void
+    {
+        $this->dateInscription = new \DateTimeImmutable();
     }
 }
