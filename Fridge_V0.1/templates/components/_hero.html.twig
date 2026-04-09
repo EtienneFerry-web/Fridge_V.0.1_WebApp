@@ -1,0 +1,38 @@
+{# templates/components/_hero.html.twig #}
+<header id="hero" class="bg-white border-bottom shadow-sm">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <div class="col-12 col-md-6 text-center text-md-start">
+                <h1 class="display-4 fw-bold text-primary">Bienvenue sur Fridge</h1>
+                <p class="lead py-3 text-muted">
+                    Ne demandez plus "qu'est-ce qu'on mange ce soir ?". Planifiez vos repas et découvrez des
+                    recettes basées sur vos restes !
+                </p>
+                <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                    {% if app.user %}
+                        {# Si l'utilisateur est connecté, on l'envoie vers son frigo ou ses recettes #}
+                        <a href="{{ path('app_stock') }}" class="btn btn-primary btn-lg px-4 shadow-sm rounded-pill">
+                            Mon Frigo <i class="bi bi-box-seam ms-1"></i>
+                        </a>
+                        <a href="{{ path('app_recipe') }}" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
+                            Voir les recettes
+                        </a>
+                    {% else %}
+                        {# Si visiteur, on garde tes boutons Connexion / Inscription #}
+                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg px-4 shadow-sm rounded-pill">
+                            Se connecter
+                        </a>
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
+                            S'inscrire
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 text-center mt-5 mt-md-0">
+                <img src="https://illustrations.popsy.co/green/delivery-boy-on-a-bicycle.svg" alt="Fridge Hero"
+                    class="img-fluid" style="max-height: 350px;">
+            </div>
+        </div>
+    </div>
+</header>
