@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\UserRepository;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['strEmail'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'user_id')]
+    private ?int $intId = null;
+
+    #[Assert\NotBlank(message: 'Entrez votre email')]
+    #[Assert\Email(message: 'Format email invalide')]
+    #[ORM\Column(name: 'user_email', length: 180)]
+    private ?string $strEmail = null;
+
+    #[Assert\NotBlank(message: 'Entrez votre nom')]
+    #[ORM\Column(name: 'user_name', length: 255)] 
+    private ?string $strName = null;
+
+    #[Assert\NotBlank(message:'Entrez votre prénom')]
+    #[ORM\Column(name: 'user_firstname', length: 255)] 
+    private ?string $strFirstname = null;
+
+    #[Assert\NotBlank(message: 'Entrez votre pseudo')]
+    #[ORM\Column(name: 'user_username', length: 255, unique: true)] 
+    private ?string $strUsername = null;
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column(name: 'user_roles')]
+    private array $arrRoles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column(name: 'user_password')]
+    private ?string $strPassword = null;
+
+    #[ORM\Column]
+    private bool $isVerified = false;
+
+    public function getId(): ?int
+    {
+        return $this->intId;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->strEmail;
+    }
+
+    public function setEmail(string $strEmail): static
+    {
+        $this->strEmail = $strEmail;
+
+        return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->strEmail;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->arrRoles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($arrRoles);
+    }
+
+    /**
+     * @param list<string> $arrRoles
+     */
+    public function setRoles(array $arrRoles): static
+    {
+        $this->arrRoles = $arrRoles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->strPassword;
+    }
+
+    public function setPassword(string $strPassword): static
+    {
+        $this->strPassword = $strPassword;
+
+        return $this;
+    }
+
+    /**
+     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
+     */
+    public function __serialize(): array
+    {
+        $data = (array) $this;
+        $data["\0".self::class."\0password"] = hash('crc32c', $this->strPassword);
+
+        return $data;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+
+        return $this;
+    }
+}
