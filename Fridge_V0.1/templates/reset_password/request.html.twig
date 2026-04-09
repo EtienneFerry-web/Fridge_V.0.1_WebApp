@@ -1,0 +1,67 @@
+{# templates/reset_password/request.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oublié - Fridge{% endblock %}
+
+{% block body %}
+    {# Ton header partagé #}
+    {% include '_partials/header.html.twig' %}
+
+    {# Utilisation de ta classe auth-wrapper pour le centrage vertical #}
+    <main class="container auth-wrapper my-auto py-5">
+        <div class="auth-card mx-auto" style="max-width: 450px;">
+            <div class="auth-header text-center mb-4">
+                <i class="bi bi-shield-lock auth-icon d-block mb-2" style="font-size: 2.5rem;"></i>
+                <h1 class="h2 fw-bold mb-0">Mot de passe oublié ?</h1>
+            </div>
+            
+            <div class="auth-body">
+                <p class="text-center text-muted mb-4 small">Entrez votre e-mail pour recevoir un lien de réinitialisation.</p>
+                
+                {# Début du formulaire Symfony #}
+                {{ form_start(requestForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                    
+                    <div class="mb-4">
+                        <label for="{{ requestForm.strEmail.vars.id }}" class="form-label fw-bold small text-dark">
+                            Adresse E-mail <span class="required-mark" aria-hidden="true">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                            {# Widget Symfony avec tes classes HTML #}
+                            {{ form_widget(requestForm.strEmail, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'placeholder': 'exemple@mail.com',
+                                    'autocomplete': 'email'
+                                }
+                            }) }}
+                        </div>
+                        {# Affichage des erreurs de validation Symfony #}
+                        {% if form_errors(requestForm.strEmail) %}
+                            <div class="text-danger small mt-1">
+                                {{ form_errors(requestForm.strEmail) }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-auth w-100 mb-3">
+                        <i class="bi bi-send me-2"></i>Envoyer le lien
+                    </button>
+                    
+                {{ form_end(requestForm) }}
+
+                <div class="text-center mt-3 border-top pt-3">
+                    <p class="mb-0 small text-muted">
+                        Je m'en souviens ! <br>
+                        <a href="{{ path('app_login') }}" class="text-decoration-none fw-bold">
+                            <i class="bi bi-arrow-left me-1"></i>Retour
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    {# Ton footer partagé #}
+    {% include '_partials/footer.html.twig' %}
+{% endblock %}
