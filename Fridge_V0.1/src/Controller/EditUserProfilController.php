@@ -12,7 +12,7 @@ final class EditUserProfilController extends AbstractController
     public function index(): Response
     {
         return $this->render('edit_user_profil/index.html.twig', [
-            'controller_name' => 'EditUserProfilController',
+            'user' => $this->getUser(), 
         ]);
     }
 }

@@ -1,20 +1,106 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello EditUserProfilController!{% endblock %}
+{% block title %}Modifier le Profil - Fridge{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+{% include '_partials/header.html.twig' %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/src/Controller/EditUserProfilController.php</code></li>
-        <li>Your template at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/templates/edit_user_profil/index.html.twig</code></li>
-    </ul>
-</div>
+<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_user_profil') }}">Mon Profil</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Modifier le profil</li>
+        </ol>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="h4 mb-4 fw-bold text-center">Modifier mon profil</h2>
+
+                    <form action="{{ path('app_edit_user_profil') }}" method="POST" novalidate>
+
+                        <div class="d-flex flex-column align-items-center mb-5">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250"
+                                alt="Profil" class="rounded-circle avatar-img mb-3">
+                            <label for="avatarUpload"
+                                class="btn-edit-avatar rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                style="width:44px;height:44px;cursor:pointer;">
+                                <i class="bi bi-camera-fill"></i>
+                            </label>
+                            <input type="file" id="avatarUpload" class="d-none-file" accept="image/*">
+                            <div class="form-text mt-2 small text-center">JPG ou PNG. Max 2 Mo.</div>
+                        </div>
+
+                        <h5 class="mb-3 text-secondary border-bottom pb-2">Informations personnelles</h5>
+
+                        <div class="mb-3">
+                            <label for="inputPrenom" class="form-label fw-medium">
+                                <i class="bi bi-person"></i> Prénom
+                            </label>
+                            <input type="text" class="form-control" id="inputPrenom"
+                                value="{{ user.strFirstname }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputNom" class="form-label fw-medium">
+                                <i class="bi bi-person"></i> Nom
+                            </label>
+                            <input type="text" class="form-control" id="inputNom"
+                                value="{{ user.strName }}" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="inputEmail" class="form-label fw-medium">
+                                <i class="bi bi-envelope"></i> Adresse Email
+                            </label>
+                            <input type="email" class="form-control" id="inputEmail"
+                                value="{{ user.strEmail }}" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="inputBio" class="form-label fw-medium">
+                                <i class="bi bi-info-circle"></i> À propos de moi
+                            </label>
+                            <textarea class="form-control" id="inputBio" rows="3"
+                                placeholder="Ma description..."></textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3 text-secondary border-bottom pb-2">Sécurité</h5>
+
+                        <div class="mb-3">
+                            <label for="inputNewPassword" class="form-label fw-medium">
+                                <i class="bi bi-key"></i> Nouveau mot de passe
+                            </label>
+                            <input type="password" class="form-control" id="inputNewPassword">
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary py-2">
+                                <i class="bi bi-save me-1"></i> Enregistrer les modifications
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+{% include '_partials/footer.html.twig' %}
+
 {% endblock %}
