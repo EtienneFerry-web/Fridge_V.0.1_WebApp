@@ -2,12 +2,14 @@
 
 namespace App\Entity;
 
-use App\Repository\RecipeRepository;
+use App\Repository\RecetteRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RecipeRepository::class)]
-class Recipe
+#[ORM\Entity(repositoryClass: RecetteRepository::class)]
+class Recette
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,6 +34,24 @@ class Recipe
     #[ORM\Column(type: Types::SMALLINT)]
     private ?int $recetteTempsCuisson = null;
 
+    /**
+     * @var Collection<int, Etape>
+     */
+    #[ORM\OneToMany(targetEntity: Etape::class, mappedBy: 'recette')]
+    private Collection $etapes;
+
+    /**
+     * @var Collection<int, LikeRecette>
+     */
+    #[ORM\OneToMany(targetEntity: LikeRecette::class, mappedBy: 'likeRecette')]
+    private Collection $likeRecettes;
+
+    public function __construct()
+    {
+        $this->etapes = new ArrayCollection();
+        $this->likeRecettes = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,7 +65,6 @@ class Recipe
     public function setRecetteLibelle(string $recetteLibelle): static
     {
         $this->recetteLibelle = $recetteLibelle;
-
         return $this;
     }
 
@@ -57,7 +76,6 @@ class Recipe
     public function setRecetteDescription(?string $recetteDescription): static
     {
         $this->recetteDescription = $recetteDescription;
-
         return $this;
     }
 
@@ -69,7 +87,6 @@ class Recipe
     public function setRecetteDifficulte(string $recetteDifficulte): static
     {
         $this->recetteDifficulte = $recetteDifficulte;
-
         return $this;
     }
 
@@ -81,7 +98,6 @@ class Recipe
     public function setRecettePortion(int $recettePortion): static
     {
         $this->recettePortion = $recettePortion;
-
         return $this;
     }
 
@@ -93,7 +109,6 @@ class Recipe
     public function setRecetteTempsPrepa(int $recetteTempsPrepa): static
     {
         $this->recetteTempsPrepa = $recetteTempsPrepa;
-
         return $this;
     }
 
@@ -105,6 +120,65 @@ class Recipe
     public function setRecetteTempsCuisson(int $recetteTempsCuisson): static
     {
         $this->recetteTempsCuisson = $recetteTempsCuisson;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etape>
+     */
+    public function getEtapes(): Collection
+    {
+        return $this->etapes;
+    }
+
+    public function addEtape(Etape $etape): static
+    {
+        if (!$this->etapes->contains($etape)) {
+            $this->etapes->add($etape);
+            $etape->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtape(Etape $etape): static
+    {
+        if ($this->etapes->removeElement($etape)) {
+            // set the owning side to null (unless already changed)
+            if ($etape->getRecette() === $this) {
+                $etape->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LikeRecette>
+     */
+    public function getLikeRecettes(): Collection
+    {
+        return $this->likeRecettes;
+    }
+
+    public function addLikeRecette(LikeRecette $likeRecette): static
+    {
+        if (!$this->likeRecettes->contains($likeRecette)) {
+            $this->likeRecettes->add($likeRecette);
+            $likeRecette->setLikeRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLikeRecette(LikeRecette $likeRecette): static
+    {
+        if ($this->likeRecettes->removeElement($likeRecette)) {
+            // set the owning side to null (unless already changed)
+            if ($likeRecette->getLikeRecette() === $this) {
+                $likeRecette->setLikeRecette(null);
+            }
+        }
 
         return $this;
     }

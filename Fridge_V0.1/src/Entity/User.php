@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -58,6 +60,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(name: 'user_date_suppression', type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $dateSuppression = null;
+
+    /**
+     * @var Collection<int, Regime>
+     */
+    #[ORM\ManyToMany(targetEntity: Regime::class, inversedBy: 'regimeUsers')]
+    #[ORM\JoinTable(name: 'user_regime',
+        joinColumns: [new ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'regime_id', referencedColumnName: 'id')]
+    )]
+    private Collection $regimes;
+
+    /**
+     * @var Collection<int, LikeRecette>
+     */
+    #[ORM\OneToMany(targetEntity: LikeRecette::class, mappedBy: 'likeUser')]
+    private Collection $likeRecette;
+
+    public function __construct()
+    {
+        $this->regimes = new ArrayCollection();
+        $this->likeRecette = new ArrayCollection();
+    }
 
     // --- ID ---
 
@@ -218,5 +242,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function initDateInscription(): void
     {
         $this->dateInscription = new \DateTimeImmutable();
+    }
+
+    /**
+     * @return Collection<int, Regime>
+     */
+    public function getRegimes(): Collection
+    {
+        return $this->regimes;
+    }
+
+    public function addRegime(Regime $regime): static
+    {
+        if (!$this->regimes->contains($regime)) {
+            $this->regimes->add($regime);
+        }
+
+        return $this;
+    }
+
+    public function removeRegime(Regime $regime): static
+    {
+        $this->regimes->removeElement($regime);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, LikeRecette>
+     */
+    public function getLikeRecette(): Collection
+    {
+        return $this->likeRecette;
+    }
+
+    public function addLikeRecette(LikeRecette $likeRecette): static
+    {
+        if (!$this->likeRecette->contains($likeRecette)) {
+            $this->likeRecette->add($likeRecette);
+            $likeRecette->setLikeUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLikeRecette(LikeRecette $likeRecette): static
+    {
+        if ($this->likeRecette->removeElement($likeRecette)) {
+            // set the owning side to null (unless already changed)
+            if ($likeRecette->getLikeUser() === $this) {
+                $likeRecette->setLikeUser(null);
+            }
+        }
+
+        return $this;
     }
 }

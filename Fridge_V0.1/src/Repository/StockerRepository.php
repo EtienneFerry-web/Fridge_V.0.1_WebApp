@@ -2,39 +2,39 @@
 
 namespace App\Repository;
 
-use App\Entity\Recipe;
+use App\Entity\Stocker;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<Recipe>
+ * @extends ServiceEntityRepository<Stocker>
  */
-class RecipeRepository extends ServiceEntityRepository
+class StockerRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Recipe::class);
+        parent::__construct($registry, Stocker::class);
     }
 
     //    /**
-    //     * @return Recipe[] Returns an array of Recipe objects
+    //     * @return Stocker[] Returns an array of Stocker objects
     //     */
     //    public function findByExampleField($value): array
     //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('s')
+    //            ->andWhere('s.exampleField = :val')
     //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
+    //            ->orderBy('s.id', 'ASC')
     //            ->setMaxResults(10)
     //            ->getQuery()
     //            ->getResult()
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?Recipe
+    //    public function findOneBySomeField($value): ?Stocker
     //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
+    //        return $this->createQueryBuilder('s')
+    //            ->andWhere('s.exampleField = :val')
     //            ->setParameter('val', $value)
     //            ->getQuery()
     //            ->getOneOrNullResult()
