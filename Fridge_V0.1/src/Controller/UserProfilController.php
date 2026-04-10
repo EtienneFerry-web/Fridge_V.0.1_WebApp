@@ -22,4 +22,6 @@ final class UserProfilController extends AbstractController
         // Stub — will be implemented with the User management feature
         return $this->render('user/profil.html.twig');
     }
+
+    
 }
