@@ -3,7 +3,7 @@
 {% block title %}Accueil - Fridge{% endblock %}
 
 {% block stylesheets %}
-    {# Import Splide #}
+    {{ parent() }}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
 {% endblock %}
 
@@ -145,7 +145,20 @@
 {% endblock %}
 
 {% block javascripts %}
-    {# Scripts spécifiques à la page d'accueil #}
+    {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-    <script src="{{ asset('script.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Splide('#recipe-carousel', {
+                type: 'loop',
+                perPage: 3,
+                perMove: 1,
+                gap: '1.5rem',
+                breakpoints: {
+                    992: { perPage: 2 },
+                    576: { perPage: 1 },
+                },
+            }).mount();
+        });
+    </script>
 {% endblock %}

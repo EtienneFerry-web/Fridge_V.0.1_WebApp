@@ -12,7 +12,6 @@
                     <li><a href="{{ path('app_home') }}" class="text-white-50 text-decoration-none small">Accueil</a></li>
                     <li><a href="{{ path('app_search') }}" class="text-white-50 text-decoration-none small">Recettes</a></li>
 
-                    {# Affichage conditionnel des outils de gestion #}
                     {% if app.user %}
                         <li><a href="{{ path('app_planning') }}" class="text-white-50 text-decoration-none small">Planning</a></li>
                         <li><a href="{{ path('app_stock') }}" class="text-white-50 text-decoration-none small">Stock</a></li>
@@ -29,7 +28,7 @@
                     {% else %}
                         <a href="{{ path('app_login') }}" class="text-white-50 text-decoration-none small px-2">Connexion / Inscription</a>
                     {% endif %}
-                    
+
                     <a href="#" class="text-white-50 text-decoration-none small px-2">Mentions légales</a>
                     <a href="#" class="text-white-50 text-decoration-none small px-2">Contact</a>
                 </div>
@@ -38,8 +37,3 @@
         </div>
     </div>
 </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('styles/script.js') }}"></script>
-</body>
-</html>
