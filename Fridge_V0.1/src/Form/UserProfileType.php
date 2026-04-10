@@ -6,8 +6,13 @@ use App\Entity\Regime;
 use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 
 class UserProfileType extends AbstractType
 {
@@ -26,14 +31,6 @@ class UserProfileType extends AbstractType
             ->add('strUsername', TextType::class, [
                 'label' => 'Pseudo',
             ])
-            ->add('arrRoles', ChoiceType::class, [
-                'label' => 'Rôles',
-                'choices' => [
-                    'Utilisateur' => 'ROLE_USER',
-                    'Administrateur' => 'ROLE_ADMIN',
-                ],
-                'multiple' => true,
-            ])
 
             ->add('regimes', EntityType::class, [
                 'class'        => Regime::class,
@@ -50,7 +47,7 @@ class UserProfileType extends AbstractType
                 'required'       => false,           
                 'first_options'  => ['label' => 'Nouveau mot de passe'],
                 'second_options' => ['label' => 'Confirmer le mot de passe'],
-                'constraints'    => [new Length(['min' => 8])],
+                'constraints'    => [new Length(min: 8)],
             ])
         ;
     }

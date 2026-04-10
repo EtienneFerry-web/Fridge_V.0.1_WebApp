@@ -28,7 +28,7 @@
                 <div class="card-body p-4 p-md-5">
                     <h2 class="h4 mb-4 fw-bold text-center">Modifier mon profil</h2>
 
-                    <form action="{{ path('app_edit_user_profil') }}" method="POST" novalidate>
+                    {{ form_start(form, {action: path('app_edit_user_profil'), method: 'POST', attr: {novalidate: 'novalidate'}}) }}
 
                         <div class="d-flex flex-column align-items-center mb-5">
                             <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=250"
@@ -44,36 +44,32 @@
 
                         <h5 class="mb-3 text-secondary border-bottom pb-2">Informations personnelles</h5>
 
-                        <div class="mb-3">
-                            <label for="inputPrenom" class="form-label fw-medium">
-                                <i class="bi bi-person"></i> Prénom
-                            </label>
-                            <input type="text" class="form-control" id="inputPrenom"
-                                value="{{ user.strFirstname }}" required>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium"><i class="bi bi-person"></i> Prénom</label>
+                                {{ form_widget(form.strFirstname, {attr: {class: 'form-control'}}) }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-medium"><i class="bi bi-person"></i> Nom</label>
+                                {{ form_widget(form.strName, {attr: {class: 'form-control'}}) }}
+                            </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="inputNom" class="form-label fw-medium">
-                                <i class="bi bi-person"></i> Nom
-                            </label>
-                            <input type="text" class="form-control" id="inputNom"
-                                value="{{ user.strName }}" required>
+                            <label class="form-label fw-medium"><i class="bi bi-at"></i> Pseudo</label>
+                            {{ form_widget(form.strUsername, {attr: {class: 'form-control'}}) }}
                         </div>
 
                         <div class="mb-3">
-                            <label for="inputEmail" class="form-label fw-medium">
-                                <i class="bi bi-envelope"></i> Adresse Email
-                            </label>
-                            <input type="email" class="form-control" id="inputEmail"
-                                value="{{ user.strEmail }}" required>
+                            <label class="form-label fw-medium"><i class="bi bi-envelope"></i> Adresse Email</label>
+                            {{ form_widget(form.strEmail, {attr: {class: 'form-control'}}) }}
                         </div>
 
                         <div class="mb-4">
-                            <label for="inputBio" class="form-label fw-medium">
-                                <i class="bi bi-info-circle"></i> À propos de moi
-                            </label>
-                            <textarea class="form-control" id="inputBio" rows="3"
-                                placeholder="Ma description..."></textarea>
+                            <label class="form-label fw-medium"><i class="bi bi-tag"></i> Régimes alimentaires</label>
+                            <div class="d-flex flex-wrap gap-2 mt-1">
+                                {{ form_widget(form.regimes) }}
+                            </div>
                         </div>
 
                         <hr class="my-4">
@@ -81,19 +77,22 @@
                         <h5 class="mb-3 text-secondary border-bottom pb-2">Sécurité</h5>
 
                         <div class="mb-3">
-                            <label for="inputNewPassword" class="form-label fw-medium">
-                                <i class="bi bi-key"></i> Nouveau mot de passe
-                            </label>
-                            <input type="password" class="form-control" id="inputNewPassword">
+                            <label class="form-label fw-medium"><i class="bi bi-key"></i> Nouveau mot de passe</label>
+                            {{ form_widget(form.newPassword.first, {attr: {class: 'form-control'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-medium"><i class="bi bi-key"></i> Confirmer le mot de passe</label>
+                            {{ form_widget(form.newPassword.second, {attr: {class: 'form-control'}}) }}
                         </div>
 
                         <div class="d-grid gap-2 mt-5">
                             <button type="submit" class="btn btn-primary py-2">
                                 <i class="bi bi-save me-1"></i> Enregistrer les modifications
                             </button>
+                            <a href="{{ path('app_user_profil') }}" class="btn btn-outline-secondary">Annuler</a>
                         </div>
 
-                    </form>
+                    {{ form_end(form) }}
                 </div>
             </div>
 
