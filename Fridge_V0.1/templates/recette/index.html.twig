@@ -1,20 +1,58 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello RecetteController!{% endblock %}
+{% block title %}Recettes - Fridge{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+        {% include '_partials/header.html.twig' %}
+    <main class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h3 fw-bold mb-0">Toutes les recettes</h1>
+            {% if is_granted('ROLE_USER') %}
+                <a href="{{ path('app_recette_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Nouvelle recette
+                </a>
+            {% endif %}
+        </div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/src/Controller/RecetteController.php</code></li>
-        <li>Your template at <code>/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/templates/recette/index.html.twig</code></li>
-    </ul>
-</div>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recette in recettes %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ recette.recetteLibelle }}</h5>
+                            <p class="card-text text-muted small">{{ recette.recetteDescription|slice(0, 100) }}...</p>
+                            <div class="d-flex gap-2 flex-wrap">
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-clock me-1"></i>{{ recette.recetteTempsPrepa + recette.recetteTempsCuisson }} min
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-bar-chart me-1"></i>{{ recette.recetteDifficulte }}
+                                </span>
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-people me-1"></i>{{ recette.recettePortion }} pers.
+                                </span>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between">
+                            <a href="{{ path('app_recette_show', {id: recette.id}) }}" class="btn btn-sm btn-outline-dark">
+                                Voir la recette
+                            </a>
+                            {% if is_granted('ROLE_USER') %}
+                                <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-muted">Aucune recette disponible pour le moment.</p>
+            {% endfor %}
+        </div>
+    </main>
+    {% include '_partials/footer.html.twig' %}
 {% endblock %}
