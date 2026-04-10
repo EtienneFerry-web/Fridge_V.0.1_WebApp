@@ -48,8 +48,25 @@ final class UserProfilController extends AbstractController
         ]);
     }
 
-    #[Route('/user/profil/{id}', name: 'app_user_profil_by_id')]
-    public function show(int $id): Response
+    #[Route('/user/profil/delete', name: 'app_user_profil_delete', methods: ['POST'])]
+    public function delete(
+        EntityManagerInterface $objEntityManager,
+        Request $objRequest
+    ): Response {
+        if (!$this->isCsrfTokenValid('delete_account', $objRequest->request->get('_token'))) {
+            $this->addFlash('error', 'Token invalide.');
+            return $this->redirectToRoute('app_user_profil');
+        }
+
+        $objUser = $this->getUser();
+        $objUser->setDateSuppression(new \DateTimeImmutable());
+        $objEntityManager->flush();
+
+        return $this->redirectToRoute('app_logout');
+    }
+
+    #[Route('/user/profil/{user_id}', name: 'app_user_profil_by_id')]
+    public function show(int $user_id): Response
     {
         return $this->render('user/profil.html.twig');
     }

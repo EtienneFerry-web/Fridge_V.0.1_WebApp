@@ -92,6 +92,17 @@
                             <a href="{{ path('app_user_profil') }}" class="btn btn-outline-secondary">Annuler</a>
                         </div>
 
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <button type="button"
+                                    class="btn btn-outline-danger btn-sm"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDeleteAccount">
+                                <i class="bi bi-trash me-1"></i> Supprimer mon compte
+                            </button>
+                        </div>
+
                     {{ form_end(form) }}
                 </div>
             </div>
@@ -99,7 +110,37 @@
         </div>
     </div>
 </main>
+{# Modale confirmation suppression #}
+<div class="modal fade" id="modalDeleteAccount" tabindex="-1" aria-labelledby="modalDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger fw-bold" id="modalDeleteLabel">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Supprimer mon compte
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <p class="mb-1">Es-tu sûr de vouloir supprimer ton compte ?</p>
+                <p class="text-muted small">Cette action est irréversible. Toutes tes données seront désactivées.</p>
+            </div>
+            <div class="modal-footer border-0 justify-content-center gap-2">
 
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Annuler
+                </button>
+
+                <form action="{{ path('app_user_profil_delete') }}" method="POST">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete_account') }}">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash me-1"></i> Oui, supprimer
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
 {% include '_partials/footer.html.twig' %}
 
 {% endblock %}

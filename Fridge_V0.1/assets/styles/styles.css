@@ -832,7 +832,7 @@ small, .small { font-size: 0.85rem; color: var(--grey-warm); }
 }
 .badge.bg-success {
   background-color: var(--teal-light) !important;
-  color: var(--teal-text) !important; /* #1f6e72 — WCAG AA sur fond teal clair */
+  color: var(--teal-text) !important; 
 }
 .badge.bg-danger {
   background-color: rgba(187, 68, 48, 0.12) !important;
@@ -1076,7 +1076,10 @@ small, .small { font-size: 0.85rem; color: var(--grey-warm); }
   border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 .modal-title { color: var(--shadow-grey); font-weight: 700; }
-.modal-body  { color: var(--shadow-grey); }
+.modal-body  { 
+  color: var(--shadow-grey); 
+  background-color:var(--linen-mid) !important;
+}
 
 .modal-backdrop.show {
   opacity: 0.55;
