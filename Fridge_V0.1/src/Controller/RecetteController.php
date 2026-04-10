@@ -15,7 +15,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class RecetteController extends AbstractController
 {
     // READ - Liste toutes les recettes
-    #[Route('/recette', name: 'app_recette_')]
+    #[Route('/recette', name: 'app_recette_index')]
     public function index(RecetteRepository $objRepository): Response
     {
         $arrRecettes = $objRepository->findAll();
@@ -83,7 +83,7 @@ final class RecetteController extends AbstractController
 
     // DELETE 
 
-    #[Route('/{id}/supprimer', name: 'app_recette_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[Route('/recette/{id}/supprimer', name: 'app_recette_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER')]
     public function delete(
         Recette $objRecette,

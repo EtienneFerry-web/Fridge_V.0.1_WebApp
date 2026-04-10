@@ -147,8 +147,11 @@
 {% block javascripts %}
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+     <script>
+        function initSplide() {
+            const el = document.getElementById('recipe-carousel');
+            if (!el || el.classList.contains('is-initialized')) return;
+            
             new Splide('#recipe-carousel', {
                 type: 'loop',
                 perPage: 3,
@@ -159,6 +162,9 @@
                     576: { perPage: 1 },
                 },
             }).mount();
-        });
+        }
+
+        document.addEventListener('DOMContentLoaded', initSplide);
+        document.addEventListener('turbo:load', initSplide);
     </script>
 {% endblock %}
