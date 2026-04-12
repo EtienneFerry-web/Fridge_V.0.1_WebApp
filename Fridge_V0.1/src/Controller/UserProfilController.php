@@ -2,6 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Favori;
+use App\Entity\LikeRecette;
+use App\Repository\LikeRecetteRepository;
+use App\Repository\FavoriRepository;
 use App\Form\UserProfileType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,9 +19,19 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserProfilController extends AbstractController
 {
     #[Route('/user/profil', name: 'app_user_profil')]
-    public function index(): Response
-    {
-        return $this->render('user/profil.html.twig');
+    public function index(
+        LikeRecetteRepository   $objLikeRecetteRepo,
+        FavoriRepository        $objFavoriRepo
+    ): Response {
+        $objUser = $this->getUser();
+
+        $arrLikes = $objLikeRecetteRepo->findBy(['likeUser' => $objUser]);
+        $arrFavoris = $objFavoriRepo->findBy(['favoriUser' => $objUser]);
+
+        return $this->render('user/profil.html.twig', [
+            'arrLikes' => $arrLikes,
+            'arrFavoris' => $arrFavoris
+        ]);
     }
 
     #[Route('/user/profil/edit', name: 'app_edit_user_profil')]

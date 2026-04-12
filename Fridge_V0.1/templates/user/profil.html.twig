@@ -53,18 +53,11 @@
 
             
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                {% set placeholderLikes = [
-                    { title: 'Salade César',     time: '15', image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300' },
-                    { title: 'Pancakes moelleux', time: '20', image: 'https://images.unsplash.com/photo-1567620905732-2d1ec7bb7445?w=300' },
-                    { title: 'Ramen maison',      time: '45', image: 'https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=300' }
-                ] %}
-
-                {% for recipe in placeholderLikes %}
+                {% for objLike in arrLikes %}
                     <div class="col">
                         {% include 'components/_recipe_card.html.twig' with {
-                            title: recipe.title,
-                            time: recipe.time,
-                            image: recipe.image
+                            title: objLike.likeRecette.recetteLibelle,
+                            time:  objLike.likeRecette.recetteTempsPrepa + objLike.likeRecette.recetteTempsCuisson
                         } %}
                     </div>
                 {% else %}
@@ -80,20 +73,17 @@
             </h2>
 
             
-            {% set placeholderFavs = [
-                { title: 'Tarte aux pommes normande',        category: 'Desserts',    time: '60', image: 'https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a?w=60' },
-                { title: 'Bowl végétarien quinoa & avocat',  category: 'Végétarien',  time: '20', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=60' },
-                { title: 'Poulet rôti aux herbes',           category: 'Plats',       time: '90', image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=60' }
-            ] %}
-
             <ul class="list-group list-group-flush">
-                {% for fav in placeholderFavs %}
+                {% for objFavori in arrFavoris %}
                     <li class="list-group-item px-0 d-flex align-items-center gap-3 bg-transparent">
-                        <img src="{{ fav.image }}" alt="{{ fav.title }}"
-                             class="rounded-2" style="width:48px;height:48px;object-fit:cover;">
                         <div class="flex-grow-1 min-w-0">
-                            <p class="mb-0 fw-medium small text-truncate">{{ fav.title }}</p>
-                            <span class="text-muted small">{{ fav.category }} · {{ fav.time }} min</span>
+                            <p class="mb-0 fw-medium small text-truncate">
+                                {{ objFavori.favoriRecette.recetteLibelle }}
+                            </p>
+                            <span class="text-muted small">
+                                {{ objFavori.favoriRecette.recetteDifficulte|capitalize }}
+                                · {{ objFavori.favoriRecette.recetteTempsPrepa + objFavori.favoriRecette.recetteTempsCuisson }} min
+                            </span>
                         </div>
                         <a href="{{ path('app_recette_index') }}" class="btn btn-sm btn-outline-dark flex-shrink-0">Voir</a>
                     </li>
