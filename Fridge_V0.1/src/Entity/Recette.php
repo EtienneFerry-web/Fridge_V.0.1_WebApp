@@ -52,6 +52,9 @@ class Recette
     #[ORM\OneToMany(targetEntity: Favori::class, mappedBy: 'favoriRecette')]
     private Collection $favoris;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $recettePhoto = null;
+
     public function __construct()
     {
         $this->etapes = new ArrayCollection();
@@ -216,6 +219,18 @@ class Recette
                 $favori->setFavoriRecette(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRecettePhoto(): ?string
+    {
+        return $this->recettePhoto;
+    }
+
+    public function setRecettePhoto(?string $recettePhoto): static
+    {
+        $this->recettePhoto = $recettePhoto;
 
         return $this;
     }

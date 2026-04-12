@@ -57,7 +57,8 @@
                     <div class="col">
                         {% include 'components/_recipe_card.html.twig' with {
                             title: objLike.likeRecette.recetteLibelle,
-                            time:  objLike.likeRecette.recetteTempsPrepa + objLike.likeRecette.recetteTempsCuisson
+                            time:  objLike.likeRecette.recetteTempsPrepa + objLike.likeRecette.recetteTempsCuisson,
+                            photo: objLike.likeRecette.recettePhoto
                         } %}
                     </div>
                 {% else %}
