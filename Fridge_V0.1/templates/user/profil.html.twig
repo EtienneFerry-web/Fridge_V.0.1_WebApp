@@ -93,7 +93,8 @@
                                 · {{ objFavori.favoriRecette.recetteTempsPrepa + objFavori.favoriRecette.recetteTempsCuisson }} min
                             </span>
                         </div>
-                        <a href="{{ path('app_recette_index') }}" class="btn btn-sm btn-outline-dark flex-shrink-0">Voir</a>
+                            <a href="{{ path('app_recette_show', {id: objFavori.favoriRecette.id}) }}"
+                            class="btn btn-sm btn-outline-dark flex-shrink-0">Voir</a>                    
                     </li>
                 {% else %}
                     <p class="text-muted small mt-2">Vous n'avez pas encore ajouté de favoris.</p>

@@ -26,7 +26,7 @@
         {% endif %}
         <div class="d-flex justify-content-between align-items-center mt-3">
             <span class="small text-muted"><i class="bi bi-clock me-1"></i> {{ time|default('15') }} min</span>
-            <a href="{{ path('app_recette_index') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+            <a href="{{ path('app_recette_show', {id: objLike.likeRecette.id}) }}" class="btn btn-sm btn-outline-dark flex-shrink-0">
                 Voir <i class="bi bi-arrow-right ms-1"></i>
             </a>
         </div>
