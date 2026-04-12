@@ -77,6 +77,13 @@
             <ul class="list-group list-group-flush">
                 {% for objFavori in arrFavoris %}
                     <li class="list-group-item px-0 d-flex align-items-center gap-3 bg-transparent">
+                        {% if objFavori.favoriRecette.recettePhoto %}
+                            <img src="{{ asset('uploads/recettes/' ~ objFavori.favoriRecette.recettePhoto) }}"
+                                alt="{{ objFavori.favoriRecette.recetteLibelle }}"
+                                class="rounded" style="width:48px; height:48px; object-fit:cover;">
+                        {% else %}
+                            <div class="rounded bg-secondary-subtle" style="width:48px; height:48px;"></div>
+                        {% endif %}
                         <div class="flex-grow-1 min-w-0">
                             <p class="mb-0 fw-medium small text-truncate">
                                 {{ objFavori.favoriRecette.recetteLibelle }}
