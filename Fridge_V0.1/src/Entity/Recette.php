@@ -46,10 +46,17 @@ class Recette
     #[ORM\OneToMany(targetEntity: LikeRecette::class, mappedBy: 'likeRecette')]
     private Collection $likeRecettes;
 
+    /**
+     * @var Collection<int, Favori>
+     */
+    #[ORM\OneToMany(targetEntity: Favori::class, mappedBy: 'favoriRecette')]
+    private Collection $favoris;
+
     public function __construct()
     {
         $this->etapes = new ArrayCollection();
         $this->likeRecettes = new ArrayCollection();
+        $this->favoris = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -177,6 +184,36 @@ class Recette
             // set the owning side to null (unless already changed)
             if ($likeRecette->getLikeRecette() === $this) {
                 $likeRecette->setLikeRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Favori>
+     */
+    public function getFavoris(): Collection
+    {
+        return $this->favoris;
+    }
+
+    public function addFavori(Favori $favori): static
+    {
+        if (!$this->favoris->contains($favori)) {
+            $this->favoris->add($favori);
+            $favori->setFavoriRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavori(Favori $favori): static
+    {
+        if ($this->favoris->removeElement($favori)) {
+            // set the owning side to null (unless already changed)
+            if ($favori->getFavoriRecette() === $this) {
+                $favori->setFavoriRecette(null);
             }
         }
 
