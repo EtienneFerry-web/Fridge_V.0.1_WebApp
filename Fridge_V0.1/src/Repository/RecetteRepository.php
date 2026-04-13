@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\LikeRecette;
 use App\Entity\Recette;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,6 +42,29 @@ class RecetteRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    /**
+     * Retourne les recettes likées par l'utilisateur avec le nombre total de likes de chaque recette.
+     * Résultat : [['recette' => Recette, 'likeCount' => int], ...]
+     * Une seule requête SQL (pas de N+1).
+     */
+    public function findLikedByUserWithCount(User $objUser): array
+    {
+        // r = Recette (racine), l = like de l'utilisateur, l2 = tous les likes de la recette
+        $results = $this->createQueryBuilder('r')
+            ->select('r', 'COUNT(l2.id) as likeCount')
+            ->innerJoin(LikeRecette::class, 'l',  'WITH', 'l.likeRecette = r AND l.likeUser = :user')
+            ->leftJoin( LikeRecette::class, 'l2', 'WITH', 'l2.likeRecette = r')
+            ->setParameter('user', $objUser)
+            ->groupBy('r.id')
+            ->getQuery()
+            ->getResult();
+
+        return array_map(fn($row) => [
+            'recette'   => $row[0],
+            'likeCount' => (int) $row['likeCount'],
+        ], $results);
+    }
 
     public function findBySearch(
         string $strQuery,

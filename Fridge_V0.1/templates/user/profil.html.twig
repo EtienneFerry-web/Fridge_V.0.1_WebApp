@@ -53,13 +53,15 @@
 
             
             <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
-                {% for objLike in arrLikes %}
+                {% for item in arrLikes %}
                     <div class="col">
                     {% include 'components/_recipe_card.html.twig' with {
-                        title: objLike.likeRecette.recetteLibelle,
-                        time:  objLike.likeRecette.recetteTempsPrepa + objLike.likeRecette.recetteTempsCuisson,
-                        id:    objLike.likeRecette.id,
-                        photo: objLike.likeRecette.recettePhoto
+                        title:      item.recette.recetteLibelle,
+                        time:       item.recette.recetteTempsPrepa + item.recette.recetteTempsCuisson,
+                        id:         item.recette.id,
+                        photo:      item.recette.recettePhoto,
+                        like_count: item.likeCount,
+                        is_liked:   true
                     } %}
                     </div>
                 {% else %}

@@ -6,6 +6,7 @@ use App\Entity\Favori;
 use App\Entity\LikeRecette;
 use App\Repository\LikeRecetteRepository;
 use App\Repository\FavoriRepository;
+use App\Repository\RecetteRepository;
 use App\Form\UserProfileType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,12 +21,12 @@ final class UserProfilController extends AbstractController
 {
     #[Route('/user/profil', name: 'app_user_profil')]
     public function index(
-        LikeRecetteRepository   $objLikeRecetteRepo,
+        RecetteRepository       $objRecetteRepo,
         FavoriRepository        $objFavoriRepo
     ): Response {
         $objUser = $this->getUser();
 
-        $arrLikes = $objLikeRecetteRepo->findBy(['likeUser' => $objUser]);
+        $arrLikes   = $objRecetteRepo->findLikedByUserWithCount($objUser);
         $arrFavoris = $objFavoriRepo->findBy(['favoriUser' => $objUser]);
 
         return $this->render('user/profil.html.twig', [

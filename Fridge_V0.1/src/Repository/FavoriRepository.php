@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Favori;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +17,16 @@ class FavoriRepository extends ServiceEntityRepository
         parent::__construct($registry, Favori::class);
     }
 
-    //    /**
-    //     * @return Favori[] Returns an array of Favori objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Favori
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        public function findFavoriIdsByUser(User $objUser): array
+    {
+        return array_column(
+            $this->createQueryBuilder('f')
+                ->select('IDENTITY(f.favoriRecette) as id')
+                ->where('f.favoriUser = :user')
+                ->setParameter('user', $objUser)
+                ->getQuery()
+                ->getArrayResult(),
+            'id'
+        );
+    }
 }

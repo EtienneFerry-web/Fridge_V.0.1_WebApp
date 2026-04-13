@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\LikeRecette;
+use App\Entity\Recette;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,28 +18,16 @@ class LikeRecetteRepository extends ServiceEntityRepository
         parent::__construct($registry, LikeRecette::class);
     }
 
-    //    /**
-    //     * @return LikeRecette[] Returns an array of LikeRecette objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('l.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?LikeRecette
-    //    {
-    //        return $this->createQueryBuilder('l')
-    //            ->andWhere('l.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findLikedIdsByUser(User $objUser): array
+    {
+        return array_column(
+            $this->createQueryBuilder('l')
+                ->select('IDENTITY(l.likeRecette) as id')
+                ->where('l.likeUser = :user')
+                ->setParameter('user', $objUser)
+                ->getQuery()
+                ->getArrayResult(),
+            'id'
+        );
+    }
 }
