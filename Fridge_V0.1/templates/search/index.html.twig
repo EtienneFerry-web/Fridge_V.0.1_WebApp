@@ -170,7 +170,8 @@
                             {% include 'components/_recipe_card.html.twig' with {
                                 title: recipe.recetteLibelle,
                                 time:  recipe.recetteTempsPrepa + recipe.recetteTempsCuisson,
-                                image: recipe.recettePhoto ?? null
+                                photo: recipe.recettePhoto ?? null,
+                                id:    recipe.id
                             } %}
                         </div>
                     {% else %}
