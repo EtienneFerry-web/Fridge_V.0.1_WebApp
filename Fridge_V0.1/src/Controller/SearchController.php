@@ -37,7 +37,7 @@ final class SearchController extends AbstractController
             'recipes' => $recette,
             'query'   => $query,
             'difficulte' => $arrDifficulte,
-            'regimes' => $arrRegimes,
+            'regimes'    => $regimeRepository->findAll(),
             'origine' => $strOrigine,
             'temps_preparation_max' => $intTempsPreparationMax,
             'sort_by' => $strSortBy,

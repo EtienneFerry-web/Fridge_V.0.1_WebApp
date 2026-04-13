@@ -27,7 +27,7 @@
                         <input class="form-control main-search-input"
                                type="search"
                                name="q"
-                               value="{{ q }}"
+                               value="{{ query }}"
                                placeholder="Que voulez-vous cuisiner ?"
                                aria-label="Rechercher">
                         <button class="btn main-search-btn text-white" type="submit">
@@ -54,7 +54,7 @@
                         <form id="filterForm" method="GET" action="{{ path('app_search') }}">
 
                             {# On conserve le mot-clé de recherche #}
-                            <input type="hidden" name="q" value="{{ q }}">
+                            <input type="hidden" name="q" value="{{ query }}">
 
                             {# --- Régime alimentaire (dynamique) --- #}
                             <div class="mb-4">
@@ -62,10 +62,10 @@
                                 {% for reg in regimes %}
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox"
-                                               name="regime[]"
+                                               name="regimes[]"
                                                value="{{ reg.id }}"
                                                id="regime_{{ reg.id }}"
-                                               {% if reg.id|string in regime %}checked{% endif %}>
+                                               {% if reg.id ~ '' in regimes %}checked{% endif %}>
                                         <label class="form-check-label" for="regime_{{ reg.id }}">
                                             {{ reg.regimeLibelle }}
                                         </label>
@@ -114,19 +114,19 @@
                                 <h6 class="fw-bold mb-2">Temps de préparation max.</h6>
                                 <input type="range" class="form-range"
                                        min="5" max="120" step="5"
-                                       name="temps_max"
+                                       name="temps_preparation_max"
                                        id="timeRange"
-                                       value="{{ tempsMax }}"
+                                       value="{{ temps_preparation_max }}"
                                        oninput="document.getElementById('timeValue').innerText = this.value + ' min'">
                                 <div class="text-end small text-muted fw-bold" id="timeValue">
-                                    {{ tempsMax }} min
+                                    {{ temps_preparation_max }} min
                                 </div>
                             </div>
 
                             <button type="submit" class="btn btn-dark btn-sm w-100">
                                 <i class="bi bi-funnel me-1"></i>Appliquer
                             </button>
-                            <a href="{{ path('app_search', {q: q}) }}"
+                            <a href="{{ path('app_search', {q: query}) }}"
                                class="btn btn-outline-secondary btn-sm w-100 mt-2">
                                 Réinitialiser les filtres
                             </a>
@@ -151,13 +151,13 @@
                         <select class="form-select form-select-sm border-0 shadow-sm w-auto bg-light"
                                 id="sortResults"
                                 onchange="updateSort(this.value)">
-                            <option value="pertinence" {% if sort == 'pertinence' %}selected{% endif %}>
+                            <option value="pertinence" {% if sort_by == 'pertinence' %}selected{% endif %}>
                                 Pertinence
                             </option>
-                            <option value="recent"     {% if sort == 'recent'     %}selected{% endif %}>
+                            <option value="recent"     {% if sort_by == 'recent'     %}selected{% endif %}>
                                 Plus récents
                             </option>
-                            <option value="time"       {% if sort == 'time'       %}selected{% endif %}>
+                            <option value="time"       {% if sort_by == 'time'       %}selected{% endif %}>
                                 Temps le plus court
                             </option>
                         </select>
@@ -170,7 +170,7 @@
                             {% include 'components/_recipe_card.html.twig' with {
                                 title: recipe.recetteLibelle,
                                 time:  recipe.recetteTempsPrepa + recipe.recetteTempsCuisson,
-                                image: recipe.recetteImage ?? null
+                                image: recipe.recettePhoto ?? null
                             } %}
                         </div>
                     {% else %}
@@ -190,11 +190,11 @@
     // Synchronise le select "Trier par" avec le form sidebar
     function updateSort(strSortValue) {
         const objForm = document.getElementById('filterForm');
-        let objSortInput = objForm.querySelector('input[name="sort"]');
+        let objSortInput = objForm.querySelector('input[name="sort_by"]');
         if (!objSortInput) {
             objSortInput = document.createElement('input');
             objSortInput.type = 'hidden';
-            objSortInput.name = 'sort';
+            objSortInput.name = 'sort_by';
             objForm.appendChild(objSortInput);
         }
         objSortInput.value = strSortValue;
