@@ -55,11 +55,22 @@ class Recette
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $recettePhoto = null;
 
+    #[ORM\Column(length: 20)]
+    private ?string $recetteStatut = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $recetteOrigine = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $recetteCreatedAt = null;
+
     public function __construct()
     {
-        $this->etapes = new ArrayCollection();
-        $this->likeRecettes = new ArrayCollection();
-        $this->favoris = new ArrayCollection();
+        $this->etapes           = new ArrayCollection();
+        $this->likeRecettes     = new ArrayCollection();
+        $this->favoris          = new ArrayCollection();
+        $this->recetteCreatedAt = new \DateTime(); 
+        $this->recetteStatut    = 'en_attente';             
     }
 
     public function getId(): ?int
@@ -231,6 +242,42 @@ class Recette
     public function setRecettePhoto(?string $recettePhoto): static
     {
         $this->recettePhoto = $recettePhoto;
+
+        return $this;
+    }
+
+    public function getRecetteStatut(): ?string
+    {
+        return $this->recetteStatut;
+    }
+
+    public function setRecetteStatut(string $recetteStatut): static
+    {
+        $this->recetteStatut = $recetteStatut;
+
+        return $this;
+    }
+
+    public function getRecetteOrigine(): ?string
+    {
+        return $this->recetteOrigine;
+    }
+
+    public function setRecetteOrigine(?string $recetteOrigine): static
+    {
+        $this->recetteOrigine = $recetteOrigine;
+
+        return $this;
+    }
+
+    public function getRecetteCreatedAt(): ?\DateTime
+    {
+        return $this->recetteCreatedAt;
+    }
+
+    public function setRecetteCreatedAt(\DateTime $recetteCreatedAt): static
+    {
+        $this->recetteCreatedAt = $recetteCreatedAt;
 
         return $this;
     }
