@@ -38,10 +38,10 @@
                 </button>
 
                 <button class="btn btn-sm rounded-pill px-2 py-1 shadow-sm"
-                        style="background: rgba(255,255,255,0.9); border: none;"
+                        style="background: rgba(255,255,255,0.9); border: none; min-width: 44px; min-height: 30px;"
                         data-action="recipe-actions#toggleFavori">
                     <i data-recipe-actions-target="favoriIcon"
-                       class="bi {{ is_favori|default(false) ? 'bi-bookmark-fill text-warning' : 'bi-bookmark text-muted' }}"></i>
+                    class="bi {{ is_favori|default(false) ? 'bi-bookmark-fill text-warning' : 'bi-bookmark text-muted' }}"></i>
                 </button>
 
             </div>
