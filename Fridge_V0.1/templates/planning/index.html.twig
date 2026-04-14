@@ -3,7 +3,6 @@
 {% block title %}Mon Planning - Fridge{% endblock %}
 
 {% block body %}
-
 {% include '_partials/header.html.twig' %}
 
 <nav class="breadcrumb-nav" aria-label="Fil d'ariane">
@@ -12,94 +11,271 @@
             <li class="breadcrumb-item">
                 <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Mon Planning</li>
+            <li class="breadcrumb-item active">Mon Planning</li>
         </ol>
     </div>
 </nav>
 
 <main class="container py-4">
-    <section class="mb-5">
-        <div class="bg-white p-4 rounded-3 shadow-sm">
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <h1 class="h4 fw-bold mb-0 text-uppercase">
-                    <i class="bi bi-calendar-range me-2 text-primary"></i>Planning de la semaine
-                </h1>
-                <div class="d-flex gap-2">
-                    <button class="btn btn-outline-danger btn-sm" onclick="clearPlanning()">
-                        <i class="bi bi-trash3 me-1"></i>Vider
-                    </button>
-                    <button class="btn btn-success btn-sm">
-                        <i class="bi bi-check2-circle me-1"></i>Sauvegarder
-                    </button>
-                </div>
-            </div>
 
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle table-planning">
-                    <thead>
-                        <tr>
-                            <th>Lun</th>
-                            <th>Mar</th>
-                            <th>Mer</th>
-                            <th>Jeu</th>
-                            <th>Ven</th>
-                            <th>Sam</th>
-                            <th>Dim</th>
-                        </tr>
-                    </thead>
-                    <tbody id="planningBody">
-                        {# Généré par JS #}
-                    </tbody>
-                </table>
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ type == 'error' ? 'danger' : 'success' }} alert-dismissible fade show">
+                {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold mb-1"><i class="bi bi-calendar3 me-2 text-primary"></i>Mon Planning</h1>
+            <p class="text-muted mb-0">Organisez vos repas de la semaine</p>
         </div>
-    </section>
+        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#clearModal">
+            <i class="bi bi-trash me-1"></i>Vider le planning
+        </button>
+    </div>
+
+    {# TABLEAU PLANNING #}
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle text-center table-planning">
+            <thead>
+                <tr>
+                    <th style="width: 130px;"></th>
+                    {% for strJour in arrJours %}
+                        <th class="text-capitalize">{{ strJour }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for strMoment, strLabel in arrMomentsLabels %}
+                    <tr>
+                        <td class="fw-bold text-start ps-3 category-row">{{ strLabel }}</td>
+                        {% for strJour in arrJours %}
+                            {% set objPlanning = arrGrille[strJour][strMoment] %}
+                            <td class="meal-cell p-1" style="min-width: 110px; height: 90px;">
+                                {% if objPlanning and objPlanning.planningRecette %}
+                                    <div class="d-flex flex-column align-items-center gap-1 h-100 justify-content-center position-relative">
+                                        {% if objPlanning.planningRecette.recettePhoto %}
+                                            <img src="{{ asset('uploads/recettes/' ~ objPlanning.planningRecette.recettePhoto) }}"
+                                                 class="rounded-circle" style="width:42px; height:42px; object-fit:cover;"
+                                                 alt="{{ objPlanning.planningRecette.recetteLibelle }}">
+                                        {% endif %}
+                                        <span class="small fw-bold text-dark" style="font-size:0.72rem; line-height:1.2;">
+                                            {{ objPlanning.planningRecette.recetteLibelle|slice(0, 20) }}{% if objPlanning.planningRecette.recetteLibelle|length > 20 %}…{% endif %}
+                                        </span>
+                                        <button class="btn btn-sm p-0 text-danger"
+                                                style="font-size:0.75rem;"
+                                                onclick="supprimerPlanning({{ objPlanning.id }}, this)"
+                                                title="Retirer">
+                                            <i class="bi bi-x-circle"></i>
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <button class="btn-add w-100 h-100 border-0 bg-transparent"
+                                            onclick="ouvrirPopup('{{ strJour }}', '{{ strMoment }}', '{{ strLabel }}', this)"
+                                            title="Ajouter une recette">
+                                        <i class="bi bi-plus-lg text-muted"></i>
+                                    </button>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </main>
 
-<div id="modalOverlay" class="modal-overlay" onclick="closeModal()"></div>
-<div id="recipeModal" class="recipe-modal">
-    <div class="modal-header-custom">
-        <h5 class="mb-0 fw-bold">Choisir une recette</h5>
-        <button class="btn btn-close" onclick="closeModal()"></button>
-    </div>
-
-    <div class="modal-tabs">
-        <button class="tab-btn active" data-tab="likes" onclick="switchTab('likes')">
-            <i class="bi bi-heart-fill text-danger me-2"></i>Mes Likes
-        </button>
-        <button class="tab-btn" data-tab="favoris" onclick="switchTab('favoris')">
-            <i class="bi bi-star-fill text-warning me-2"></i>Mes Favoris
-        </button>
-    </div>
-
-    <div class="modal-body-custom p-4 flex-grow-1 overflow-auto">
-        <div class="d-flex gap-2 mb-4">
-            <div class="input-group input-group-sm flex-grow-1">
-                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-                {# id renommé planningSearchInput pour éviter le conflit avec stock/courses #}
-                <input type="text" id="planningSearchInput" class="form-control"
-                    placeholder="Rechercher..." oninput="applyFilters()">
+{# MODAL POPUP AJOUT #}
+<div class="modal fade" id="addModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-plus-circle me-2 text-primary"></i>
+                    Ajouter une recette — <span id="modalLabel"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            {# id renommé planningSortSelect pour la même raison #}
-            <select id="planningSortSelect" class="form-select form-select-sm w-auto" onchange="applyFilters()">
-                <option value="az">A-Z</option>
-                <option value="za">Z-A</option>
-                <option value="cat">Catégorie</option>
-            </select>
-        </div>
+            <div class="modal-body">
 
-        <div id="recipeGrid" class="recipe-grid d-grid gap-3"
-            style="grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));">
-            {# Généré par JS #}
+                {# Onglets Likes / Favoris #}
+                <ul class="nav nav-pills mb-3" id="planningTabs">
+                    <li class="nav-item">
+                        <button class="nav-link active" onclick="switchTab('likes')">
+                            <i class="bi bi-heart me-1"></i>Mes Likes
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link" onclick="switchTab('favoris')">
+                            <i class="bi bi-bookmark me-1"></i>Mes Favoris
+                        </button>
+                    </li>
+                </ul>
+
+                {# Liste likes #}
+                <div id="tabLikes">
+                    {% if arrLikedRecettes is empty %}
+                        <p class="text-muted text-center py-3">Vous n'avez pas encore liké de recettes.</p>
+                    {% else %}
+                        <div class="row row-cols-2 row-cols-md-3 g-3">
+                            {% for objRecette in arrLikedRecettes %}
+                                <div class="col">
+                                    <div class="card h-100 shadow-sm border-0 planning-recette-card"
+                                         onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
+                                         style="cursor:pointer;">
+                                        {% if objRecette.recettePhoto %}
+                                            <img src="{{ asset('uploads/recettes/' ~ objRecette.recettePhoto) }}"
+                                                 class="card-img-top" style="height:100px; object-fit:cover;"
+                                                 alt="{{ objRecette.recetteLibelle }}">
+                                        {% endif %}
+                                        <div class="card-body p-2 text-center">
+                                            <p class="small fw-bold mb-1">{{ objRecette.recetteLibelle }}</p>
+                                            <span class="small text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson }} min
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Liste favoris #}
+                <div id="tabFavoris" class="d-none">
+                    {% if arrFavoriRecettes is empty %}
+                        <p class="text-muted text-center py-3">Vous n'avez pas encore de recettes en favoris.</p>
+                    {% else %}
+                        <div class="row row-cols-2 row-cols-md-3 g-3">
+                            {% for objRecette in arrFavoriRecettes %}
+                                <div class="col">
+                                    <div class="card h-100 shadow-sm border-0 planning-recette-card"
+                                         onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
+                                         style="cursor:pointer;">
+                                        {% if objRecette.recettePhoto %}
+                                            <img src="{{ asset('uploads/recettes/' ~ objRecette.recettePhoto) }}"
+                                                 class="card-img-top" style="height:100px; object-fit:cover;"
+                                                 alt="{{ objRecette.recetteLibelle }}">
+                                        {% endif %}
+                                        <div class="card-body p-2 text-center">
+                                            <p class="small fw-bold mb-1">{{ objRecette.recetteLibelle }}</p>
+                                            <span class="small text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                {{ objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson }} min
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# MODAL VIDER #}
+<div class="modal fade" id="clearModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title text-white"><i class="bi bi-trash me-2"></i>Vider le planning</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">Voulez-vous vraiment supprimer tout le planning ?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form method="POST" action="{{ path('app_planning_clear') }}">
+                    <button type="submit" class="btn btn-danger">Tout supprimer</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 {% include '_partials/footer.html.twig' %}
-
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
-<script src="{{ asset('planning.js') }}" defer></script>
+<script>
+let strCurrentJour   = null;
+let strCurrentMoment = null;
+let objCurrentBtn    = null;
+
+function ouvrirPopup(strJour, strMoment, strLabel, objBtn) {
+    strCurrentJour   = strJour;
+    strCurrentMoment = strMoment;
+    objCurrentBtn    = objBtn;
+    document.getElementById('modalLabel').textContent = strLabel + ' — ' + strJour;
+    switchTab('likes');
+    new bootstrap.Modal(document.getElementById('addModal')).show();
+}
+
+function switchTab(strTab) {
+    document.getElementById('tabLikes').classList.toggle('d-none', strTab !== 'likes');
+    document.getElementById('tabFavoris').classList.toggle('d-none', strTab !== 'favoris');
+    document.querySelectorAll('#planningTabs .nav-link').forEach((btn, i) => {
+        btn.classList.toggle('active', (i === 0 && strTab === 'likes') || (i === 1 && strTab === 'favoris'));
+    });
+}
+
+async function ajouterAuPlanning(intRecetteId, strTitre, objCard) {
+    const objResponse = await fetch('{{ path('app_planning_add') }}', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+        body: new URLSearchParams({
+            jour:       strCurrentJour,
+            moment:     strCurrentMoment,
+            recette_id: intRecetteId
+        })
+    });
+
+    const objData = await objResponse.json();
+    if (!objData.success) return;
+
+    // Fermer le modal
+    bootstrap.Modal.getInstance(document.getElementById('addModal')).hide();
+
+    // Mettre à jour la cellule
+    const objTd = objCurrentBtn.closest('td');
+    const strPhoto = objData.photo
+        ? `<img src="/uploads/recettes/${objData.photo}" class="rounded-circle" style="width:42px;height:42px;object-fit:cover;" alt="${objData.titre}">`
+        : '';
+
+    objTd.innerHTML = `
+        <div class="d-flex flex-column align-items-center gap-1 h-100 justify-content-center">
+            ${strPhoto}
+            <span class="small fw-bold text-dark" style="font-size:0.72rem;line-height:1.2;">
+                ${objData.titre.substring(0, 20)}${objData.titre.length > 20 ? '…' : ''}
+            </span>
+            <button class="btn btn-sm p-0 text-danger" style="font-size:0.75rem;"
+                    onclick="supprimerPlanning(${objData.id}, this)" title="Retirer">
+                <i class="bi bi-x-circle"></i>
+            </button>
+        </div>`;
+}
+
+async function supprimerPlanning(intId, objBtn) {
+    const objResponse = await fetch(`{{ path('app_planning_delete', {id: '__ID__'}) }}`.replace('__ID__', intId), {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    });
+
+    const objData = await objResponse.json();
+    if (!objData.success) return;
+
+    const objTd = objBtn.closest('td');
+    objTd.innerHTML = `
+        <button class="btn-add w-100 h-100 border-0 bg-transparent"
+                onclick="ouvrirPopup('${objTd.dataset.jour}', '${objTd.dataset.moment}', '${objTd.dataset.label}', this)"
+                title="Ajouter une recette">
+            <i class="bi bi-plus-lg text-muted"></i>
+        </button>`;
+}
+</script>
 {% endblock %}

@@ -1724,3 +1724,36 @@ footer .text-white-50:hover {
 .filter-check-active {
     background-color: rgba(187, 68, 48, 0.08);
 }
+
+/* ============================================================
+   30. PLANNING — Onglets popup
+   ============================================================ */
+
+#planningTabs .nav-link {
+    color: var(--grey-warm);
+    border: 1.5px solid rgba(35, 31, 32, 0.12);
+    background: transparent;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    transition: var(--transition-normal);
+}
+
+#planningTabs .nav-link:hover {
+    background-color: rgba(187, 68, 48, 0.08);
+    border-color: var(--tomato-jam);
+    color: var(--tomato-jam);
+}
+
+#planningTabs .nav-link.active {
+    background-color: var(--tomato-jam) !important;
+    border-color: var(--tomato-jam) !important;
+    color: var(--linen) !important;
+}
+
+#addModal .modal-content {
+    border-radius: var(--radius-lg) !important;
+}
+
+#addModal .modal-body {
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+}

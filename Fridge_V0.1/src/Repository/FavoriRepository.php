@@ -33,4 +33,17 @@ class FavoriRepository extends ServiceEntityRepository
 
         return $arrFavoris;
     }
+
+    public function findFavoriRecettesByUser(User $objUser): array
+    {
+        $objEm = $this->getEntityManager();
+        return $objEm->createQueryBuilder()
+            ->select('r')
+            ->from(\App\Entity\Recette::class, 'r')
+            ->join(\App\Entity\Favori::class, 'f', 'WITH', 'f.favoriRecette = r')
+            ->where('f.favoriUser = :user')
+            ->setParameter('user', $objUser)
+            ->getQuery()
+            ->getResult();
+    }
 }

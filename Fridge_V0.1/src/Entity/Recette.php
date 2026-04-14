@@ -70,6 +70,12 @@ class Recette
     #[ORM\ManyToMany(targetEntity: Regime::class, inversedBy: 'recettes')]
     private Collection $regimes;
 
+    /**
+     * @var Collection<int, Planning>
+     */
+    #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'planningRecette')]
+    private Collection $plannings;
+
     public function __construct()
     {
         $this->etapes           = new ArrayCollection();
@@ -77,7 +83,8 @@ class Recette
         $this->favoris          = new ArrayCollection();
         $this->recetteCreatedAt = new \DateTime(); 
         $this->recetteStatut    = 'en_attente';
-        $this->regimes = new ArrayCollection();             
+        $this->regimes = new ArrayCollection();
+        $this->plannings = new ArrayCollection();             
     }
 
     public function getId(): ?int
@@ -309,6 +316,36 @@ class Recette
     public function removeRegime(Regime $regime): static
     {
         $this->regimes->removeElement($regime);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Planning>
+     */
+    public function getPlannings(): Collection
+    {
+        return $this->plannings;
+    }
+
+    public function addPlanning(Planning $planning): static
+    {
+        if (!$this->plannings->contains($planning)) {
+            $this->plannings->add($planning);
+            $planning->setPlanningRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlanning(Planning $planning): static
+    {
+        if ($this->plannings->removeElement($planning)) {
+            // set the owning side to null (unless already changed)
+            if ($planning->getPlanningRecette() === $this) {
+                $planning->setPlanningRecette(null);
+            }
+        }
 
         return $this;
     }

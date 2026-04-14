@@ -83,11 +83,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Favori::class, mappedBy: 'favoriUser')]
     private Collection $favoris;
 
+    /**
+     * @var Collection<int, Planning>
+     */
+    #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'planningUser')]
+    private Collection $plannings;
+
     public function __construct()
     {
         $this->regimes = new ArrayCollection();
         $this->likeRecette = new ArrayCollection();
         $this->favoris = new ArrayCollection();
+        $this->plannings = new ArrayCollection();
     }
 
     // --- ID ---
@@ -329,6 +336,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($favori->getFavoriUser() === $this) {
                 $favori->setFavoriUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Planning>
+     */
+    public function getPlannings(): Collection
+    {
+        return $this->plannings;
+    }
+
+    public function addPlanning(Planning $planning): static
+    {
+        if (!$this->plannings->contains($planning)) {
+            $this->plannings->add($planning);
+            $planning->setPlanningUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlanning(Planning $planning): static
+    {
+        if ($this->plannings->removeElement($planning)) {
+            // set the owning side to null (unless already changed)
+            if ($planning->getPlanningUser() === $this) {
+                $planning->setPlanningUser(null);
             }
         }
 

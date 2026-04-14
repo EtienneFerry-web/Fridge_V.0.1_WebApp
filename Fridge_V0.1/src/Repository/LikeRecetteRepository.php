@@ -34,4 +34,17 @@ class LikeRecetteRepository extends ServiceEntityRepository
 
         return $arrLiked;
     }
+
+    public function findLikedRecettesByUser(User $objUser): array
+    {
+        $objEm = $this->getEntityManager();
+        return $objEm->createQueryBuilder()
+            ->select('r')
+            ->from(\App\Entity\Recette::class, 'r')
+            ->join(\App\Entity\LikeRecette::class, 'l', 'WITH', 'l.likeRecette = r')
+            ->where('l.likeUser = :user')
+            ->setParameter('user', $objUser)
+            ->getQuery()
+            ->getResult();
+    }
 }
