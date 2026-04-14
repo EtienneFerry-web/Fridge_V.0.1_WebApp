@@ -43,7 +43,12 @@ final class HomeController extends AbstractController
             $arrFavoriIds = $objFavoriRepository->findFavoriIdsByUser($objUser);
         }
 
-        foreach ($arrRecettes as $objRecette) {
+        $arrAllRecettes = array_merge(
+            iterator_to_array($arrRecettes),
+            $arrRecettesCarousel
+        );
+
+        foreach ($arrAllRecettes as $objRecette) {
             $arrLikeCounts[$objRecette->getId()] = $objLikeRecetteRepository->count([
                 'likeRecette' => $objRecette
             ]);
