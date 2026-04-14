@@ -42,7 +42,7 @@
     <main class="container mb-5 mt-4">
         <div class="row">
 
-            {# SIDEBAR FILTRES — tout dans un seul <form> lié aux résultats #}
+            {# SIDEBAR FILTRES #}
             <aside class="col-lg-3 mb-4">
                 <div class="card shadow-sm border-0 position-sticky" style="top: 85px; z-index: 10;">
                     <div class="card-body">
@@ -50,23 +50,22 @@
                             <i class="bi bi-sliders me-2 text-success"></i> Filtres
                         </h5>
 
-                        {# Un seul form englobe sidebar + tri — soumis via JS au changement #}
                         <form id="filterForm" method="GET" action="{{ path('app_search') }}">
 
-                            {# On conserve le mot-clé de recherche #}
                             <input type="hidden" name="q" value="{{ query }}">
-
-                            {# --- Régime alimentaire (dynamique) --- #}
+                            {# --- Régime alimentaire --- #}
                             <div class="mb-4">
                                 <h6 class="fw-bold mb-2">Régime alimentaire</h6>
                                 {% for reg in regimes %}
-                                    <div class="form-check">
+                                    {% set boolActive = reg.id ~ '' in app.request.query.all('regimes') %}
+                                    <div class="form-check {{ boolActive ? 'filter-check-active' : '' }}">
                                         <input class="form-check-input" type="checkbox"
-                                               name="regimes[]"
-                                               value="{{ reg.id }}"
-                                               id="regime_{{ reg.id }}"
-                                               {% if reg.id ~ '' in regimes %}checked{% endif %}>
-                                        <label class="form-check-label" for="regime_{{ reg.id }}">
+                                            name="regimes[]"
+                                            value="{{ reg.id }}"
+                                            id="regime_{{ reg.id }}"
+                                            {{ boolActive ? 'checked' : '' }}>
+                                        <label class="form-check-label {{ boolActive ? 'filter-active-label' : '' }}"
+                                            for="regime_{{ reg.id }}">
                                             {{ reg.regimeLibelle }}
                                         </label>
                                     </div>
@@ -77,13 +76,15 @@
                             <div class="mb-4">
                                 <h6 class="fw-bold mb-2">Difficulté</h6>
                                 {% for level in ['Facile', 'Moyen', 'Difficile'] %}
-                                    <div class="form-check">
+                                    {% set boolActive = level in app.request.query.all('difficulte') %}
+                                    <div class="form-check {{ boolActive ? 'filter-check-active' : '' }}">
                                         <input class="form-check-input" type="checkbox"
-                                               name="difficulte[]"
-                                               value="{{ level }}"
-                                               id="diff_{{ level }}"
-                                               {% if level in difficulte %}checked{% endif %}>
-                                        <label class="form-check-label" for="diff_{{ level }}">
+                                            name="difficulte[]"
+                                            value="{{ level }}"
+                                            id="diff_{{ level }}"
+                                            {{ boolActive ? 'checked' : '' }}>
+                                        <label class="form-check-label {{ boolActive ? 'filter-active-label' : '' }}"
+                                            for="diff_{{ level }}">
                                             {{ level }}
                                         </label>
                                     </div>
@@ -93,7 +94,8 @@
                             {# --- Origine --- #}
                             <div class="mb-4">
                                 <h6 class="fw-bold mb-2">Origine</h6>
-                                <select class="form-select form-select-sm shadow-none" name="origine">
+                                <select class="form-select form-select-sm shadow-none {{ origine ? 'filter-active-select' : '' }}"
+                                        name="origine">
                                     <option value="">Toutes les origines</option>
                                     {% for val, label in {
                                         'fr': 'Française',
@@ -118,7 +120,8 @@
                                        id="timeRange"
                                        value="{{ temps_preparation_max }}"
                                        oninput="document.getElementById('timeValue').innerText = this.value + ' min'">
-                                <div class="text-end small text-muted fw-bold" id="timeValue">
+                                <div class="text-end small fw-bold {{ temps_preparation_max < 120 ? 'text-tomato' : 'text-muted' }}"
+                                     id="timeValue">
                                     {{ temps_preparation_max }} min
                                 </div>
                             </div>
@@ -147,17 +150,16 @@
                         <label for="sortResults" class="me-2 small text-muted text-nowrap">
                             Trier par :
                         </label>
-                        {# Le tri recharge la page via JS en ajoutant ?sort= à l'URL #}
                         <select class="form-select form-select-sm border-0 shadow-sm w-auto bg-light"
                                 id="sortResults"
                                 onchange="updateSort(this.value)">
                             <option value="pertinence" {% if sort_by == 'pertinence' %}selected{% endif %}>
                                 Pertinence
                             </option>
-                            <option value="recent"     {% if sort_by == 'recent'     %}selected{% endif %}>
+                            <option value="recent" {% if sort_by == 'recent' %}selected{% endif %}>
                                 Plus récents
                             </option>
-                            <option value="time"       {% if sort_by == 'time'       %}selected{% endif %}>
+                            <option value="time" {% if sort_by == 'time' %}selected{% endif %}>
                                 Temps le plus court
                             </option>
                         </select>
@@ -168,10 +170,10 @@
                     {% for recipe in recipes %}
                         <div class="col">
                             {% include 'components/_recipe_card.html.twig' with {
-                                title: recipe.recetteLibelle,
-                                time:  recipe.recetteTempsPrepa + recipe.recetteTempsCuisson,
-                                photo: recipe.recettePhoto ?? null,
-                                id:    recipe.id,
+                                title:      recipe.recetteLibelle,
+                                time:       recipe.recetteTempsPrepa + recipe.recetteTempsCuisson,
+                                photo:      recipe.recettePhoto ?? null,
+                                id:         recipe.id,
                                 is_liked:   arrLikedIds[recipe.id] is defined,
                                 like_count: arrLikeCounts[recipe.id]|default(0),
                                 is_favori:  arrFavoriIds[recipe.id] is defined
@@ -191,7 +193,6 @@
     {% include '_partials/footer.html.twig' %}
 
     <script>
-    // Synchronise le select "Trier par" avec le form sidebar
     function updateSort(strSortValue) {
         const objForm = document.getElementById('filterForm');
         let objSortInput = objForm.querySelector('input[name="sort_by"]');

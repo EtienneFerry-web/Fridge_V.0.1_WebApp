@@ -1678,3 +1678,49 @@ footer .text-white-50:hover {
   box-shadow: none;
   transform: none;
 }
+
+/* ============================================================
+   29. FILTRES ACTIFS (Search)
+   ============================================================ */
+
+.filter-check {
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.filter-check:has(input:checked) {
+    background-color: rgba(187, 68, 48, 0.08);
+}
+
+.filter-active-label {
+    color: var(--tomato-jam) !important;
+    font-weight: 700;
+}
+
+.filter-active-select {
+    border-color: var(--tomato-jam) !important;
+    color: var(--tomato-jam) !important;
+    font-weight: 600;
+    box-shadow: 0 0 0 3px rgba(187, 68, 48, 0.12) !important;
+}
+
+.text-tomato {
+    color: var(--tomato-jam) !important;
+}
+
+.filter-check-active {
+    background-color: rgba(187, 68, 48, 0.08);
+    border-radius: var(--radius-sm);
+}
+
+.filter-check {
+    padding: 3px 6px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+    margin-bottom: 2px;
+}
+
+.filter-check-active {
+    background-color: rgba(187, 68, 48, 0.08);
+}

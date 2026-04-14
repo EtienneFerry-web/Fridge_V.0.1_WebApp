@@ -64,13 +64,20 @@ class Recette
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $recetteCreatedAt = null;
 
+    /**
+     * @var Collection<int, Regime>
+     */
+    #[ORM\ManyToMany(targetEntity: Regime::class, inversedBy: 'recettes')]
+    private Collection $regimes;
+
     public function __construct()
     {
         $this->etapes           = new ArrayCollection();
         $this->likeRecettes     = new ArrayCollection();
         $this->favoris          = new ArrayCollection();
         $this->recetteCreatedAt = new \DateTime(); 
-        $this->recetteStatut    = 'en_attente';             
+        $this->recetteStatut    = 'en_attente';
+        $this->regimes = new ArrayCollection();             
     }
 
     public function getId(): ?int
@@ -278,6 +285,30 @@ class Recette
     public function setRecetteCreatedAt(\DateTime $recetteCreatedAt): static
     {
         $this->recetteCreatedAt = $recetteCreatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Regime>
+     */
+    public function getRegimes(): Collection
+    {
+        return $this->regimes;
+    }
+
+    public function addRegime(Regime $regime): static
+    {
+        if (!$this->regimes->contains($regime)) {
+            $this->regimes->add($regime);
+        }
+
+        return $this;
+    }
+
+    public function removeRegime(Regime $regime): static
+    {
+        $this->regimes->removeElement($regime);
 
         return $this;
     }

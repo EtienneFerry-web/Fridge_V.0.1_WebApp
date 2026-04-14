@@ -5,10 +5,11 @@ namespace App\DataFixtures;
 use App\Entity\Etape;
 use App\Entity\Recette;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class RecetteFixtures extends Fixture
+class RecetteFixtures extends Fixture implements DependentFixtureInterface
 {
     const PATES_TOMATE      = 'recette-pates-tomate';
     const POULET_ROTI       = 'recette-poulet-roti';
@@ -45,11 +46,14 @@ class RecetteFixtures extends Fixture
 
     public function __construct(private ParameterBagInterface $params) {}
 
+    public function getDependencies(): array
+    {
+        return [RegimeFixtures::class];
+    }
+
     public function load(ObjectManager $manager): void
     {
         $arrRecettesData = [
-
-            // ── RECETTES EXISTANTES (conservées à l'identique) ──────────────
 
             self::PATES_TOMATE => [
                 'libelle'      => 'Pâtes à la tomate maison',
@@ -62,6 +66,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1588013273468-315fd88ea34c?w=800',
                 'photoNom'     => 'pates-tomate.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
                     ['Mise en place',  'Faire bouillir une grande casserole d\'eau salée.',            5],
                     ['Sauce tomate',   'Faire revenir l\'ail et les tomates dans l\'huile d\'olive.',  10],
@@ -81,6 +86,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1598103442097-8b74394b95c8?w=800',
                 'photoNom'     => 'poulet-roti.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
                     ['Marinade',    'Mélanger huile d\'olive, herbes de Provence, sel et poivre.',     10],
                     ['Préparation', 'Badigeonner le poulet de la marinade et laisser reposer.',         10],
@@ -100,6 +106,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?w=800',
                 'photoNom'     => 'mousse-chocolat.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
                     ['Fonte chocolat',  'Faire fondre le chocolat noir au bain-marie.',             5],
                     ['Jaunes d\'oeufs', 'Incorporer les jaunes d\'oeufs au chocolat fondu.',        3],
@@ -120,6 +127,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800',
                 'photoNom'     => 'soupe-tomates.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::VEGAN],
                 'etapes' => [
                     ['Préparation', 'Éplucher et couper les tomates et l\'oignon en morceaux.',         5],
                     ['Cuisson',     'Faire revenir l\'oignon puis ajouter les tomates et l\'ail.',      10],
@@ -139,6 +147,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1519676867240-f03562e64548?w=800',
                 'photoNom'     => 'crepes-maison.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
                     ['Pâte',    'Mélanger farine, oeufs, lait et beurre fondu jusqu\'à obtenir une pâte lisse.', 5],
                     ['Repos',   'Laisser reposer la pâte 30 minutes au réfrigérateur.',                          30],
@@ -146,8 +155,6 @@ class RecetteFixtures extends Fixture
                     ['Service', 'Servir avec garnitures sucrées ou salées au choix.',                             2],
                 ],
             ],
-
-            // ── NOUVELLES RECETTES ───────────────────────────────────────────
 
             self::RISOTTO => [
                 'libelle'      => 'Risotto aux champignons',
@@ -160,12 +167,13 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800',
                 'photoNom'     => 'risotto-champignons.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Bouillon',         'Chauffer le bouillon de légumes dans une casserole à part.',              5],
-                    ['Soffritto',        'Faire revenir l\'oignon dans le beurre jusqu\'à transparence.',           5],
-                    ['Toast du riz',     'Ajouter le riz et faire toaster 2 minutes en remuant.',                   3],
-                    ['Cuisson du riz',   'Ajouter le bouillon louche par louche en remuant constamment.',          25],
-                    ['Finition',         'Incorporer parmesan, beurre et champignons sautés. Ajuster l\'assaisonnement.', 5],
+                    ['Bouillon',       'Chauffer le bouillon de légumes dans une casserole à part.',              5],
+                    ['Soffritto',      'Faire revenir l\'oignon dans le beurre jusqu\'à transparence.',           5],
+                    ['Toast du riz',   'Ajouter le riz et faire toaster 2 minutes en remuant.',                   3],
+                    ['Cuisson du riz', 'Ajouter le bouillon louche par louche en remuant constamment.',          25],
+                    ['Finition',       'Incorporer parmesan, beurre et champignons sautés.',                      5],
                 ],
             ],
 
@@ -180,12 +188,13 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1568571780765-9276f4b1e57f?w=800',
                 'photoNom'     => 'tarte-pomme.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Pâte brisée',    'Mélanger farine, beurre froid et eau pour former la pâte. Réfrigérer 30 min.', 15],
-                    ['Préparation',    'Éplucher les pommes et les couper en fines lamelles.',                           10],
-                    ['Fonçage',        'Étaler la pâte et foncer le moule. Piquer le fond.',                             5],
-                    ['Garniture',      'Disposer les lamelles de pommes en rosace sur la pâte.',                         5],
-                    ['Cuisson',        'Enfourner à 180°C pendant 40 minutes jusqu\'à dorure.',                         40],
+                    ['Pâte brisée', 'Mélanger farine, beurre froid et eau pour former la pâte. Réfrigérer 30 min.', 15],
+                    ['Préparation', 'Éplucher les pommes et les couper en fines lamelles.',                           10],
+                    ['Fonçage',     'Étaler la pâte et foncer le moule. Piquer le fond.',                             5],
+                    ['Garniture',   'Disposer les lamelles de pommes en rosace sur la pâte.',                         5],
+                    ['Cuisson',     'Enfourner à 180°C pendant 40 minutes jusqu\'à dorure.',                         40],
                 ],
             ],
 
@@ -200,12 +209,13 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800',
                 'photoNom'     => 'curry-legumes.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::VEGAN, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
-                    ['Préparation',   'Couper courgettes, poivrons et aubergines en dés réguliers.',              10],
-                    ['Épices',        'Faire revenir oignon, ail et curry en poudre dans l\'huile.',               5],
-                    ['Légumes',       'Ajouter les légumes et faire revenir 5 minutes.',                           5],
-                    ['Sauce',         'Verser le lait de coco et laisser mijoter 20 minutes à feu doux.',         20],
-                    ['Service',       'Servir avec du riz basmati et de la coriandre fraîche.',                    2],
+                    ['Préparation', 'Couper courgettes, poivrons et aubergines en dés réguliers.',              10],
+                    ['Épices',      'Faire revenir oignon, ail et curry en poudre dans l\'huile.',               5],
+                    ['Légumes',     'Ajouter les légumes et faire revenir 5 minutes.',                           5],
+                    ['Sauce',       'Verser le lait de coco et laisser mijoter 20 minutes à feu doux.',         20],
+                    ['Service',     'Servir avec du riz basmati et de la coriandre fraîche.',                    2],
                 ],
             ],
 
@@ -220,6 +230,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800',
                 'photoNom'     => 'quiche-lorraine.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
                     ['Pâte',       'Étaler la pâte brisée et foncer le moule. Précuire 10 minutes à blanc.',  10],
                     ['Appareil',   'Battre les oeufs avec la crème fraîche, sel, poivre et noix de muscade.',  5],
@@ -240,11 +251,12 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1572453800999-e8d2d1589b7c?w=800',
                 'photoNom'     => 'ratatouille.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::VEGAN, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
-                    ['Préparation',  'Couper aubergines, courgettes, poivrons et tomates en rondelles.',          20],
-                    ['Cuisson base', 'Faire revenir oignon et ail dans l\'huile d\'olive.',                        5],
-                    ['Légumes',      'Ajouter les légumes couche par couche et laisser mijoter à feu doux.',      40],
-                    ['Assaisonnement','Ajouter herbes de Provence, sel, poivre et un filet d\'huile d\'olive.',     5],
+                    ['Préparation',   'Couper aubergines, courgettes, poivrons et tomates en rondelles.',      20],
+                    ['Cuisson base',  'Faire revenir oignon et ail dans l\'huile d\'olive.',                    5],
+                    ['Légumes',       'Ajouter les légumes couche par couche et laisser mijoter à feu doux.', 40],
+                    ['Assaisonnement','Ajouter herbes de Provence, sel, poivre et huile d\'olive.',             5],
                 ],
             ],
 
@@ -259,17 +271,18 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
                 'photoNom'     => 'salade-nicoise.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
-                    ['Cuisson',      'Cuire les oeufs durs et les haricots verts.',                                10],
-                    ['Préparation',  'Couper tomates, poivrons et oignons.',                                       10],
-                    ['Assemblage',   'Dresser la salade avec tous les ingrédients.',                                5],
-                    ['Vinaigrette',  'Préparer une vinaigrette à l\'huile d\'olive et au citron.',                  3],
+                    ['Cuisson',     'Cuire les oeufs durs et les haricots verts.',                  10],
+                    ['Préparation', 'Couper tomates, poivrons et oignons.',                         10],
+                    ['Assemblage',  'Dresser la salade avec tous les ingrédients.',                   5],
+                    ['Vinaigrette', 'Préparer une vinaigrette à l\'huile d\'olive et au citron.',    3],
                 ],
             ],
 
             self::GATEAU_CHOCO => [
                 'libelle'      => 'Gâteau au chocolat moelleux',
-                'description'  => 'Un gâteau au chocolat ultra moelleux et fondant, le dessert préféré des petits et grands.',
+                'description'  => 'Un gâteau au chocolat ultra moelleux et fondant.',
                 'difficulte'   => 'Facile',
                 'portion'      => 8,
                 'tempsPrepa'   => 15,
@@ -278,17 +291,18 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800',
                 'photoNom'     => 'gateau-chocolat.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Fonte',      'Faire fondre chocolat et beurre ensemble au micro-ondes.',                5],
-                    ['Appareil',   'Mélanger sucre, oeufs puis incorporer le chocolat fondu.',                5],
-                    ['Farine',     'Ajouter farine et levure tamisées et mélanger sans travailler la pâte.', 3],
-                    ['Cuisson',    'Verser dans un moule beurré et cuire 30 minutes à 170°C.',               30],
+                    ['Fonte',    'Faire fondre chocolat et beurre ensemble au micro-ondes.',                5],
+                    ['Appareil', 'Mélanger sucre, oeufs puis incorporer le chocolat fondu.',                5],
+                    ['Farine',   'Ajouter farine et levure tamisées et mélanger sans travailler la pâte.', 3],
+                    ['Cuisson',  'Verser dans un moule beurré et cuire 30 minutes à 170°C.',               30],
                 ],
             ],
 
             self::OMELETTE => [
                 'libelle'      => 'Omelette aux champignons et fines herbes',
-                'description'  => 'Une omelette baveuse aux champignons sautés et aux herbes fraîches, prête en 10 minutes.',
+                'description'  => 'Une omelette baveuse aux champignons sautés et aux herbes fraîches.',
                 'difficulte'   => 'Facile',
                 'portion'      => 2,
                 'tempsPrepa'   => 5,
@@ -297,6 +311,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=800',
                 'photoNom'     => 'omelette-champignons.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
                     ['Champignons', 'Faire sauter les champignons avec l\'ail dans le beurre.',  5],
                     ['Oeufs',       'Battre les oeufs avec sel, poivre et herbes fraîches.',      2],
@@ -307,7 +322,7 @@ class RecetteFixtures extends Fixture
 
             self::GRATIN_DAUPHINOIS => [
                 'libelle'      => 'Gratin dauphinois',
-                'description'  => 'Le gratin dauphinois traditionnel, fondant et crémeux, cuit longuement au four.',
+                'description'  => 'Le gratin dauphinois traditionnel, fondant et crémeux.',
                 'difficulte'   => 'Facile',
                 'portion'      => 6,
                 'tempsPrepa'   => 20,
@@ -316,6 +331,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1621510456681-2330135e5871?w=800',
                 'photoNom'     => 'gratin-dauphinois.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
                     ['Pommes de terre', 'Éplucher et couper les pommes de terre en fines rondelles.',            15],
                     ['Infusion',        'Chauffer la crème avec l\'ail écrasé et la noix de muscade.',            5],
@@ -335,17 +351,18 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800',
                 'photoNom'     => 'saumon-citron.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
-                    ['Marinade',  'Mariner le saumon avec jus de citron, huile d\'olive et aneth 15 min.',   15],
-                    ['Cuisson',   'Saisir le saumon côté peau 6 min puis retourner 4 min.',                   10],
-                    ['Sauce',     'Déglacer la poêle avec le jus de citron restant et la crème fraîche.',      3],
-                    ['Service',   'Napper le saumon de sauce et décorer d\'aneth frais.',                      2],
+                    ['Marinade', 'Mariner le saumon avec jus de citron, huile d\'olive et aneth 15 min.',   15],
+                    ['Cuisson',  'Saisir le saumon côté peau 6 min puis retourner 4 min.',                   10],
+                    ['Sauce',    'Déglacer la poêle avec le jus de citron restant et la crème fraîche.',      3],
+                    ['Service',  'Napper le saumon de sauce et décorer d\'aneth frais.',                      2],
                 ],
             ],
 
             self::PAD_THAI => [
                 'libelle'      => 'Pad Thaï aux crevettes',
-                'description'  => 'Le célèbre plat thaïlandais de nouilles sautées aux crevettes, cacahuètes et sauce tamarin.',
+                'description'  => 'Le célèbre plat thaïlandais de nouilles sautées aux crevettes.',
                 'difficulte'   => 'Moyen',
                 'portion'      => 4,
                 'tempsPrepa'   => 20,
@@ -354,12 +371,13 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=800',
                 'photoNom'     => 'pad-thai.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
-                    ['Trempage',    'Faire tremper les nouilles de riz dans l\'eau tiède 20 minutes.',          20],
-                    ['Sauce',       'Mélanger sauce poisson, sauce soja, sucre et jus de citron.',               5],
-                    ['Wok',         'Faire chauffer l\'huile dans le wok et faire sauter ail et crevettes.',     5],
-                    ['Assemblage',  'Ajouter les nouilles, la sauce et les oeufs brouillés.',                    5],
-                    ['Service',     'Garnir de cacahuètes concassées, citron vert et ciboulette.',               2],
+                    ['Trempage',   'Faire tremper les nouilles de riz dans l\'eau tiède 20 minutes.',          20],
+                    ['Sauce',      'Mélanger sauce poisson, sauce soja, sucre et jus de citron.',               5],
+                    ['Wok',        'Faire chauffer l\'huile dans le wok et faire sauter ail et crevettes.',     5],
+                    ['Assemblage', 'Ajouter les nouilles, la sauce et les oeufs brouillés.',                    5],
+                    ['Service',    'Garnir de cacahuètes concassées, citron vert et ciboulette.',               2],
                 ],
             ],
 
@@ -374,18 +392,19 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1622973536968-3ead9e780960?w=800',
                 'photoNom'     => 'bolognese.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
-                    ['Soffritto',  'Faire revenir oignon, carotte et céleri finement hachés.',                10],
-                    ['Viande',     'Ajouter le boeuf haché et faire dorer en cassant les grumeaux.',          10],
-                    ['Tomates',    'Incorporer tomates concassées, vin rouge et concentré de tomate.',         5],
-                    ['Mijotage',   'Laisser mijoter à feu très doux pendant 90 minutes en remuant.',          90],
-                    ['Service',    'Servir sur des tagliatelles avec parmesan râpé.',                          3],
+                    ['Soffritto', 'Faire revenir oignon, carotte et céleri finement hachés.',                10],
+                    ['Viande',    'Ajouter le boeuf haché et faire dorer en cassant les grumeaux.',          10],
+                    ['Tomates',   'Incorporer tomates concassées, vin rouge et concentré de tomate.',         5],
+                    ['Mijotage',  'Laisser mijoter à feu très doux pendant 90 minutes en remuant.',          90],
+                    ['Service',   'Servir sur des tagliatelles avec parmesan râpé.',                          3],
                 ],
             ],
 
             self::TIRAMISU => [
                 'libelle'      => 'Tiramisu classique',
-                'description'  => 'Le tiramisu original italien avec mascarpone, savoiardi et café, sans cuisson.',
+                'description'  => 'Le tiramisu original italien avec mascarpone, savoiardi et café.',
                 'difficulte'   => 'Moyen',
                 'portion'      => 8,
                 'tempsPrepa'   => 30,
@@ -394,18 +413,19 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800',
                 'photoNom'     => 'tiramisu.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Café',        'Préparer un café fort et le laisser refroidir.',                           5],
-                    ['Crème',       'Battre jaunes d\'oeufs et sucre jusqu\'à blanchiment, incorporer mascarpone.', 10],
-                    ['Blancs',      'Monter les blancs en neige et les incorporer délicatement à la crème.',    8],
-                    ['Montage',     'Tremper les biscuits dans le café et alterner couches biscuits/crème.',    10],
-                    ['Repos',       'Réfrigérer au moins 4 heures et saupoudrer de cacao avant service.',       5],
+                    ['Café',    'Préparer un café fort et le laisser refroidir.',                           5],
+                    ['Crème',   'Battre jaunes d\'oeufs et sucre jusqu\'à blanchiment, incorporer mascarpone.', 10],
+                    ['Blancs',  'Monter les blancs en neige et les incorporer délicatement à la crème.',    8],
+                    ['Montage', 'Tremper les biscuits dans le café et alterner couches biscuits/crème.',    10],
+                    ['Repos',   'Réfrigérer au moins 4 heures et saupoudrer de cacao avant service.',       5],
                 ],
             ],
 
             self::VELOUTE_COURGETTE => [
                 'libelle'      => 'Velouté de courgettes',
-                'description'  => 'Un velouté léger et onctueux de courgettes, parfait en entrée chaude ou froide.',
+                'description'  => 'Un velouté léger et onctueux de courgettes.',
                 'difficulte'   => 'Facile',
                 'portion'      => 4,
                 'tempsPrepa'   => 10,
@@ -414,6 +434,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1607330289024-1535c6b4e1c1?w=800',
                 'photoNom'     => 'veloute-courgette.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
                     ['Préparation', 'Laver et couper les courgettes en rondelles sans les éplucher.',  5],
                     ['Cuisson',     'Faire revenir oignon et ail puis ajouter les courgettes.',        5],
@@ -424,7 +445,7 @@ class RecetteFixtures extends Fixture
 
             self::POULET_CURRY => [
                 'libelle'      => 'Poulet au curry et lait de coco',
-                'description'  => 'Un poulet fondant dans une sauce curry crémeuse au lait de coco, servi avec du riz.',
+                'description'  => 'Un poulet fondant dans une sauce curry crémeuse au lait de coco.',
                 'difficulte'   => 'Facile',
                 'portion'      => 4,
                 'tempsPrepa'   => 15,
@@ -433,12 +454,13 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800',
                 'photoNom'     => 'poulet-curry.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
-                    ['Découpe',    'Couper le poulet en morceaux réguliers.',                                   5],
-                    ['Saisir',     'Faire dorer le poulet dans l\'huile avec l\'oignon et l\'ail.',            10],
-                    ['Épices',     'Ajouter curry, cumin et gingembre et faire revenir 2 minutes.',             3],
-                    ['Sauce',      'Verser le lait de coco et laisser mijoter 25 minutes à feu doux.',         25],
-                    ['Service',    'Servir avec du riz basmati et de la coriandre fraîche.',                    2],
+                    ['Découpe', 'Couper le poulet en morceaux réguliers.',                                   5],
+                    ['Saisir',  'Faire dorer le poulet dans l\'huile avec l\'oignon et l\'ail.',            10],
+                    ['Épices',  'Ajouter curry, cumin et gingembre et faire revenir 2 minutes.',             3],
+                    ['Sauce',   'Verser le lait de coco et laisser mijoter 25 minutes à feu doux.',         25],
+                    ['Service', 'Servir avec du riz basmati et de la coriandre fraîche.',                    2],
                 ],
             ],
 
@@ -453,6 +475,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=800',
                 'photoNom'     => 'tarte-citron.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
                     ['Pâte sablée',  'Préparer et cuire la pâte sablée à blanc 15 minutes.',                   15],
                     ['Crème citron', 'Mélanger jus de citron, zestes, oeufs, sucre et beurre. Cuire à feu doux.', 15],
@@ -473,10 +496,11 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800',
                 'photoNom'     => 'bruschetta.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Tomates',   'Couper les tomates en dés, assaisonner avec sel, basilic et huile d\'olive.',  5],
-                    ['Pain',      'Griller les tranches de pain et les frotter avec une gousse d\'ail.',           5],
-                    ['Assemblage','Garnir les toasts de la préparation aux tomates et servir immédiatement.',      2],
+                    ['Tomates',    'Couper les tomates en dés, assaisonner avec sel, basilic et huile d\'olive.',  5],
+                    ['Pain',       'Griller les tranches de pain et les frotter avec une gousse d\'ail.',           5],
+                    ['Assemblage', 'Garnir les toasts de la préparation aux tomates et servir immédiatement.',      2],
                 ],
             ],
 
@@ -491,11 +515,12 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800',
                 'photoNom'     => 'riz-cantonais.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
-                    ['Riz',       'Cuire le riz la veille et le réfrigérer pour qu\'il soit bien sec.',           30],
-                    ['Lardons',   'Faire revenir les lardons à feu vif jusqu\'à dorure.',                          5],
-                    ['Oeufs',     'Pousser les lardons sur le côté et brouiller les oeufs.',                       3],
-                    ['Assemblage','Ajouter le riz froid, les petits pois et la sauce soja. Sauter à feu vif.',     7],
+                    ['Riz',        'Cuire le riz la veille et le réfrigérer pour qu\'il soit bien sec.',           30],
+                    ['Lardons',    'Faire revenir les lardons à feu vif jusqu\'à dorure.',                          5],
+                    ['Oeufs',      'Pousser les lardons sur le côté et brouiller les oeufs.',                       3],
+                    ['Assemblage', 'Ajouter le riz froid, les petits pois et la sauce soja. Sauter à feu vif.',     7],
                 ],
             ],
 
@@ -510,6 +535,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=800',
                 'photoNom'     => 'crevettes-ail.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
                     ['Préparation', 'Décortiquer les crevettes et les sécher avec du papier absorbant.',  5],
                     ['Cuisson',     'Faire fondre le beurre et faire sauter les crevettes 3 min par face.', 6],
@@ -519,7 +545,7 @@ class RecetteFixtures extends Fixture
 
             self::FONDANT_CHOCO => [
                 'libelle'      => 'Fondant au chocolat coeur coulant',
-                'description'  => 'Le fondant au chocolat avec son coeur coulant, à préparer à l\'avance et cuire au dernier moment.',
+                'description'  => 'Le fondant au chocolat avec son coeur coulant.',
                 'difficulte'   => 'Difficile',
                 'portion'      => 4,
                 'tempsPrepa'   => 20,
@@ -528,12 +554,13 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=800',
                 'photoNom'     => 'fondant-chocolat.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Préparation',  'Beurrer et fariner les ramequins. Préchauffer le four à 200°C.',     5],
-                    ['Fonte',        'Faire fondre chocolat et beurre ensemble.',                           5],
-                    ['Appareil',     'Battre oeufs et sucre, incorporer le chocolat puis la farine.',       5],
-                    ['Cuisson',      'Verser dans les ramequins et cuire exactement 12 minutes.',          12],
-                    ['Service',      'Démouler délicatement et servir immédiatement avec glace vanille.',   2],
+                    ['Préparation', 'Beurrer et fariner les ramequins. Préchauffer le four à 200°C.',     5],
+                    ['Fonte',       'Faire fondre chocolat et beurre ensemble.',                           5],
+                    ['Appareil',    'Battre oeufs et sucre, incorporer le chocolat puis la farine.',       5],
+                    ['Cuisson',     'Verser dans les ramequins et cuire exactement 12 minutes.',          12],
+                    ['Service',     'Démouler délicatement et servir immédiatement avec glace vanille.',   2],
                 ],
             ],
 
@@ -548,17 +575,18 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1512852939750-1305098529bf?w=800',
                 'photoNom'     => 'salade-caesar.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
-                    ['Croûtons',    'Couper le pain en dés et les faire dorer à la poêle avec ail et huile.',  8],
-                    ['Poulet',      'Griller les filets de poulet assaisonnés et les couper en lamelles.',    15],
-                    ['Sauce',       'Préparer la sauce Caesar : ail, anchois, citron, parmesan, crème.',       5],
-                    ['Assemblage',  'Mélanger la salade avec sauce, croûtons, poulet et copeaux de parmesan.', 3],
+                    ['Croûtons',   'Couper le pain en dés et les faire dorer à la poêle avec ail et huile.',  8],
+                    ['Poulet',     'Griller les filets de poulet assaisonnés et les couper en lamelles.',    15],
+                    ['Sauce',      'Préparer la sauce Caesar : ail, anchois, citron, parmesan, crème.',       5],
+                    ['Assemblage', 'Mélanger la salade avec sauce, croûtons, poulet et copeaux de parmesan.', 3],
                 ],
             ],
 
             self::CLAFOUTIS_FRAISE => [
                 'libelle'      => 'Clafoutis aux fraises',
-                'description'  => 'Un clafoutis moelleux aux fraises fraîches, plus léger que le traditionnel aux cerises.',
+                'description'  => 'Un clafoutis moelleux aux fraises fraîches.',
                 'difficulte'   => 'Facile',
                 'portion'      => 6,
                 'tempsPrepa'   => 15,
@@ -567,17 +595,18 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800',
                 'photoNom'     => 'clafoutis-fraise.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN],
                 'etapes' => [
-                    ['Appareil',  'Mixer oeufs, sucre, farine, lait et beurre fondu jusqu\'à pâte lisse.',   5],
-                    ['Fraises',   'Laver, équeuter et couper les fraises en deux.',                           5],
-                    ['Montage',   'Beurrer le plat, disposer les fraises et verser l\'appareil.',             3],
-                    ['Cuisson',   'Cuire 35 minutes à 180°C jusqu\'à dorure et prise de l\'appareil.',       35],
+                    ['Appareil', 'Mixer oeufs, sucre, farine, lait et beurre fondu jusqu\'à pâte lisse.',   5],
+                    ['Fraises',  'Laver, équeuter et couper les fraises en deux.',                           5],
+                    ['Montage',  'Beurrer le plat, disposer les fraises et verser l\'appareil.',             3],
+                    ['Cuisson',  'Cuire 35 minutes à 180°C jusqu\'à dorure et prise de l\'appareil.',       35],
                 ],
             ],
 
             self::POELE_CHAMPIGNONS => [
                 'libelle'      => 'Poêlée de champignons à l\'ail et persil',
-                'description'  => 'Une poêlée de champignons dorés et parfumés à l\'ail, idéale en accompagnement ou sur des toasts.',
+                'description'  => 'Une poêlée de champignons dorés et parfumés à l\'ail.',
                 'difficulte'   => 'Facile',
                 'portion'      => 4,
                 'tempsPrepa'   => 10,
@@ -586,16 +615,17 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
                 'photoNom'     => 'poele-champignons.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::VEGAN, RegimeFixtures::SANS_GLUTEN],
                 'etapes' => [
-                    ['Nettoyage',  'Nettoyer les champignons avec un papier humide et les couper en quartiers.',  5],
-                    ['Cuisson',    'Faire chauffer beurre et huile à feu vif et saisir les champignons.',         8],
-                    ['Finition',   'Ajouter ail et persil en fin de cuisson, assaisonner.',                        2],
+                    ['Nettoyage', 'Nettoyer les champignons avec un papier humide et les couper en quartiers.',  5],
+                    ['Cuisson',   'Faire chauffer beurre et huile à feu vif et saisir les champignons.',         8],
+                    ['Finition',  'Ajouter ail et persil en fin de cuisson, assaisonner.',                        2],
                 ],
             ],
 
             self::SANDWICH_THON => [
                 'libelle'      => 'Sandwich au thon et crudités',
-                'description'  => 'Un sandwich généreux au thon avec légumes croquants, moutarde et citron.',
+                'description'  => 'Un sandwich généreux au thon avec légumes croquants.',
                 'difficulte'   => 'Facile',
                 'portion'      => 2,
                 'tempsPrepa'   => 10,
@@ -604,6 +634,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=800',
                 'photoNom'     => 'sandwich-thon.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE],
                 'etapes' => [
                     ['Garniture', 'Égoutter le thon et le mélanger avec moutarde, citron et poivre.',  3],
                     ['Légumes',   'Couper tomates, concombre et oignons en fines rondelles.',           5],
@@ -613,7 +644,7 @@ class RecetteFixtures extends Fixture
 
             self::SMOOTHIE_FRAISE => [
                 'libelle'      => 'Smoothie fraises et banane',
-                'description'  => 'Un smoothie onctueux aux fraises et banane, idéal pour le petit-déjeuner ou le goûter.',
+                'description'  => 'Un smoothie onctueux aux fraises et banane.',
                 'difficulte'   => 'Facile',
                 'portion'      => 2,
                 'tempsPrepa'   => 5,
@@ -622,6 +653,7 @@ class RecetteFixtures extends Fixture
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1502741224143-90386d7f8c82?w=800',
                 'photoNom'     => 'smoothie-fraise.jpg',
+                'regimes'      => [RegimeFixtures::OMNIVORE, RegimeFixtures::VEGETARIEN, RegimeFixtures::VEGAN, RegimeFixtures::SANS_LACTOSE],
                 'etapes' => [
                     ['Préparation', 'Laver et équeuter les fraises, peler la banane.',                   2],
                     ['Mixage',      'Mixer fraises, banane, lait et miel jusqu\'à consistance lisse.',    3],
@@ -629,7 +661,6 @@ class RecetteFixtures extends Fixture
             ],
         ];
 
-        // Création du répertoire d'upload si inexistant
         $strUploadPath = $this->params->get('kernel.project_dir') . self::UPLOAD_DIR;
         if (!is_dir($strUploadPath)) {
             mkdir($strUploadPath, 0755, true);
@@ -637,7 +668,7 @@ class RecetteFixtures extends Fixture
 
         foreach ($arrRecettesData as $strReference => $arrData) {
 
-            $strPhotoNom = $arrData['photoNom'];
+            $strPhotoNom  = $arrData['photoNom'];
             $strPhotoDest = $strUploadPath . $strPhotoNom;
 
             if (!file_exists($strPhotoDest)) {
@@ -659,6 +690,13 @@ class RecetteFixtures extends Fixture
                        ->setRecetteStatut($arrData['statut'])
                        ->setRecetteOrigine($arrData['origine'])
                        ->setRecettePhoto($strPhotoNom);
+
+            // Rattachement des régimes
+            foreach ($arrData['regimes'] as $strRegimeRef) {
+                $objRegime = $this->getReference($strRegimeRef, \App\Entity\Regime::class);
+                $objRecette->addRegime($objRegime);
+            }
+
             $manager->persist($objRecette);
 
             foreach ($arrData['etapes'] as $intNumero => [$strLibelle, $strDescription, $intDuree]) {
