@@ -4,6 +4,8 @@
          data-controller="recipe-actions"
          data-like-url="{{ path('app_like_toggle', {id: id}) }}"
          data-favori-url="{{ path('app_favori_toggle', {id: id}) }}"
+         data-recipe-actions-liked-value="{{ is_liked|default(false) ? 'true' : 'false' }}"
+         data-recipe-actions-favori-value="{{ is_favori|default(false) ? 'true' : 'false' }}"
      {% endif %}
 >
     <div class="position-relative">

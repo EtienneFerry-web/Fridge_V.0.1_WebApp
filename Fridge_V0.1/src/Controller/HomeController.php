@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -14,10 +14,10 @@ final class HomeController extends AbstractController
 {
     #[Route('/', name: 'app_home')]
     public function index(
-        RecetteRepository  $objRecetteRepository,
+        RecetteRepository     $objRecetteRepository,
         LikeRecetteRepository $objLikeRecetteRepository,
-        PaginatorInterface $paginator,
-        Request            $request
+        PaginatorInterface    $paginator,
+        Request               $request
     ): Response {
         $arrRecettesCarousel = $objRecetteRepository->findBy([], ['id' => 'DESC'], 6);
 
@@ -31,9 +31,9 @@ final class HomeController extends AbstractController
             8
         );
 
-        $arrLikedIds    = [];
-        $arrLikeCounts  = [];
-        $objUser = $this->getUser();
+        $arrLikedIds   = [];
+        $arrLikeCounts = [];
+        $objUser       = $this->getUser();
 
         if ($objUser) {
             $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);

@@ -6,33 +6,45 @@ export default class extends Controller {
 
     async toggleLike(event) {
         event.preventDefault();
-
         const strUrl = this.element.dataset.likeUrl;
+
         const objResponse = await fetch(strUrl, {
             method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] ?? ''
+            }
         });
+
+        if (!objResponse.ok) return;
+
         const objData = await objResponse.json();
 
-        this.likedValue = objData.liked;
+        this.likedValue                  = objData.liked;
         this.likeCountTarget.textContent = objData.count;
-        this.likeIconTarget.className = objData.liked
+        this.likeIconTarget.className    = objData.liked
             ? 'bi bi-heart-fill text-danger'
             : 'bi bi-heart text-muted';
     }
 
     async toggleFavori(event) {
         event.preventDefault();
-
         const strUrl = this.element.dataset.favoriUrl;
+
         const objResponse = await fetch(strUrl, {
             method: 'POST',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-Token': document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] ?? ''
+            }
         });
+
+        if (!objResponse.ok) return;
+
         const objData = await objResponse.json();
 
-        this.favoriValue = objData.favori;
-        this.favoriIconTarget.className = objData.favori
+        this.favoriValue                    = objData.favori;
+        this.favoriIconTarget.className     = objData.favori
             ? 'bi bi-bookmark-fill text-warning'
             : 'bi bi-bookmark text-muted';
     }

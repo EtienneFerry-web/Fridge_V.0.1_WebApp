@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
 use App\Repository\RegimeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,7 +16,8 @@ final class SearchController extends AbstractController
     public function index(
         Request $request,
         RecetteRepository $recetteRepository,
-        RegimeRepository $regimeRepository
+        RegimeRepository $regimeRepository,
+        LikeRecetteRepository $objLikeRecetteRepository
     ): Response {
         $query = $request->query->get('q', '');
         $arrDifficulte          = $request->query->all('difficulte');
@@ -24,7 +26,7 @@ final class SearchController extends AbstractController
         $intTempsPreparationMax = $request->query->getInt('temps_preparation_max', 120);
         $strSortBy              = $request->query->get('sort_by', 'pertinence');
 
-        $recette                = $recetteRepository->findBySearch(
+        $arrRecettes                = $recetteRepository->findBySearch(
             $query,
             $arrDifficulte,
             $arrRegimes,
@@ -33,14 +35,31 @@ final class SearchController extends AbstractController
             $strSortBy
         );
 
+        // Likes
+        $arrLikedIds   = [];
+        $arrLikeCounts = [];
+        $objUser       = $this->getUser();
+
+        if ($objUser) {
+            $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
+        }
+
+        foreach ($arrRecettes as $objRecette) {
+            $arrLikeCounts[$objRecette->getId()] = $objLikeRecetteRepository->count([
+                'likeRecette' => $objRecette
+            ]);
+        }
+
         return $this->render('search/index.html.twig', [
-            'recipes' => $recette,
-            'query'   => $query,
-            'difficulte' => $arrDifficulte,
-            'regimes'    => $regimeRepository->findAll(),
-            'origine' => $strOrigine,
+            'recipes'               => $arrRecettes,
+            'query'                 => $query,
+            'difficulte'            => $arrDifficulte,
+            'regimes'               => $regimeRepository->findAll(),
+            'origine'               => $strOrigine,
             'temps_preparation_max' => $intTempsPreparationMax,
-            'sort_by' => $strSortBy,
+            'sort_by'               => $strSortBy,
+            'arrLikedIds'           => $arrLikedIds,
+            'arrLikeCounts'         => $arrLikeCounts,
         ]);
     }
 }

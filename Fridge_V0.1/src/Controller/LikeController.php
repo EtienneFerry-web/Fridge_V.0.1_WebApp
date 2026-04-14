@@ -45,7 +45,7 @@ final class LikeController extends AbstractController
         $intCount = $likeRepository->count(['likeRecette' => $objRecette]);
         
             return new JsonResponse([
-                'status' => 'liked', 
+                'liked' => $boolLiked,
                 'count' => $intCount
             ]);
      

@@ -171,7 +171,9 @@
                                 title: recipe.recetteLibelle,
                                 time:  recipe.recetteTempsPrepa + recipe.recetteTempsCuisson,
                                 photo: recipe.recettePhoto ?? null,
-                                id:    recipe.id
+                                id:    recipe.id,
+                                is_liked:   arrLikedIds[recipe.id] is defined,
+                                like_count: arrLikeCounts[recipe.id]|default(0)
                             } %}
                         </div>
                     {% else %}

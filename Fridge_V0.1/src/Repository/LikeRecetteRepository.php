@@ -20,14 +20,18 @@ class LikeRecetteRepository extends ServiceEntityRepository
 
     public function findLikedIdsByUser(User $objUser): array
     {
-        return array_column(
-            $this->createQueryBuilder('l')
-                ->select('IDENTITY(l.likeRecette) as id')
-                ->where('l.likeUser = :user')
-                ->setParameter('user', $objUser)
-                ->getQuery()
-                ->getArrayResult(),
-            'id'
-        );
+        $arrResults = $this->createQueryBuilder('l')
+            ->select('IDENTITY(l.likeRecette) as recetteId')
+            ->where('l.likeUser = :user')
+            ->setParameter('user', $objUser)
+            ->getQuery()
+            ->getArrayResult();
+
+        $arrLiked = [];
+        foreach ($arrResults as $arrRow) {
+            $arrLiked[(int)$arrRow['recetteId']] = true;
+        }
+
+        return $arrLiked;
     }
 }
