@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\FavoriRepository;
 use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
 use Knp\Component\Pager\PaginatorInterface;
@@ -16,6 +17,7 @@ final class HomeController extends AbstractController
     public function index(
         RecetteRepository     $objRecetteRepository,
         LikeRecetteRepository $objLikeRecetteRepository,
+        FavoriRepository      $objFavoriRepository,
         PaginatorInterface    $paginator,
         Request               $request
     ): Response {
@@ -33,10 +35,12 @@ final class HomeController extends AbstractController
 
         $arrLikedIds   = [];
         $arrLikeCounts = [];
+        $arrFavoriIds = [];
         $objUser       = $this->getUser();
 
         if ($objUser) {
             $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
+            $arrFavoriIds = $objFavoriRepository->findFavoriIdsByUser($objUser);
         }
 
         foreach ($arrRecettes as $objRecette) {
@@ -50,6 +54,7 @@ final class HomeController extends AbstractController
             'arrRecettes'         => $arrRecettes,
             'arrLikedIds'         => $arrLikedIds,
             'arrLikeCounts'       => $arrLikeCounts,
+            'arrFavoriIds'        => $arrFavoriIds,
         ]);
     }
 }

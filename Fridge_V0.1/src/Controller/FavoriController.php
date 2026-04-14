@@ -45,7 +45,7 @@ final class FavoriController extends AbstractController
         $intCount = $favoriRepository->count(['favoriRecette' => $objRecette]);
         
             return new JsonResponse([
-                'status' => 'favori', 
+                'favori' => $boolFavori, 
                 'count' => $intCount
             ]);
      

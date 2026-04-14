@@ -34,7 +34,8 @@
                                     id:    objRecette.id,
                                     photo: objRecette.recettePhoto,
                                     is_liked:   arrLikedIds[objRecette.id] is defined,
-                                    like_count: arrLikeCounts[objRecette.id]|default(0)
+                                    like_count: arrLikeCounts[objRecette.id]|default(0),
+                                    is_favori:  arrFavoriIds[objRecette.id] is defined
                                 } %}
                             </li>
                         {% endfor %}
@@ -68,7 +69,8 @@
                             id:    objRecette.id,
                             photo: objRecette.recettePhoto,
                             is_liked:   arrLikedIds[objRecette.id] is defined,
-                            like_count: arrLikeCounts[objRecette.id]|default(0)
+                            like_count: arrLikeCounts[objRecette.id]|default(0),
+                            is_favori:  arrFavoriIds[objRecette.id] is defined
                         } %}
                     </div>
                 {% endfor %}
@@ -126,7 +128,8 @@
                         id:    objRecette.id,
                         photo: objRecette.recettePhoto,
                         is_liked:   arrLikedIds[objRecette.id] is defined,
-                        like_count: arrLikeCounts[objRecette.id]|default(0)
+                        like_count: arrLikeCounts[objRecette.id]|default(0),
+                        is_favori:  arrFavoriIds[objRecette.id] is defined
                     } %}
                 </div>
             {% endfor %}

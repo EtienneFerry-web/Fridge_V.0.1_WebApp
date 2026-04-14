@@ -19,14 +19,18 @@ class FavoriRepository extends ServiceEntityRepository
 
         public function findFavoriIdsByUser(User $objUser): array
     {
-        return array_column(
-            $this->createQueryBuilder('f')
-                ->select('IDENTITY(f.favoriRecette) as id')
-                ->where('f.favoriUser = :user')
-                ->setParameter('user', $objUser)
-                ->getQuery()
-                ->getArrayResult(),
-            'id'
-        );
+        $arrResults = $this->createQueryBuilder('f')
+            ->select('IDENTITY(f.favoriRecette) as recetteId')
+            ->where('f.favoriUser = :user')
+            ->setParameter('user', $objUser)
+            ->getQuery()
+            ->getArrayResult();
+
+        $arrFavoris = [];
+        foreach ($arrResults as $arrRow) {
+            $arrFavoris[(int)$arrRow['recetteId']] = true;
+        }
+
+        return $arrFavoris;
     }
 }

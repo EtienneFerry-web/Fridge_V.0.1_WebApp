@@ -173,7 +173,8 @@
                                 photo: recipe.recettePhoto ?? null,
                                 id:    recipe.id,
                                 is_liked:   arrLikedIds[recipe.id] is defined,
-                                like_count: arrLikeCounts[recipe.id]|default(0)
+                                like_count: arrLikeCounts[recipe.id]|default(0),
+                                is_favori:  arrFavoriIds[recipe.id] is defined
                             } %}
                         </div>
                     {% else %}

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\FavoriRepository;
 use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
 use App\Repository\RegimeRepository;
@@ -17,7 +18,8 @@ final class SearchController extends AbstractController
         Request $request,
         RecetteRepository $recetteRepository,
         RegimeRepository $regimeRepository,
-        LikeRecetteRepository $objLikeRecetteRepository
+        LikeRecetteRepository $objLikeRecetteRepository,
+        FavoriRepository      $objFavoriRepository
     ): Response {
         $query = $request->query->get('q', '');
         $arrDifficulte          = $request->query->all('difficulte');
@@ -38,10 +40,12 @@ final class SearchController extends AbstractController
         // Likes
         $arrLikedIds   = [];
         $arrLikeCounts = [];
+        $arrFavoriIds = [];
         $objUser       = $this->getUser();
 
         if ($objUser) {
             $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
+            $arrFavoriIds = $objFavoriRepository->findFavoriIdsByUser($objUser);
         }
 
         foreach ($arrRecettes as $objRecette) {
@@ -60,6 +64,7 @@ final class SearchController extends AbstractController
             'sort_by'               => $strSortBy,
             'arrLikedIds'           => $arrLikedIds,
             'arrLikeCounts'         => $arrLikeCounts,
+            'arrFavoriIds'          => $arrFavoriIds,
         ]);
     }
 }
