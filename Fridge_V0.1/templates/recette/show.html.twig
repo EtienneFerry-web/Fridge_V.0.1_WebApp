@@ -64,6 +64,23 @@
                 <p class="text-muted mb-4">{{ recette.recetteDescription }}</p>
             {% endif %}
 
+            {% if recette.contenirs|length > 0 %}
+                <h2 class="h5 fw-bold mb-3">Ingrédients</h2>
+                <ul class="list-group mb-4">
+                    {% for contenir in recette.contenirs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-check2-circle text-primary me-2"></i>
+                                {{ contenir.ingredient.ingredientLibelle }}
+                            </div>
+                            <span class="badge rounded-pill shadow-sm" style="background-color: var(--tomato-jam); color: var(--linen); border: 1.5px solid var(--tomato-dark);">
+                                {{ contenir.contenirQuantite }} {{ contenir.contenirUnite }}
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
             {% if recette.etapes|length > 0 %}
                 <h2 class="h5 fw-bold mb-3">Étapes</h2>
                 <ol class="list-group list-group-numbered mb-4">

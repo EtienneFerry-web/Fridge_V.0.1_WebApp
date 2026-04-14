@@ -76,6 +76,12 @@ class Recette
     #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'planningRecette')]
     private Collection $plannings;
 
+    /**
+     * @var Collection<int, Contenir>
+     */
+    #[ORM\OneToMany(targetEntity: Contenir::class, mappedBy: 'recette')]
+    private Collection $contenirs;
+
     public function __construct()
     {
         $this->etapes           = new ArrayCollection();
@@ -84,7 +90,8 @@ class Recette
         $this->recetteCreatedAt = new \DateTime(); 
         $this->recetteStatut    = 'en_attente';
         $this->regimes = new ArrayCollection();
-        $this->plannings = new ArrayCollection();             
+        $this->plannings = new ArrayCollection();   
+        $this->contenirs = new ArrayCollection();          
     }
 
     public function getId(): ?int
@@ -347,6 +354,32 @@ class Recette
             }
         }
 
+        return $this;
+    }
+
+    public function getContenirs(): Collection
+    {
+        return $this->contenirs;
+    }
+    
+    public function addContenir(Contenir $contenir): static
+    {
+        if (!$this->contenirs->contains($contenir)) {
+            $this->contenirs->add($contenir);
+            $contenir->setRecette($this);
+        }
+    
+        return $this;
+    }
+    
+    public function removeContenir(Contenir $contenir): static
+    {
+        if ($this->contenirs->removeElement($contenir)) {
+            if ($contenir->getRecette() === $this) {
+                $contenir->setRecette(null);
+            }
+        }
+    
         return $this;
     }
 }

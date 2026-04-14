@@ -13,8 +13,11 @@ class Contenir
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $contenirQuantite = null;
+    #[ORM\Column(nullable: true)]
+    private ?float $contenirQuantite = null;
+
+    #[ORM\Column(length: 30, nullable: true)]
+    private ?string $contenirUnite = null;
 
     #[ORM\ManyToOne(inversedBy: 'contenirs')]
     private ?ListeCourse $listeCourse = null;
@@ -22,19 +25,35 @@ class Contenir
     #[ORM\ManyToOne(inversedBy: 'contenirs')]
     private ?Ingredient $ingredient = null;
 
+    #[ORM\ManyToOne(inversedBy: 'contenirs')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Recette $recette = null;
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getContenirQuantite(): ?int
+    public function getContenirQuantite(): ?float
     {
         return $this->contenirQuantite;
     }
 
-    public function setContenirQuantite(int $contenirQuantite): static
+    public function setContenirQuantite(?float $contenirQuantite): static
     {
         $this->contenirQuantite = $contenirQuantite;
+
+        return $this;
+    }
+
+    public function getContenirUnite(): ?string
+    {
+        return $this->contenirUnite;
+    }
+
+    public function setContenirUnite(?string $contenirUnite): static
+    {
+        $this->contenirUnite = $contenirUnite;
 
         return $this;
     }
@@ -59,6 +78,18 @@ class Contenir
     public function setIngredient(?Ingredient $ingredient): static
     {
         $this->ingredient = $ingredient;
+
+        return $this;
+    }
+
+    public function getRecette(): ?Recette
+    {
+        return $this->recette;
+    }
+
+    public function setRecette(?Recette $recette): static
+    {
+        $this->recette = $recette;
 
         return $this;
     }

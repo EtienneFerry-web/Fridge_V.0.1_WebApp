@@ -27,12 +27,18 @@ class ListeCourse
     /**
      * @var Collection<int, Contenir>
      */
-    #[ORM\OneToMany(targetEntity: Contenir::class, mappedBy: 'listeCourse')]
+    #[ORM\OneToMany(targetEntity: Contenir::class, mappedBy: 'listeCourse', cascade: ['persist', 'remove'])]
     private Collection $contenirs;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id', nullable: true)]
+    private ?User $user = null;
 
     public function __construct()
     {
-        $this->contenirs = new ArrayCollection();
+        $this->contenirs        = new ArrayCollection();
+        $this->listeDateCreation = new \DateTimeImmutable();
+        $this->listeStatut      = 'active';
     }
 
     public function getId(): ?int
@@ -45,7 +51,7 @@ class ListeCourse
         return $this->listeLibelle;
     }
 
-    public function setListeLibelle(string $listeLibelle): static
+    public function setListeLibelle(?string $listeLibelle): static
     {
         $this->listeLibelle = $listeLibelle;
 
@@ -97,11 +103,22 @@ class ListeCourse
     public function removeContenir(Contenir $contenir): static
     {
         if ($this->contenirs->removeElement($contenir)) {
-            // set the owning side to null (unless already changed)
             if ($contenir->getListeCourse() === $this) {
                 $contenir->setListeCourse(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
