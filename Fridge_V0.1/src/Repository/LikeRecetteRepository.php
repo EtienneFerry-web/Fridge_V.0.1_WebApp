@@ -47,4 +47,17 @@ class LikeRecetteRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findTopLikedRecettes(int $intLimit = 5): array
+    {
+        return $this->getEntityManager()->createQueryBuilder()
+            ->select('r', 'COUNT(l.id) as likeCount')
+            ->from(\App\Entity\Recette::class, 'r')
+            ->join(\App\Entity\LikeRecette::class, 'l', 'WITH', 'l.likeRecette = r')
+            ->groupBy('r.id')
+            ->orderBy('likeCount', 'DESC')
+            ->setMaxResults($intLimit)
+            ->getQuery()
+            ->getResult();
+    }
 }

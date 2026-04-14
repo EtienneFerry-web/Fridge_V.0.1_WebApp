@@ -88,8 +88,8 @@
                 <div class="col-md-4">
                     <div class="admin-card stat-card p-4 d-flex align-items-center justify-content-between">
                         <div>
-                            <h4 class="text-muted small text-uppercase fw-bold mb-1">Commentaires</h4>
-                            <h2 class="display-5 fw-bold text-dark mb-0">{{ stats.totalComments }}</h2>
+                            <h4 class="text-muted small text-uppercase fw-bold mb-1">Total Favoris</h4>
+                            <h2 class="display-5 fw-bold text-dark mb-0">{{ stats.totalFavoris }}</h2>
                         </div>
                         <i class="bi bi-chat-dots-fill stat-icon text-info"></i>
                     </div>
@@ -107,16 +107,13 @@
                         <ul class="list-group list-group-flush">
                             {% for recipe in topLikedRecipes %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="{{ path('app_recette_show', {id: recipe.id}) }}"
+                                <a href="{{ path('app_recette_show', {id: recipe[0].id}) }}"
                                     class="text-decoration-none text-dark fw-bold">
-                                    {{ recipe.title }}
+                                    {{ recipe[0].recetteLibelle }}
                                 </a>
                                 <div class="text-end">
                                     <span class="badge bg-danger rounded-pill me-2">
-                                        <i class="bi bi-heart-fill me-1"></i>{{ recipe.likesCount }}
-                                    </span>
-                                    <span class="badge bg-secondary rounded-pill">
-                                        <i class="bi bi-chat me-1"></i>{{ recipe.commentsCount }}
+                                        <i class="bi bi-heart-fill me-1"></i>{{ recipe["likeCount"] }}
                                     </span>
                                 </div>
                             </li>
@@ -135,17 +132,21 @@
                             </h5>
                         </div>
                         <ul class="list-group list-group-flush">
-                            {% for recipe in latestRecipes %}
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="{{ path('app_recette_show', {id: recipe.id}) }}"
-                                    class="text-decoration-none text-dark fw-bold">
-                                    {{ recipe.title }}
-                                </a>
-                                <span class="text-muted small">{{ recipe.createdAt | ago }}</span>
-                            </li>
-                            {% else %}
-                            <li class="list-group-item text-muted fst-italic small">Aucune recette.</li>
-                            {% endfor %}
+                        {% for recipe in latestRecipes %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <a href="{{ path('app_recette_show', {id: recipe.id}) }}"
+                                class="text-decoration-none text-dark fw-bold">
+                                {{ recipe.recetteLibelle }}
+                            </a>
+                            <div class="text-end">
+                                <span class="badge bg-secondary rounded-pill">
+                                    <i class="bi bi-calendar3 me-1"></i>{{ recipe.recetteCreatedAt|date('d/m/Y') }}
+                                </span>
+                            </div>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item text-muted fst-italic small">Aucune recette.</li>
+                        {% endfor %}
                         </ul>
                     </div>
                 </div>
@@ -159,6 +160,7 @@
 
             <div class="admin-filter mb-4 p-3 bg-white rounded shadow-sm">
                 <form method="GET" class="row g-2 align-items-center">
+                    <input type="hidden" name="tab" value="users">
                     <div class="col-md-5">
                         <div class="input-group">
                             <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
@@ -201,7 +203,7 @@
                                         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40"
                                             class="rounded-circle me-3" width="40" height="40"
                                             alt="Avatar {{ user.strUsername }}">
-                                        <a href="{{ path('app_user_profil_by_id', {id: user.id}) }}"
+                                        <a href="{{ path('app_user_profil_by_id', {user_id: user.id}) }}"
                                             class="text-decoration-none text-dark fw-bold">
                                             {{ user.strFirstname }} {{ user.strName }}
                                         </a>
@@ -255,22 +257,29 @@
            ===================================================== #}
         <div class="tab-pane fade" id="recipes" role="tabpanel">
 
-            <div class="admin-filter d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4 p-3 bg-white rounded shadow-sm">
-                <form method="GET" class="d-flex gap-2 flex-grow-1" style="max-width: 600px;">
-                    <input class="form-control" type="search" name="q"
-                        placeholder="Rechercher une recette..."
-                        value="{{ app.request.query.get('q') }}">
-                    <select class="form-select w-auto" name="category">
-                        <option value="0">Toutes catégories</option>
-                        <option value="1" {{ app.request.query.get('category') == '1' ? 'selected' }}>Entrées</option>
-                        <option value="2" {{ app.request.query.get('category') == '2' ? 'selected' }}>Plats</option>
-                        <option value="3" {{ app.request.query.get('category') == '3' ? 'selected' }}>Desserts</option>
-                    </select>
-                    <button type="submit" class="btn btn-primary flex-shrink-0">Recherche</button>
+            <div class="admin-filter mb-4 p-3 bg-white rounded shadow-sm">
+                <form method="GET" class="row g-2 align-items-center">
+                    <input type="hidden" name="tab" value="recipes">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                            <input class="form-control" type="search" name="q"
+                                placeholder="Rechercher une recette..."
+                                value="{{ app.request.query.get('q') }}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" name="category">
+                            <option value="0">Toutes catégories</option>
+                            <option value="1" {{ app.request.query.get('category') == '1' ? 'selected' }}>Entrées</option>
+                            <option value="2" {{ app.request.query.get('category') == '2' ? 'selected' }}>Plats</option>
+                            <option value="3" {{ app.request.query.get('category') == '3' ? 'selected' }}>Desserts</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100 fw-bold">Recherche</button>
+                    </div>
                 </form>
-                <a href="{{ path('app_admin_recipe_new') }}" class="btn btn-success fw-bold">
-                    <i class="bi bi-plus-lg me-1"></i>Créer une recette
-                </a>
             </div>
 
             <h5 class="fw-bold mb-3 text-dark">
@@ -286,14 +295,9 @@
                             <div>
                                 <a href="{{ path('app_recette_show', {id: recipe.id}) }}"
                                     class="text-decoration-none text-dark fw-bold d-block">
-                                    {{ recipe.title }}
+                                    {{ recipe.recetteLibelle }}
                                 </a>
-                                <span class="small text-muted">
-                                    Proposé par
-                                    <a href="{{ path('app_user_profil_by_id', {id: recipe.author.id}) }}">
-                                        {{ recipe.author.strFirstname }} {{ recipe.author.strName }}
-                                    </a>
-                                </span>
+                                <span class="small text-muted">{{ recipe.recetteCreatedAt|date('d/m/Y') }}</span>
                             </div>
                         </div>
                         <div class="d-flex gap-2">
@@ -335,7 +339,7 @@
                     <div class="list-group-item">
                         <div class="row align-items-center">
                             <div class="col-md-3">
-                                <a href="{{ path('app_user_profil_by_id', {id: report.author.id}) }}"
+                                <a href="{{ path('app_user_profil_by_id', {user_id: report.author.id}) }}"
                                     class="text-decoration-none text-dark d-flex align-items-center gap-2">
                                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40"
                                         class="rounded-circle" width="30" height="30"
@@ -420,6 +424,17 @@
 {% block javascripts %}
 {{ parent() }}
 <script>
+// Restaure l'onglet actif après soumission d'un filtre GET
+(function () {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    if (tab) {
+        const trigger = document.querySelector('[data-bs-target="#' + tab + '"]');
+        if (trigger) {
+            bootstrap.Tab.getOrCreateInstance(trigger).show();
+        }
+    }
+})();
+
 // Injecte le pseudo et l'ID dans la modale de bannissement
 document.getElementById('modalBan').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
