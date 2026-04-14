@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Knp\Component\Pager\PaginatorInterface;
@@ -14,6 +15,7 @@ final class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(
         RecetteRepository  $objRecetteRepository,
+        LikeRecetteRepository $objLikeRecetteRepository,
         PaginatorInterface $paginator,
         Request            $request
     ): Response {
@@ -29,9 +31,25 @@ final class HomeController extends AbstractController
             8
         );
 
+        $arrLikedIds    = [];
+        $arrLikeCounts  = [];
+        $objUser = $this->getUser();
+
+        if ($objUser) {
+            $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
+        }
+
+        foreach ($arrRecettes as $objRecette) {
+            $arrLikeCounts[$objRecette->getId()] = $objLikeRecetteRepository->count([
+                'likeRecette' => $objRecette
+            ]);
+        }
+
         return $this->render('home/index.html.twig', [
             'arrRecettesCarousel' => $arrRecettesCarousel,
             'arrRecettes'         => $arrRecettes,
+            'arrLikedIds'         => $arrLikedIds,
+            'arrLikeCounts'       => $arrLikeCounts,
         ]);
     }
 }
