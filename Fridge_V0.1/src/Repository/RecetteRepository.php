@@ -18,36 +18,6 @@ class RecetteRepository extends ServiceEntityRepository
         parent::__construct($registry, Recette::class);
     }
 
-    //    /**
-    //     * @return Recette[] Returns an array of Recette objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('r.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?Recette
-    //    {
-    //        return $this->createQueryBuilder('r')
-    //            ->andWhere('r.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
-
-    /**
-     * Retourne les recettes likées par l'utilisateur avec le nombre total de likes de chaque recette.
-     * Résultat : [['recette' => Recette, 'likeCount' => int], ...]
-     * Une seule requête SQL (pas de N+1).
-     */
     public function findLikedByUserWithCount(User $objUser): array
     {
         // r = Recette (racine), l = like de l'utilisateur, l2 = tous les likes de la recette
@@ -79,7 +49,7 @@ class RecetteRepository extends ServiceEntityRepository
             ->setParameter('statut', 'publie');
 
         if ($strQuery !== '') {
-            $qb->andWhere('r.recetteLibelle LIKE :q OR r.recetteDescription LIKE :q')
+            $qb->andWhere('LOWER(r.recetteLibelle) LIKE LOWER(:q)')
             ->setParameter('q', '%' . $strQuery . '%');
         }
 
