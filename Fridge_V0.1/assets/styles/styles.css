@@ -1630,3 +1630,51 @@ footer .text-white-50:hover {
     .courses-item-label     { padding: 12px 14px; }
 }
 
+/* ============================================================
+   28. PAGINATION FRIDGE (KnpPaginator)
+   ============================================================ */
+
+.fridge-pagination { gap: 0.3rem; }
+
+.fridge-pagination .page-item .page-link,
+.fridge-pagination .page-item span.page-link {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md) !important;
+  border: 1.5px solid rgba(35, 31, 32, 0.12);
+  color: var(--grey-warm);
+  background-color: var(--white);
+  transition: var(--transition-normal);
+  box-shadow: var(--shadow-xs);
+}
+
+.fridge-pagination .page-item .page-link:hover {
+  background-color: rgba(187, 68, 48, 0.08);
+  border-color: var(--tomato-jam);
+  color: var(--tomato-jam);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.fridge-pagination .page-item.active .page-link {
+  background-color: var(--tomato-jam) !important;
+  border-color: var(--tomato-jam) !important;
+  color: var(--linen) !important;
+  box-shadow: 0 4px 14px rgba(187, 68, 48, 0.30) !important;
+  transform: translateY(-2px);
+}
+
+.fridge-pagination .page-item.disabled .page-link,
+.fridge-pagination .page-item.disabled span.page-link {
+  background-color: var(--linen-mid);
+  border-color: rgba(35, 31, 32, 0.07);
+  color: var(--grey-subtle);
+  box-shadow: none;
+  transform: none;
+}

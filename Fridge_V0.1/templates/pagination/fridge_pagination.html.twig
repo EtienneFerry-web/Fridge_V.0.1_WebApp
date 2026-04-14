@@ -1,0 +1,50 @@
+{% if pageCount > 1 %}
+<nav aria-label="Pagination des recettes">
+    <ul class="pagination fridge-pagination justify-content-center gap-1 flex-wrap">
+
+        {# Bouton Précédent #}
+        {% if current > 1 %}
+            <li class="page-item">
+                <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): current - 1})) }}" aria-label="Page précédente">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link fridge-page-link" aria-hidden="true">
+                    <i class="bi bi-chevron-left"></i>
+                </span>
+            </li>
+        {% endif %}
+
+        {# Pages numérotées #}
+        {% for page in pagesInRange %}
+            {% if page == current %}
+                <li class="page-item active">
+                    <span class="page-link fridge-page-link fridge-page-active" aria-current="page">{{ page }}</span>
+                </li>
+            {% else %}
+                <li class="page-item">
+                    <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {# Bouton Suivant #}
+        {% if current < pageCount %}
+            <li class="page-item">
+                <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): current + 1})) }}" aria-label="Page suivante">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link fridge-page-link" aria-hidden="true">
+                    <i class="bi bi-chevron-right"></i>
+                </span>
+            </li>
+        {% endif %}
+
+    </ul>
+</nav>
+{% endif %}
