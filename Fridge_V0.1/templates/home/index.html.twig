@@ -25,66 +25,27 @@
             <div class="splide" id="recipe-carousel">
                 <div class="splide__track">
                     <ul class="splide__list">
-                        {# Carrousel en dure a modifier avec une boucle #}
                         {% for objRecette in arrRecettesCarousel %}
                             <li class="splide__slide px-2">
                                 {% include 'components/_recipe_card.html.twig' with {
-                                    title: objRecette.recetteLibelle,
-                                    time:  objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
-                                    id:    objRecette.id,
-                                    photo: objRecette.recettePhoto,
+                                    title:      objRecette.recetteLibelle,
+                                    time:       objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
+                                    id:         objRecette.id,
+                                    photo:      objRecette.recettePhoto,
                                     is_liked:   arrLikedIds[objRecette.id] is defined,
                                     like_count: arrLikeCounts[objRecette.id]|default(0),
                                     is_favori:  arrFavoriIds[objRecette.id] is defined
                                 } %}
                             </li>
                         {% endfor %}
-                        </li>
                     </ul>
                 </div>
             </div>
         </section>
 
-        {# 4. FIL DE RECETTES (Mise en avant) #}
-        <section id="recipeFeed" class="container py-5 border-top">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
-                <h2 class="fw-bold m-0">Toutes les recettes</h2>
-                <div class="dropdown">
-                    <button class="btn btn-white border shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Trier par
-                    </button>
-                    <ul class="dropdown-menu shadow">
-                        <li><a class="dropdown-item" href="#">Plus récentes</a></li>
-                        <li><a class="dropdown-item" href="#">Mieux notées</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-                {% for objRecette in arrRecettes %}
-                    <div class="col-md-4">
-                        {% include 'components/_recipe_card.html.twig' with {
-                            title: objRecette.recetteLibelle,
-                            time:  objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
-                            id:    objRecette.id,
-                            photo: objRecette.recettePhoto,
-                            is_liked:   arrLikedIds[objRecette.id] is defined,
-                            like_count: arrLikeCounts[objRecette.id]|default(0),
-                            is_favori:  arrFavoriIds[objRecette.id] is defined
-                        } %}
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="d-flex justify-content-center mt-4">
-                {{ knp_pagination_render(arrRecettes) }}
-            </div>
-        </section>
-        </section>
-
-        {# 5. CATALOGUE COMPLET #}
+        {# 4. CATALOGUE COMPLET #}
         <section id="recipeCatalog" class="container py-5 border-top">
 
-            {# Titre + filtres sur la même ligne, comme la section 4 #}
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
                 <div>
                     <h2 class="fw-bold mb-0">Catalogue de Recettes</h2>
@@ -118,46 +79,46 @@
                 </div>
             </div>
 
-            {# Grille identique à la section 4 #}
             <div id="recipeGrid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-            {% for objRecette in arrRecettes %}
-                <div class="col-md-4">
-                    {% include 'components/_recipe_card.html.twig' with {
-                        title: objRecette.recetteLibelle,
-                        time:  objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
-                        id:    objRecette.id,
-                        photo: objRecette.recettePhoto,
-                        is_liked:   arrLikedIds[objRecette.id] is defined,
-                        like_count: arrLikeCounts[objRecette.id]|default(0),
-                        is_favori:  arrFavoriIds[objRecette.id] is defined
-                    } %}
-                </div>
-            {% endfor %}
+                {% for objRecette in arrRecettes %}
+                    <div class="col-md-4">
+                        {% include 'components/_recipe_card.html.twig' with {
+                            title:      objRecette.recetteLibelle,
+                            time:       objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
+                            id:         objRecette.id,
+                            photo:      objRecette.recettePhoto,
+                            is_liked:   arrLikedIds[objRecette.id] is defined,
+                            like_count: arrLikeCounts[objRecette.id]|default(0),
+                            is_favori:  arrFavoriIds[objRecette.id] is defined
+                        } %}
+                    </div>
+                {% endfor %}
             </div>
-            <div class="d-flex justify-content-center mt-4">
-                {{ knp_pagination_render(arrRecettes) }}
-            </div>
-        </section>
 
             <div id="noResultMsg" class="text-center py-5 d-none">
                 <i class="bi bi-search display-4 text-muted mb-3 d-block"></i>
                 <h5 class="text-muted">Aucune recette ne correspond à vos critères.</h5>
             </div>
+
+            <div class="d-flex justify-content-center mt-4">
+                {{ knp_pagination_render(arrRecettes) }}
+            </div>
+
         </section>
     </main>
 
-    {# 6. FOOTER #}
+    {# 5. FOOTER #}
     {% include '_partials/footer.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-     <script>
+    <script>
         function initSplide() {
             const el = document.getElementById('recipe-carousel');
             if (!el || el.classList.contains('is-initialized')) return;
-            
+
             new Splide('#recipe-carousel', {
                 type: 'loop',
                 perPage: 3,

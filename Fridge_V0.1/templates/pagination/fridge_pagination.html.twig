@@ -2,10 +2,9 @@
 <nav aria-label="Pagination des recettes">
     <ul class="pagination fridge-pagination justify-content-center gap-1 flex-wrap">
 
-        {# Bouton Précédent #}
         {% if current > 1 %}
             <li class="page-item">
-                <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): current - 1})) }}" aria-label="Page précédente">
+                <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): current - 1})) }}#recipeCatalog" aria-label="Page précédente">
                     <i class="bi bi-chevron-left"></i>
                 </a>
             </li>
@@ -17,7 +16,6 @@
             </li>
         {% endif %}
 
-        {# Pages numérotées #}
         {% for page in pagesInRange %}
             {% if page == current %}
                 <li class="page-item active">
@@ -25,15 +23,14 @@
                 </li>
             {% else %}
                 <li class="page-item">
-                    <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}">{{ page }}</a>
+                    <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): page})) }}#recipeCatalog">{{ page }}</a>
                 </li>
             {% endif %}
         {% endfor %}
 
-        {# Bouton Suivant #}
         {% if current < pageCount %}
             <li class="page-item">
-                <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): current + 1})) }}" aria-label="Page suivante">
+                <a class="page-link fridge-page-link" href="{{ path(route, query|merge({(pageParameterName): current + 1})) }}#recipeCatalog" aria-label="Page suivante">
                     <i class="bi bi-chevron-right"></i>
                 </a>
             </li>
