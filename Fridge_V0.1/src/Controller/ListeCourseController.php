@@ -37,9 +37,14 @@ class ListeCourseController extends AbstractController
         $user = $this->getUser();
         $liste = $listeCourseService->genererDepuisPlanning($user);
 
+        if (!$liste) {
+            $this->addFlash('warning', 'Aucune recette dans votre planning pour générer une liste.');
+            return $this->redirectToRoute('app_liste_course_index');
+        }
+
         $this->addFlash('success', 'Votre liste de courses a été générée avec succès !');
 
-        return $this->redirectToRoute('app_liste_course_show', ['id' => $liste->getId()]);
+        return $this->redirectToRoute('app_liste_course_index', ['id' => $liste->getId()]);
     }
 
     #[Route('/check/{id}', name: 'app_liste_course_check', methods: ['POST'])]
