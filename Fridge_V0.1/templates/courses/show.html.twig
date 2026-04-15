@@ -1,0 +1,136 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ liste.listeLibelle }} - Fridge{% endblock %}
+
+{% block body %}
+{% include '_partials/header.html.twig' %}
+
+<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ path('app_home') }}"><i class="bi bi-house"></i></a></li>
+            <li class="breadcrumb-item"><a href="{{ path('app_liste_course_index') }}">Listes</a></li>
+            <li class="breadcrumb-item active">{{ liste.listeLibelle }}</li>
+        </ol>
+    </div>
+</nav>
+
+<main class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h1 class="h2 fw-bold mb-1">{{ liste.listeLibelle }}</h1>
+            <p class="text-muted mb-0">Créée le {{ liste.listeDateCreation|date('d/m/Y') }}</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_liste_course_index') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Retour
+            </a>
+            <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST" onsubmit="return confirm('Supprimer ?')">
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-trash me-1"></i>Supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {# Progession #}
+        <div class="col-12">
+            <div class="card shadow-sm border-0 mb-4" style="background: var(--gradient-hero);">
+                <div class="card-body p-4 text-center">
+                    {% set total = liste.contenirs|length %}
+                    {% set coches = 0 %}
+                    {% for item in liste.contenirs %}
+                        {% if item.contenirEstCoche %}{% set coches = coches + 1 %}{% endif %}
+                    {% endfor %}
+                    {% set percent = total > 0 ? (coches / total * 100)|round : 0 %}
+                    
+                    <h3 class="h5 fw-bold mb-3">Progression des courses : {{ percent }}%</h3>
+                    <div class="progress mb-2" style="height: 12px; border-radius: 10px;">
+                        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" 
+                             style="width: {{ percent }}%" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    <p class="text-muted small mb-0">{{ coches }} article(s) sur {{ total }} achetés</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12">
+            <div class="card shadow-sm border-0 p-4 bg-white">
+                {% if parCategorie is empty %}
+                    <p class="text-center text-muted py-4">Cette liste est vide.</p>
+                {% else %}
+                    {% for categorie, elements in parCategorie %}
+                        <div class="mb-4">
+                            <h3 class="h6 fw-bold text-uppercase letter-spacing-05 mb-3 border-bottom pb-2">
+                                <i class="bi bi-tag text-primary me-2"></i>{{ categorie }}
+                            </h3>
+                            <ul class="list-group list-group-flush">
+                                {% for item in elements %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-bottom bg-transparent">
+                                        <div class="d-flex align-items-center flex-grow-1">
+                                            <div class="form-check me-3">
+                                                <input class="form-check-input ms-0 check-ingredient" type="checkbox" 
+                                                       data-id="{{ item.id }}"
+                                                       id="check-{{ item.id }}"
+                                                       {{ item.contenirEstCoche ? 'checked' : '' }}
+                                                       style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
+                                            </div>
+                                            <label class="form-check-label mb-0 {{ item.contenirEstCoche ? 'text-decoration-line-through text-muted' : 'fw-bold' }}" 
+                                                   for="check-{{ item.id }}" style="cursor: pointer;">
+                                                {{ item.ingredient.ingredientLibelle }}
+                                            </label>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge rounded-pill shadow-sm" style="background-color: var(--tomato-jam); color: var(--linen);">
+                                                {{ item.contenirQuantite }} {{ item.contenirUnite }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
+
+{% include '_partials/footer.html.twig' %}
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.querySelectorAll('.check-ingredient').forEach(checkbox => {
+    checkbox.addEventListener('change', async function() {
+        const id = this.dataset.id;
+        const isCoche = this.checked;
+        const row = this.closest('li');
+        const label = row.querySelector('.form-check-label');
+        
+        try {
+            const response = await fetch(`/liste-courses/check/${id}`, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            
+            if (response.ok) {
+                // Toggle classes visuelles
+                if (isCoche) {
+                    label.classList.add('text-decoration-line-through', 'text-muted');
+                    label.classList.remove('fw-bold');
+                } else {
+                    label.classList.remove('text-decoration-line-through', 'text-muted');
+                    label.classList.add('fw-bold');
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour:', error);
+            this.checked = !isCoche; // Reverser en cas d'erreur
+        }
+    });
+});
+</script>
+{% endblock %}

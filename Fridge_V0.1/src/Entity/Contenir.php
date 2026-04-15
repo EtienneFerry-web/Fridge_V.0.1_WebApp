@@ -29,6 +29,9 @@ class Contenir
     #[ORM\JoinColumn(nullable: true)]
     private ?Recette $recette = null;
 
+    #[ORM\Column(options: ['default' => false])]
+    private bool $contenirEstCoche = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -90,6 +93,18 @@ class Contenir
     public function setRecette(?Recette $recette): static
     {
         $this->recette = $recette;
+
+        return $this;
+    }
+
+    public function isContenirEstCoche(): bool
+    {
+        return $this->contenirEstCoche;
+    }
+
+    public function setContenirEstCoche(bool $contenirEstCoche): static
+    {
+        $this->contenirEstCoche = $contenirEstCoche;
 
         return $this;
     }

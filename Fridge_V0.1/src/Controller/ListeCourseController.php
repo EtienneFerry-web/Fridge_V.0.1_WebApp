@@ -2,9 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\ListeCourse;
+use App\Repository\ContenirRepository;
 use App\Repository\ListeCourseRepository;
 use App\Service\ListeCourseService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -22,7 +26,7 @@ class ListeCourseController extends AbstractController
             ['listeDateCreation' => 'DESC']
         );
 
-        return $this->render('liste_course/index.html.twig', [
+        return $this->render('courses/index.html.twig', [
             'listes' => $listes,
         ]);
     }
@@ -36,6 +40,40 @@ class ListeCourseController extends AbstractController
         $this->addFlash('success', 'Votre liste de courses a été générée avec succès !');
 
         return $this->redirectToRoute('app_liste_course_show', ['id' => $liste->getId()]);
+    }
+
+    #[Route('/check/{id}', name: 'app_liste_course_check', methods: ['POST'])]
+    public function toggleCheck(int $id, ContenirRepository $contenirRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $contenir = $contenirRepository->find($id);
+        if (!$contenir) {
+            return new JsonResponse(['success' => false], 404);
+        }
+
+        // Vérifier que la liste appartient à l'utilisateur
+        if ($contenir->getListeCourse()->getUser() !== $this->getUser()) {
+            return new JsonResponse(['success' => false], 403);
+        }
+
+        $contenir->setContenirEstCoche(!$contenir->isContenirEstCoche());
+        $em->flush();
+
+        return new JsonResponse(['success' => true, 'isCoche' => $contenir->isContenirEstCoche()]);
+    }
+
+    #[Route('/supprimer/{id}', name: 'app_liste_course_delete', methods: ['POST'])]
+    public function delete(ListeCourse $liste, EntityManagerInterface $em): Response
+    {
+        if ($liste->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $em->remove($liste);
+        $em->flush();
+
+        $this->addFlash('success', 'La liste de courses a été supprimée.');
+
+        return $this->redirectToRoute('app_liste_course_index');
     }
 
     #[Route('/{id}', name: 'app_liste_course_show')]
@@ -57,7 +95,7 @@ class ListeCourseController extends AbstractController
         }
         ksort($parCategorie);
 
-        return $this->render('liste_course/show.html.twig', [
+        return $this->render('courses/show.html.twig', [
             'liste'        => $liste,
             'parCategorie' => $parCategorie,
         ]);

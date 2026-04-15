@@ -1,9 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Liste de Courses - Fridge{% endblock %}
+{% block title %}Mes Listes de Courses - Fridge{% endblock %}
 
 {% block body %}
-
 {% include '_partials/header.html.twig' %}
 
 <nav class="breadcrumb-nav" aria-label="Fil d'ariane">
@@ -12,259 +11,91 @@
             <li class="breadcrumb-item">
                 <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
             </li>
-            <li class="breadcrumb-item active" aria-current="page">Liste de Courses</li>
+            <li class="breadcrumb-item active">Listes de Courses</li>
         </ol>
     </div>
 </nav>
 
 <main class="container py-4 py-md-5">
-
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="h2 fw-bold mb-1">
-                <i class="bi bi-cart3 me-2 text-primary"></i>Liste de Courses
+                <i class="bi bi-cart3 me-2 text-primary"></i>Mes Listes de Courses
             </h1>
-            <p class="text-muted mb-0">Cochez au fur et à mesure, puis transférez vos achats dans le stock.</p>
+            <p class="text-muted mb-0">Retrouvez vos listes générées depuis le planning.</p>
         </div>
-        <div class="d-flex gap-2 flex-wrap">
-            <span class="badge rounded-pill bg-primary fs-6 px-3 py-2" id="totalBadge">
-                <i class="bi bi-list-check me-1"></i>
-                <span id="totalCount">0</span> article(s)
-            </span>
-            <span class="badge rounded-pill fs-6 px-3 py-2 courses-badge-checked d-none" id="checkedBadge">
-                <i class="bi bi-check2-all me-1"></i>
-                <span id="checkedCount">0</span> coché(s)
-            </span>
-        </div>
+        <form action="{{ path('app_liste_course_generer') }}" method="POST">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus-circle me-1"></i>Générer une nouvelle liste
+            </button>
+        </form>
     </div>
 
-    <div class="row g-4">
-
-        {# =====================================================
-           COLONNE GAUCHE : FORMULAIRE D'AJOUT
-           ===================================================== #}
-        <div class="col-12 col-lg-4">
-            <div class="card shadow-sm border-0 position-sticky" style="top: 85px;">
-                <div class="card-body p-4">
-
-                    <h2 class="h5 fw-bold mb-4 d-flex align-items-center gap-2">
-                        <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white"
-                            style="width:32px; height:32px; font-size:1rem;">
-                            <i class="bi bi-plus-lg"></i>
-                        </span>
-                        Ajouter un article
-                    </h2>
-
-                    <form id="coursesForm" class="needs-validation" novalidate>
-
-                        <div class="mb-3">
-                            <label for="itemName" class="form-label">
-                                Article <span class="required-mark" aria-hidden="true">*</span>
-                            </label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                <input type="text" id="itemName" class="form-control"
-                                    placeholder="ex : Tomates, Lait..." required minlength="1"
-                                    autocomplete="off" list="ingredientSuggestions">
-                                <div class="invalid-feedback">Veuillez saisir le nom de l'article.</div>
-                            </div>
-                            <datalist id="ingredientSuggestions"></datalist>
-                        </div>
-
-                        <div class="row g-2 mb-3">
-                            <div class="col-7">
-                                <label for="itemQty" class="form-label">Quantité</label>
-                                <input type="number" id="itemQty" class="form-control"
-                                    placeholder="ex : 2" min="0" step="0.01" value="1">
-                            </div>
-                            <div class="col-5">
-                                <label for="itemUnit" class="form-label">Unité</label>
-                                <select id="itemUnit" class="form-select">
-                                    <option value="unité">unité</option>
-                                    <option value="g">g</option>
-                                    <option value="kg">kg</option>
-                                    <option value="mL">mL</option>
-                                    <option value="L">L</option>
-                                    <option value="cL">cL</option>
-                                    <option value="tbsp">c. à soupe</option>
-                                    <option value="tsp">c. à café</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="itemCategory" class="form-label">
-                                <i class="bi bi-geo-alt me-1 text-muted"></i>Rayon
-                            </label>
-                            <select id="itemCategory" class="form-select">
-                                <option value="Autre">Autre</option>
-                                <option value="Fruits & Légumes">🥦 Fruits &amp; Légumes</option>
-                                <option value="Crémerie">🧀 Crémerie</option>
-                                <option value="Boucherie & Poissonnerie">🥩 Boucherie &amp; Poissonnerie</option>
-                                <option value="Épicerie sucrée">🍫 Épicerie sucrée</option>
-                                <option value="Épicerie salée">🥫 Épicerie salée</option>
-                                <option value="Boissons">🧃 Boissons</option>
-                                <option value="Surgelés">❄️ Surgelés</option>
-                                <option value="Hygiène & Beauté">🧴 Hygiène &amp; Beauté</option>
-                                <option value="Entretien">🧹 Entretien</option>
-                            </select>
-                        </div>
-
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle me-2"></i>Ajouter à la liste
-                            </button>
-                        </div>
-
-                    </form>
-
-                    <hr>
-
-                    <div class="d-grid gap-2">
-                        <button class="btn btn-outline-secondary" id="transferBtn"
-                            onclick="transferToStock()" disabled>
-                            <i class="bi bi-box-arrow-in-down me-2"></i>Ajouter les cochés au Stock
-                        </button>
-                        <button class="btn btn-outline-secondary" id="clearCheckedBtn"
-                            onclick="openClearModal('checked')" disabled>
-                            <i class="bi bi-check2-square me-2"></i>Supprimer les cochés
-                        </button>
-                        <button class="btn btn-outline-primary" id="clearAllBtn"
-                            onclick="openClearModal('all')" disabled>
-                            <i class="bi bi-trash me-2"></i>Vider la liste
-                        </button>
-                    </div>
-
-                </div>
-            </div>
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show mb-4 shadow-sm border-0">
+            <i class="bi bi-check-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
+    {% endfor %}
 
-        {# =====================================================
-           COLONNE DROITE : LISTE PAR RAYON
-           ===================================================== #}
-        <div class="col-12 col-lg-8">
-
-            <div class="card shadow-sm border-0 mb-3">
-                <div class="card-body p-3">
-                    <div class="row g-2 align-items-center">
-                        <div class="col-12 col-sm-5">
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="search" id="searchInput" class="form-control"
-                                    placeholder="Rechercher..." oninput="renderList()">
+    {% if listes is empty %}
+        <div class="text-center py-5 bg-white rounded shadow-sm">
+            <i class="bi bi-cart-x display-3 text-muted mb-3"></i>
+            <h3 class="h5 text-muted">Vous n'avez pas encore de liste de courses.</h3>
+            <p class="text-muted">Générez-en une en ajoutant des recettes à votre planning !</p>
+            <a href="{{ path('app_planning_index') }}" class="btn btn-outline-primary mt-2">
+                Aller au planning
+            </a>
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for liste in listes %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 recipe-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="card-title mb-0">{{ liste.listeLibelle }}</h5>
+                                <span class="badge {{ liste.listeStatut == 'active' ? 'bg-primary' : 'bg-secondary' }} rounded-pill">
+                                    {{ liste.listeStatut|capitalize }}
+                                </span>
                             </div>
-                        </div>
-                        <div class="col-6 col-sm-4">
-                            <select id="filterState" class="form-select" onchange="renderList()">
-                                <option value="all">Tous</option>
-                                <option value="todo">À acheter</option>
-                                <option value="done">Cochés</option>
-                            </select>
-                        </div>
-                        <div class="col-6 col-sm-3">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="progress flex-grow-1" style="height: 8px;" role="progressbar"
-                                    aria-label="Progression des courses"
-                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-                                    <div class="progress-bar bg-primary" id="progressBar" style="width: 0%"></div>
+                            <p class="text-muted small mb-3">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                Créée le {{ liste.listeDateCreation|date('d/m/Y à H:i') }}
+                            </p>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="progress flex-grow-1" style="height: 6px;">
+                                    {% set total = liste.contenirs|length %}
+                                    {% set coches = 0 %}
+                                    {% for item in liste.contenirs %}
+                                        {% if item.contenirEstCoche %}{% set coches = coches + 1 %}{% endif %}
+                                    {% endfor %}
+                                    {% set percent = total > 0 ? (coches / total * 100)|round : 0 %}
+                                    <div class="progress-bar bg-primary" style="width: {{ percent }}%"></div>
                                 </div>
-                                <span class="small text-muted text-nowrap" id="progressLabel">0 %</span>
+                                <span class="ms-2 small text-muted">{{ percent }}%</span>
+                            </div>
+                            <p class="small text-muted">{{ total }} article(s)</p>
+                        </div>
+                        <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
+                            <div class="d-grid gap-2">
+                                <a href="{{ path('app_liste_course_show', {id: liste.id}) }}" class="btn btn-outline-primary btn-sm bg-white">
+                                    <i class="bi bi-eye me-1"></i>Voir les détails
+                                </a>
+                                <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST"
+                                      onsubmit="return confirm('Supprimer cette liste définitivement ?')">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm w-100 bg-white">
+                                        <i class="bi bi-trash me-1"></i>Supprimer
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="coursesList"></div>
-
+            {% endfor %}
         </div>
-    </div>
+    {% endif %}
 </main>
 
-{# =====================================================
-   MODAL : VIDER LA LISTE
-   ===================================================== #}
-<div class="modal fade" id="clearModal" tabindex="-1" aria-labelledby="clearModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger">
-                <h5 class="modal-title text-white" id="clearModalLabel">
-                    <i class="bi bi-trash me-2"></i><span id="clearModalTitle">Vider la liste</span>
-                </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body" id="clearModalBody">
-                Voulez-vous vraiment vider toute la liste ?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x me-1"></i>Annuler
-                </button>
-                <button type="button" class="btn btn-primary" id="confirmClearBtn">
-                    <i class="bi bi-trash me-1"></i>Confirmer
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{# =====================================================
-   MODAL : TRANSFERT VERS LE STOCK
-   ===================================================== #}
-<div class="modal fade" id="transferModal" tabindex="-1" aria-labelledby="transferModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header" style="background: var(--gradient-hero);">
-                <h5 class="modal-title" id="transferModalLabel">
-                    <i class="bi bi-box-arrow-in-down me-2 text-primary"></i>Transfert vers le Stock
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-                <p class="mb-3">Les <strong id="transferCount">0</strong> article(s) coché(s) vont être ajoutés à votre stock.</p>
-                <div class="alert alert-warning d-flex gap-2 align-items-start py-2 px-3 small mb-0">
-                    <i class="bi bi-info-circle-fill mt-1 flex-shrink-0"></i>
-                    <span>Si un ingrédient existe déjà dans le stock, sa quantité sera <strong>cumulée</strong>.</span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                    <i class="bi bi-x me-1"></i>Annuler
-                </button>
-                <button type="button" class="btn btn-primary" id="confirmTransferBtn">
-                    <i class="bi bi-box-arrow-in-down me-1"></i>Transférer
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-{# =====================================================
-   TOAST DE FEEDBACK
-   ===================================================== #}
-<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1100;">
-    <div id="toastFeedback" class="toast align-items-center text-white border-0" role="alert"
-        aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body d-flex align-items-center gap-2" id="toastBody">
-                <i class="bi bi-check-circle-fill"></i> Action effectuée.
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                data-bs-dismiss="toast" aria-label="Fermer"></button>
-        </div>
-    </div>
-</div>
-
 {% include '_partials/footer.html.twig' %}
-
-{% endblock %}
-
-{% block stylesheets %}
-{{ parent() }}
-<link rel="stylesheet" href="{{ asset('styles/styles.css') }}">
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script src="{{ asset('script.js') }}" defer></script>
 {% endblock %}
