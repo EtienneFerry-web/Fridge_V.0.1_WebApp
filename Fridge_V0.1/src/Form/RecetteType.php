@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Recette;
+use App\Entity\Etape;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -60,6 +62,14 @@ class RecetteType extends AbstractType
                     new NotBlank(),
                     new Positive(),
                 ],
+            ])
+            ->add('etapes', CollectionType::class, [
+                'entry_type'    => EtapeType::class,
+                'allow_add'     => true,
+                'allow_delete'  => true,
+                'by_reference'  => false,
+                'label'         => false,
+                'entry_options' => ['label' => false],
             ])
         ;
     }

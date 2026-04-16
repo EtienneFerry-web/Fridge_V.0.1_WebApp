@@ -9,6 +9,38 @@
         <div class="col-md-4">{{ form_row(form.recetteTempsPrepa, {attr: {class: 'form-control'}}) }}</div>
         <div class="col-md-4">{{ form_row(form.recetteTempsCuisson, {attr: {class: 'form-control'}}) }}</div>
     </div>
+
+    {# ÉTAPES #}
+    <div class="mb-4">
+        <label class="form-label fw-bold">Étapes</label>
+        <div id="etapes-container">
+            {% for etape in form.etapes %}
+                <div class="etape-row card mb-2 border-0 shadow-sm">
+                    <div class="card-body p-3">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="badge bg-dark me-2 etape-numero">Étape ?</span>
+                            <button type="button" class="btn btn-sm btn-outline-danger ms-auto btn-supprimer-etape">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                        {{ form_row(etape.etapeLibelle, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_row(etape.etapeDescription, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_row(etape.etapeDuree, {'attr': {'class': 'form-control'}}) }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="btn-ajouter-etape" class="btn btn-outline-primary btn-sm mt-2">
+            <i class="bi bi-plus-lg me-1"></i> Ajouter une étape
+        </button>
+    </div>
+
+    <div id="etapes-prototype"
+         data-prototype="{{ form_widget(form.etapes.vars.prototype)|e('html_attr') }}"
+         style="display:none"></div>
+
+    {{ form_rest(form) }}
+
     <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary">
             <i class="bi bi-save me-1"></i>Enregistrer

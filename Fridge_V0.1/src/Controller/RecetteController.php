@@ -48,6 +48,11 @@ final class RecetteController extends AbstractController
             $objEntityManager->persist($objRecette);
             $objEntityManager->flush();
 
+                $intNumero = 1;
+                foreach ($objRecette->getEtapes() as $objEtape) {
+                    $objEtape->setEtapeNumero($intNumero++);
+                }
+
             $this->addFlash('success', 'Recette créée avec succès !');
             return $this->redirectToRoute('app_recette_show', ['id' => $objRecette->getId()]);
         }
