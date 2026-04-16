@@ -25,7 +25,7 @@ final class RecetteController extends AbstractController
     }
 
     //READ - Détail d'une recette
-    #[Route('/recette/{id}', name: 'app_recette_show')]
+    #[Route('/recette/{id}', name: 'app_recette_show', requirements: ['id' => '\d+'])]
     public function show(Recette $objRecette): Response
     {
         return $this->render('recette/show.html.twig', [

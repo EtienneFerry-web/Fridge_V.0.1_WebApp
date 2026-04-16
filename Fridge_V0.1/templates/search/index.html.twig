@@ -141,7 +141,13 @@
 
             {# GRILLE DE RÉSULTATS #}
             <div class="col-lg-9">
-
+                {% if is_granted('ROLE_USER') %}
+                <div class="d-flex justify-content-end mb-4">
+                    <a href="{{ path('app_recette_new') }}" class="btn btn-primary btn-sm justify-content-center align-items-right mb-4">
+                        <i class="bi bi-plus-lg me-1"></i> Nouvelle recette
+                    </a>
+                </div>
+                {% endif %}
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <span class="text-muted">
                         <strong class="text-dark">{{ recipes|length }}</strong> recette(s) trouvée(s)
