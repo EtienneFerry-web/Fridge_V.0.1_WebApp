@@ -13,18 +13,45 @@
     {# INGRÉDIENTS #}
     <div class="mb-4">
         <label class="form-label fw-bold">Ingrédients</label>
+
         <div id="contenirs-container">
             {% for contenir in form.contenirs %}
-                <div class="contenir-row d-flex gap-2 align-items-center mb-2">
-                    {{ form_widget(contenir.ingredient) }}
-                    {{ form_widget(contenir.contenirQuantite) }}
-                    {{ form_widget(contenir.contenirUnite) }}
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-supprimer-contenir">
+                <div class="contenir-row d-flex gap-2 align-items-center mb-2 p-2 rounded bg-body-secondary">
+
+                {{ form_widget(contenir.ingredient, {
+                    attr: {
+                        class: 'ingredient-id-hidden',
+                        'data-ingredient-hidden': '1'
+                    }
+                }) }}
+
+                    <div class="flex-grow-1">
+                        <input type="text"
+                            class="form-control ingredient-ts-input"
+                            placeholder="Rechercher un ingrédient…">
+                    </div>
+
+                    <div style="width: 90px">
+                        {{ form_widget(contenir.contenirQuantite, {
+                            attr: {class: 'form-control', placeholder: 'Qté'}
+                        }) }}
+                    </div>
+
+                    <div style="width: 110px">
+                        {{ form_widget(contenir.contenirUnite, {
+                            attr: {class: 'form-control', placeholder: 'Unité'}
+                        }) }}
+                    </div>
+
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger btn-supprimer-contenir flex-shrink-0"
+                            title="Supprimer">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
             {% endfor %}
         </div>
+
         <button type="button" id="btn-ajouter-contenir" class="btn btn-outline-primary btn-sm mt-2">
             <i class="bi bi-plus-lg me-1"></i> Ajouter un ingrédient
         </button>
@@ -33,7 +60,7 @@
     <div id="contenirs-prototype"
         data-prototype="{{ form_widget(form.contenirs.vars.prototype)|e('html_attr') }}"
         style="display:none"></div>
-
+        
     {# ÉTAPES #}
     <div class="mb-4">
         <label class="form-label fw-bold">Étapes</label>
