@@ -37,9 +37,8 @@ class Recette
     /**
      * @var Collection<int, Etape>
      */
-    #[ORM\OneToMany(targetEntity: Etape::class, mappedBy: 'recette')]
+    #[ORM\OneToMany(targetEntity: Etape::class, mappedBy: 'recette', cascade: ['persist',  'remove'])]
     private Collection $etapes;
-
     /**
      * @var Collection<int, LikeRecette>
      */

@@ -45,13 +45,13 @@ final class RecetteController extends AbstractController
         $objForm->handleRequest($objRequest);
 
         if ($objForm->isSubmitted() && $objForm->isValid()) {
+            $intNumero = 1;
+            foreach ($objRecette->getEtapes() as $objEtape) {
+                $objEtape->setEtapeNumero($intNumero++);
+            }
+
             $objEntityManager->persist($objRecette);
             $objEntityManager->flush();
-
-                $intNumero = 1;
-                foreach ($objRecette->getEtapes() as $objEtape) {
-                    $objEtape->setEtapeNumero($intNumero++);
-                }
 
             $this->addFlash('success', 'Recette créée avec succès !');
             return $this->redirectToRoute('app_recette_show', ['id' => $objRecette->getId()]);
@@ -104,6 +104,6 @@ final class RecetteController extends AbstractController
         $objEntityManager->flush();
 
         $this->addFlash('success', 'Recette supprimé.');
-        return $this->redirectToRoute('app_recette_index');
+        return $this->redirectToRoute('app_search');
     }
 }
