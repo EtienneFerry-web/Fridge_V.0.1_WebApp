@@ -71,6 +71,14 @@ class RecetteType extends AbstractType
                 'label'         => false,
                 'entry_options' => ['label' => false],
             ])
+            ->add('contenirs', CollectionType::class, [
+                'entry_type'    => ContenirType::class,
+                'allow_add'     => true,
+                'allow_delete'  => true,
+                'by_reference'  => false,
+                'label'         => false,
+                'entry_options' => ['label' => false],
+            ])
         ;
     }
 

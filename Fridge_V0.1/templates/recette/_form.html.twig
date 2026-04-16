@@ -10,6 +10,30 @@
         <div class="col-md-4">{{ form_row(form.recetteTempsCuisson, {attr: {class: 'form-control'}}) }}</div>
     </div>
 
+    {# INGRÉDIENTS #}
+    <div class="mb-4">
+        <label class="form-label fw-bold">Ingrédients</label>
+        <div id="contenirs-container">
+            {% for contenir in form.contenirs %}
+                <div class="contenir-row d-flex gap-2 align-items-center mb-2">
+                    {{ form_widget(contenir.ingredient) }}
+                    {{ form_widget(contenir.contenirQuantite) }}
+                    {{ form_widget(contenir.contenirUnite) }}
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-supprimer-contenir">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" id="btn-ajouter-contenir" class="btn btn-outline-primary btn-sm mt-2">
+            <i class="bi bi-plus-lg me-1"></i> Ajouter un ingrédient
+        </button>
+    </div>
+
+    <div id="contenirs-prototype"
+        data-prototype="{{ form_widget(form.contenirs.vars.prototype)|e('html_attr') }}"
+        style="display:none"></div>
+
     {# ÉTAPES #}
     <div class="mb-4">
         <label class="form-label fw-bold">Étapes</label>

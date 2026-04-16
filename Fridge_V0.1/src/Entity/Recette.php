@@ -78,7 +78,7 @@ class Recette
     /**
      * @var Collection<int, Contenir>
      */
-    #[ORM\OneToMany(targetEntity: Contenir::class, mappedBy: 'recette')]
+    #[ORM\OneToMany(targetEntity: Contenir::class, mappedBy: 'recette', cascade: ['persist', 'remove'])]
     private Collection $contenirs;
 
     public function __construct()

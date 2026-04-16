@@ -1,3 +1,41 @@
+// ==========================================
+// Gestion des ingrédients
+// ==========================================
+
+const contenirContainer  = document.getElementById('contenirs-container');
+const btnAjouterContenir = document.getElementById('btn-ajouter-contenir');
+
+if (contenirContainer && btnAjouterContenir) {
+    const contenirPrototype = document.getElementById('contenirs-prototype').dataset.prototype;
+    let contenirIndex = contenirContainer.querySelectorAll('.contenir-row').length;
+
+    function ajouterContenir() {
+        const html = contenirPrototype.replace(/__name__/g, contenirIndex);
+        const div  = document.createElement('div');
+        div.classList.add('contenir-row', 'd-flex', 'gap-2', 'align-items-center', 'mb-2');
+        div.innerHTML = html + `
+            <button type="button" class="btn btn-sm btn-outline-danger btn-supprimer-contenir">
+                <i class="bi bi-trash"></i>
+            </button>`;
+        contenirContainer.appendChild(div);
+        contenirIndex++;
+        bindSupprimerContenir(div.querySelector('.btn-supprimer-contenir'));
+    }
+
+    function bindSupprimerContenir(btn) {
+        btn.addEventListener('click', function () {
+            btn.closest('.contenir-row').remove();
+        });
+    }
+
+    contenirContainer.querySelectorAll('.btn-supprimer-contenir').forEach(bindSupprimerContenir);
+    btnAjouterContenir.addEventListener('click', ajouterContenir);
+}
+
+// ==========================================
+//Gestion des étapes
+// ==========================================
+
 document.addEventListener('DOMContentLoaded', function () {
     const container  = document.getElementById('etapes-container');
     const btnAjouter = document.getElementById('btn-ajouter-etape');
