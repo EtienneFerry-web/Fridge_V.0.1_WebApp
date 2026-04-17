@@ -85,12 +85,14 @@
                 <h2 class="h5 fw-bold mb-3">Étapes</h2>
                 <ol class="list-group list-group-numbered mb-4">
                     {% for etape in recette.etapes %}
-                        <li class="list-group-item">
-                            <strong>{{ etape.etapeLibelle }}</strong>
+                        <li class="list-group-item d-flex align-items-center gap-3">
+                            <div class="d-flex flex-column" style="min-width: 160px;">
+                                <strong>{{ etape.etapeLibelle }}</strong>
+                                <p class="mb-0 text-muted small">{{ etape.etapeDescription }}</p>
+                            </div>
                             {% if etape.etapeDuree %}
-                                <span class="badge bg-light text-dark ms-2">{{ etape.etapeDuree }} min</span>
+                                <span class="badge bg-light text-dark ms-auto text-nowrap">{{ etape.etapeDuree }} min</span>
                             {% endif %}
-                            <p class="mb-0 text-muted small mt-1">{{ etape.etapeDescription }}</p>
                         </li>
                     {% endfor %}
                 </ol>

@@ -66,9 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Met à jour le label affiché
         const label = row.querySelector('.contenir-label');
-        if (label) {
-            label.innerHTML = `${libelle} <span class="opacity-75 fw-normal ms-1">· ${qte} ${unite}</span>`;
-        }
+        const badge = row.querySelector('.contenir-badge');
+        if (label) label.textContent = libelle;
+        if (badge) badge.textContent = `${qte} ${unite}`;
 
         // Bascule en mode confirmé
         row.querySelector('.contenir-form').classList.add('d-none');
@@ -127,22 +127,26 @@ document.addEventListener('DOMContentLoaded', function () {
             ${sfUniteHtml}
 
             <!-- Mode confirmé (caché au départ) -->
-            <div class="contenir-display d-none align-items-center gap-2 p-2 rounded"
-                 style="background-color: #d4876e; color: white;">
-                <span class="flex-grow-1 fw-medium contenir-label"></span>
+            <div class="contenir-display d-none align-items-center gap-2 p-2 rounded list-group-item d-flex justify-content-between "
+                style="background: white; border: 0.5px solid #e0d5cc;">
+                <i class="bi bi-check2-circle me-1" style="color: var(--tomato-jam);"></i>
+                <span class="flex-grow-1 fw-medium contenir-label" style="color: #333;"></span>
+                <span class="badge rounded-pill contenir-badge"
+                    style="background-color: var(--tomato-jam); color: var(--linen); border: 1.5px solid var(--tomato-dark);">
+                </span>
                 <button type="button" class="btn btn-sm btn-modifier-contenir"
-                        style="color:white; border-color:rgba(255,255,255,0.5);">
+                        style="color: var(--tomato-jam); border-color: var(--tomato-jam);">
                     <i class="bi bi-pencil"></i>
                 </button>
                 <button type="button" class="btn btn-sm btn-supprimer-contenir"
-                        style="color:white; border-color:rgba(255,255,255,0.5);">
+                        style="color: var(--tomato-jam); border-color: var(--tomato-jam);">
                     <i class="bi bi-trash"></i>
                 </button>
             </div>
 
             <!-- Mode formulaire (visible au départ) -->
             <div class="contenir-form d-flex gap-2 align-items-center p-2 rounded"
-                 style="background-color: #d4876e;">
+                 style="background-color: #e0d3c6;">
                 <div class="flex-grow-1" style="min-width:160px;">
                     <input type="text" class="form-control ingredient-ts-input"
                            placeholder="Rechercher un ingrédient…">
@@ -164,11 +168,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     <option value="tranche(s)">tranche(s)</option>
                 </select>
                 <button type="button" class="btn btn-sm btn-confirmer-contenir flex-shrink-0"
-                        style="color:white; border-color:rgba(255,255,255,0.5);" title="Confirmer">
+                        style="color: var(--teal-text); border-color: var(--teal-text);" title="Confirmer">
                     <i class="bi bi-check-lg"></i>
                 </button>
                 <button type="button" class="btn btn-sm btn-annuler-contenir flex-shrink-0"
-                        style="color:white; border-color:rgba(255,255,255,0.5);" title="Annuler">
+                        style="color: var(--tomato-dark); border-color: var(--tomato-dark);" title="Annuler">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
