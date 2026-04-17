@@ -12,9 +12,7 @@
             </ol>
         </nav>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">{{ message }}</div>
-        {% endfor %}
+        {% include '_partials/flash.html.twig' %}
 
         {% if recette.recettePhoto is defined and recette.recettePhoto %}
             <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"

@@ -1,0 +1,17 @@
+{% set type_map = {
+    'success': 'success',
+    'error': 'danger',
+    'warning': 'warning',
+    'info': 'info',
+    'verify_email_error': 'danger',
+    'reset_password_error': 'danger'
+} %}
+{% for type, messages in app.flashes %}
+    {% set bs_class = type_map[type] ?? 'info' %}
+    {% for message in messages %}
+        <div class="alert alert-{{ bs_class }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    {% endfor %}
+{% endfor %}

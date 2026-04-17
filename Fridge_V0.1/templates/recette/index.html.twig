@@ -14,9 +14,7 @@
             {% endif %}
         </div>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">{{ message }}</div>
-        {% endfor %}
+        {% include '_partials/flash.html.twig' %}
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for recette in recettes %}
