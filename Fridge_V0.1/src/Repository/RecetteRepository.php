@@ -74,9 +74,10 @@ class RecetteRepository extends ServiceEntityRepository
         ->setParameter('tempsMax', $intTempsMax);
 
         match ($strSort) {
-            'recent'   => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
-            'time'     => $qb->orderBy('r.recetteTempsPrepa + r.recetteTempsCuisson', 'ASC'),
-            default    => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
+            'recent' => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
+            'time'   => $qb->addSelect('(r.recetteTempsPrepa + r.recetteTempsCuisson) AS HIDDEN tempsTotal')
+                        ->orderBy('tempsTotal', 'ASC'),
+            default  => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
         };
 
         return $qb->getQuery()->getResult();
@@ -96,8 +97,9 @@ class RecetteRepository extends ServiceEntityRepository
 
         match ($sort) {
             'popular' => $qb->leftJoin('r.likeRecettes', 'lr')
-                            ->orderBy('COUNT(lr.id)', 'DESC')
-                            ->groupBy('r.id'),
+                            ->addSelect('COUNT(lr.id) AS HIDDEN likeCount')
+                            ->groupBy('r.id')
+                            ->orderBy('likeCount', 'DESC'),
             default   => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
         };
 
