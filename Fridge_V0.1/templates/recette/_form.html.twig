@@ -1,6 +1,18 @@
-{{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+{{ form_start(form, {attr: {novalidate: 'novalidate', enctype: 'multipart/form-data'}}) }}
     <div class="mb-3">{{ form_row(form.recetteLibelle, {attr: {class: 'form-control'}}) }}</div>
     <div class="mb-3">{{ form_row(form.recetteDescription, {attr: {class: 'form-control'}}) }}</div>
+    {# PHOTO #}
+    <div class="mb-3">
+        {% if form.vars.data.recettePhoto %}
+            <div class="mb-2">
+                <img src="{{ asset('uploads/recettes/' ~ form.vars.data.recettePhoto) }}"
+                    alt="Photo actuelle"
+                    style="max-width: 200px; height: auto; border-radius: 8px;">
+                <p class="small text-muted mt-1">Photo actuelle — choisissez-en une nouvelle pour la remplacer.</p>
+            </div>
+        {% endif %}
+        {{ form_row(form.recettePhotoFile, {attr: {class: 'form-control', accept: 'image/*'}}) }}
+    </div>
     <div class="row g-3 mb-3">
         <div class="col-md-4">{{ form_row(form.recetteDifficulte, {attr: {class: 'form-select'}}) }}</div>
         <div class="col-md-4">{{ form_row(form.recettePortion, {attr: {class: 'form-control'}}) }}</div>

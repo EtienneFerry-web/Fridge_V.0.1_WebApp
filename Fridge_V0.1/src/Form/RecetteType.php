@@ -2,11 +2,13 @@
 
 namespace App\Form;
 
-use App\Entity\Recette;
 use App\Entity\Etape;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use App\Entity\Recette;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -61,6 +63,22 @@ class RecetteType extends AbstractType
                 'constraints' => [
                     new NotBlank(),
                     new Positive(),
+                ],
+            ])
+            ->add('recettePhotoFile', FileType::class, [
+                'label'    => 'Photo de la recette',
+                'mapped'   => false,
+                'required' => false,
+                'constraints' => [
+                    new File(
+                        maxSize: '4M',
+                        mimeTypes: [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp',
+                        ],
+                        mimeTypesMessage: 'Merci de téléverser une image valide (JPEG, PNG ou WebP).',
+                    ),
                 ],
             ])
             ->add('etapes', CollectionType::class, [

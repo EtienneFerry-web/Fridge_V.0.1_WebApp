@@ -7,10 +7,13 @@ use App\Form\RecetteType;
 use App\Repository\RecetteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class RecetteController extends AbstractController
 {
@@ -44,13 +47,21 @@ final class RecetteController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function new(
         Request $objRequest, 
-        EntityManagerInterface $objEntityManager
+        EntityManagerInterface $objEntityManager,
+        SluggerInterface $objSlugger
     ): Response{
         $objRecette = new Recette();
         $objForm = $this->createForm(RecetteType::class, $objRecette);
         $objForm->handleRequest($objRequest);
 
-        if ($objForm->isSubmitted() && $objForm->isValid()) {
+            if ($objForm->isSubmitted() && $objForm->isValid()) {
+            /** @var UploadedFile|null $objPhotoFile */
+            $objPhotoFile = $objForm->get('recettePhotoFile')->getData();
+
+            if ($objPhotoFile) {
+                $strNomFichier = $this->uploadPhoto($objPhotoFile, $objSlugger);
+                $objRecette->setRecettePhoto($strNomFichier);
+            }
             $intNumero = 1;
             foreach ($objRecette->getEtapes() as $objEtape) {
                 $objEtape->setEtapeNumero($intNumero++);
@@ -74,12 +85,29 @@ final class RecetteController extends AbstractController
     public function edit(
         Recette $objRecette,
         Request $objRequest,
-        EntityManagerInterface $objEntityManager
+        EntityManagerInterface $objEntityManager,
+        SluggerInterface $objSlugger
     ): Response {
         $objForm = $this->createForm(RecetteType::class, $objRecette);
         $objForm->handleRequest($objRequest);
 
         if($objForm->isSubmitted() && $objForm->isValid()){
+            /** @var UploadedFile|null $objPhotoFile */
+            $objPhotoFile = $objForm->get('recettePhotoFile')->getData();
+
+            if ($objPhotoFile) {
+                // Optionnel : supprimer l'ancienne photo
+                if ($objRecette->getRecettePhoto()) {
+                    $strAnciennePhoto = $this->getParameter('photos_directory') . '/' . $objRecette->getRecettePhoto();
+                    if (file_exists($strAnciennePhoto)) {
+                        unlink($strAnciennePhoto);
+                    }
+                }
+
+                $strNomFichier = $this->uploadPhoto($objPhotoFile, $objSlugger);
+                $objRecette->setRecettePhoto($strNomFichier);
+            }
+
             $objEntityManager->flush();
 
             $this->addFlash('success', 'Recette modifié avec succés !');
@@ -90,6 +118,24 @@ final class RecetteController extends AbstractController
             'recette'   => $objRecette,
             'form'      => $objForm,
         ]);
+    }
+
+    private function uploadPhoto(UploadedFile $objFile, SluggerInterface $objSlugger): string
+    {
+        $strNomOriginal = pathinfo($objFile->getClientOriginalName(), PATHINFO_FILENAME);
+        $strNomSecurise = $objSlugger->slug($strNomOriginal);
+        $strNomFichier  = $strNomSecurise . '-' . uniqid() . '.' . $objFile->guessExtension();
+
+        try {
+            $objFile->move(
+                $this->getParameter('photos_directory'),
+                $strNomFichier
+            );
+        } catch (FileException $e) {
+            throw new \RuntimeException('Erreur lors du téléversement de la photo.');
+        }
+
+        return $strNomFichier;
     }
 
     // DELETE 
