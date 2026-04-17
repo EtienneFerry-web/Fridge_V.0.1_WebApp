@@ -27,20 +27,22 @@
         <div class="bg-white rounded shadow-sm p-4">
             <div class="d-flex justify-content-between align-items-start mb-3">
                 <h1 class="h2 fw-bold">{{ recette.recetteLibelle }}</h1>
-                {% if is_granted('ROLE_USER') %}
                     <div class="d-flex gap-2">
-                        <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-pencil me-1"></i>Modifier
-                        </a>
-                        <form action="{{ path('app_recette_delete', {id: recette.id}) }}" method="POST"
-                              onsubmit="return confirm('Supprimer cette recette ?')">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete_recette_' ~ recette.id) }}">
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-trash me-1"></i>Supprimer
-                            </button>
-                        </form>
+                        {% if is_granted('RECETTE_EDIT', recette) %}
+                            <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-pencil me-1"></i>Modifier
+                            </a>
+                        {% endif %}
+                        {% if is_granted('RECETTE_DELETE', recette) %}
+                            <form action="{{ path('app_recette_delete', {id: recette.id}) }}" method="POST"
+                                onsubmit="return confirm('Supprimer cette recette ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_recette_' ~ recette.id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-trash me-1"></i>Supprimer
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
-                {% endif %}
             </div>
 
             <div class="d-flex flex-wrap gap-2 mb-4">

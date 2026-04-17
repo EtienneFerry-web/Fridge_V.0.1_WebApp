@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Recette;
+use App\Entity\User;
+use App\Security\Voter\UserVoter;
 use App\Repository\FavoriRepository;
 use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
@@ -12,8 +14,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/dashboard')]
+#[IsGranted('ROLE_MODERATOR')]
 class DashboardController extends AbstractController
 {
     #[Route('', name: 'app_dashboard')]
@@ -24,8 +28,6 @@ class DashboardController extends AbstractController
         UserRepository        $objUserRepository,
         Request               $request
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_MODERATOR');
-
         // --- Stats ---
         $intTotalLikes   = $objLikeRepository->count([]);
         $intTotalFavoris = $objFavoriRepository->count([]);
@@ -67,116 +69,135 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/recipe/{id}/approve', name: 'app_admin_recipe_approve')]
+    #[Route('/recipe/{id}/approve', name: 'app_admin_recipe_approve', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function recipeApprove(
         Recette                $objRecette,
+        Request                $request,
         EntityManagerInterface $objEntityManager
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_MODERATOR');
+        if (!$this->isCsrfTokenValid('approve_recipe_' . $objRecette->getId(), $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
         $objRecette->setRecetteStatut('publie');
         $objEntityManager->flush();
         $this->addFlash('success', 'Recette validée.');
+
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/recipe/{id}/reject', name: 'app_admin_recipe_reject')]
+    #[Route('/recipe/{id}/reject', name: 'app_admin_recipe_reject', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function recipeReject(
         Recette                $objRecette,
+        Request                $request,
         EntityManagerInterface $objEntityManager
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_MODERATOR');
+        if (!$this->isCsrfTokenValid('reject_recipe_' . $objRecette->getId(), $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+
         $objRecette->setRecetteStatut('refuse');
         $objEntityManager->flush();
         $this->addFlash('success', 'Recette refusée.');
+
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/recipe/new', name: 'app_admin_recipe_new')]
-    public function recipeNew(): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $this->addFlash('info', 'Fonctionnalité à venir.');
-        return $this->redirectToRoute('app_dashboard');
-    }
-
-    #[Route('/user/{id}/role', name: 'app_admin_user_role', methods: ['POST'])]
+    #[Route('/user/{id}/role', name: 'app_admin_user_role', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted(UserVoter::EDIT_ROLE, subject: 'objUser')]
     public function userRole(
-        int                    $id,
+        User                   $objUser,
         Request                $request,
-        UserRepository         $objUserRepository,
         EntityManagerInterface $objEntityManager
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $objUser = $objUserRepository->find($id);
-        if ($objUser) {
-            $strRole = $request->request->get('role', 'ROLE_USER');
-            $objUser->setRoles($strRole === 'ROLE_USER' ? [] : [$strRole]);
-            $objEntityManager->flush();
-            $this->addFlash('success', 'Rôle mis à jour.');
+        if (!$this->isCsrfTokenValid('admin_role_' . $objUser->getId(), $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
         }
+
+        $strRole = $request->request->getString('role', 'ROLE_USER');
+        $objUser->setRoles($strRole === 'ROLE_USER' ? [] : [$strRole]);
+        $objEntityManager->flush();
+        $this->addFlash('success', 'Rôle mis à jour.');
+
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/user/{id}/delete', name: 'app_admin_user_delete')]
+    #[Route('/user/{id}/delete', name: 'app_admin_user_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted(UserVoter::DELETE, subject: 'objUser')]
     public function userDelete(
-        int                    $id,
-        UserRepository         $objUserRepository,
+        User                   $objUser,
+        Request                $request,
         EntityManagerInterface $objEntityManager
     ): Response {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $objUser = $objUserRepository->find($id);
-        if ($objUser) {
-            $objEntityManager->remove($objUser);
-            $objEntityManager->flush();
-            $this->addFlash('success', 'Utilisateur supprimé.');
+        if (!$this->isCsrfTokenValid('delete_user_' . $objUser->getId(), $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
         }
+
+        $objEntityManager->remove($objUser);
+        $objEntityManager->flush();
+        $this->addFlash('success', 'Utilisateur supprimé.');
+
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/user/{id}/edit', name: 'app_admin_user_edit')]
-    public function userEdit(int $id): Response
+    #[Route('/user/{id}/edit', name: 'app_admin_user_edit', requirements: ['id' => '\d+'])]
+    #[IsGranted(UserVoter::EDIT_PROFILE, subject: 'objUser')]
+    public function userEdit(User $objUser): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        // Stub : page d'édition à implémenter
         $this->addFlash('info', 'Fonctionnalité à venir.');
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/user/{id}/ban', name: 'app_admin_user_ban')]
-    public function userBan(int $id): Response
+    #[Route('/user/{id}/ban', name: 'app_admin_user_ban_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted(UserVoter::BAN, subject: 'objUser')]
+    public function userBanConfirm(User $objUser, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if (!$this->isCsrfTokenValid('ban_user_' . $objUser->getId(), $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
+        }
+        // Stub : logique de ban à implémenter
         $this->addFlash('info', 'Fonctionnalité à venir.');
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/user/ban/confirm', name: 'app_admin_user_ban_confirm', methods: ['POST'])]
-    public function userBanConfirm(): Response
+    #[Route('/comment/{id}/hide', name: 'app_admin_comment_hide', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function commentHide(int $id, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if (!$this->isCsrfTokenValid('hide_comment_' . $id, $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
+        }
         $this->addFlash('info', 'Fonctionnalité à venir.');
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/comment/{id}/hide', name: 'app_admin_comment_hide')]
-    public function commentHide(int $id): Response
+    #[Route('/comment/{id}/delete', name: 'app_admin_comment_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_ADMIN')]
+    public function commentDelete(int $id, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if (!$this->isCsrfTokenValid('delete_comment_' . $id, $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
+        }
         $this->addFlash('info', 'Fonctionnalité à venir.');
         return $this->redirectToRoute('app_dashboard');
     }
 
-    #[Route('/comment/{id}/delete', name: 'app_admin_comment_delete')]
-    public function commentDelete(int $id): Response
+    #[Route('/report/{id}/dismiss', name: 'app_admin_report_dismiss', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_MODERATOR')]
+    public function reportDismiss(int $id, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $this->addFlash('info', 'Fonctionnalité à venir.');
-        return $this->redirectToRoute('app_dashboard');
-    }
-
-    #[Route('/report/{id}/dismiss', name: 'app_admin_report_dismiss')]
-    public function reportDismiss(int $id): Response
-    {
-        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        if (!$this->isCsrfTokenValid('dismiss_report_' . $id, $request->request->getString('_token'))) {
+            $this->addFlash('error', 'Token CSRF invalide.');
+            return $this->redirectToRoute('app_dashboard');
+        }
         $this->addFlash('info', 'Fonctionnalité à venir.');
         return $this->redirectToRoute('app_dashboard');
     }

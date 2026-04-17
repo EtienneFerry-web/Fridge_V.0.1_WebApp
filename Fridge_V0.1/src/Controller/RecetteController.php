@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Recette;
 use App\Form\RecetteType;
+use App\Security\Voter\RecetteVoter;
 use App\Repository\RecetteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -81,7 +82,7 @@ final class RecetteController extends AbstractController
 
     // UPDATE - Modifie une recette existante
     #[Route('/recette/{id}/modifier', name: 'app_recette_edit', requirements: ['id' => '\d+'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(RecetteVoter::EDIT, subject: 'recette')]
     public function edit(
         Recette $objRecette,
         Request $objRequest,
@@ -141,7 +142,7 @@ final class RecetteController extends AbstractController
     // DELETE 
 
     #[Route('/recette/{id}/supprimer', name: 'app_recette_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
-    #[IsGranted('ROLE_USER')]
+    #[IsGranted(RecetteVoter::DELETE, subject: 'recette')]
     public function delete(
         Recette $objRecette,
         Request $objRequest,

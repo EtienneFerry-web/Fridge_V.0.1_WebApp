@@ -175,7 +175,7 @@
                         <select class="form-select" name="role">
                             <option value="all" {{ app.request.query.get('role') == 'all' ? 'selected' }}>Tous les rôles</option>
                             <option value="ROLE_ADMIN" {{ app.request.query.get('role') == 'ROLE_ADMIN' ? 'selected' }}>Administrateurs</option>
-                            <option value="ROLE_MODO"  {{ app.request.query.get('role') == 'ROLE_MODO'  ? 'selected' }}>Modérateurs</option>
+                            <option value="ROLE_MODERATOR" {{ app.request.query.get('role') == 'ROLE_MODERATOR' ? 'selected' }}>Modérateurs</option>
                             <option value="ROLE_USER"  {{ app.request.query.get('role') == 'ROLE_USER'  ? 'selected' }}>Utilisateurs standards</option>
                         </select>
                     </div>
@@ -212,33 +212,51 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <form method="POST" action="{{ path('app_admin_user_role', {id: user.id}) }}">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('admin_role_' ~ user.id) }}">
-                                        <select class="form-select form-select-sm w-auto" name="role"
-                                            onchange="this.form.submit()">
-                                            <option value="ROLE_USER"  {{ 'ROLE_USER'  in user.roles ? 'selected' }}>Utilisateur</option>
-                                            <option value="ROLE_MODO"  {{ 'ROLE_MODO'  in user.roles ? 'selected' }}>Modérateur</option>
-                                            <option value="ROLE_ADMIN" {{ 'ROLE_ADMIN' in user.roles ? 'selected' }}>Administrateur</option>
-                                        </select>
-                                    </form>
+                                    {% if is_granted('USER_EDIT_ROLE', user) %}
+                                        <form method="POST" action="{{ path('app_admin_user_role', {id: user.id}) }}">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_role_' ~ user.id) }}">
+                                            <select class="form-select form-select-sm w-auto" name="role"
+                                                onchange="this.form.submit()">
+                                                <option value="ROLE_USER"      {{ 'ROLE_USER'      in user.roles ? 'selected' }}>Utilisateur</option>
+                                                <option value="ROLE_MODERATOR" {{ 'ROLE_MODERATOR' in user.roles ? 'selected' }}>Modérateur</option>
+                                                <option value="ROLE_ADMIN"     {{ 'ROLE_ADMIN'     in user.roles ? 'selected' }}>Administrateur</option>
+                                            </select>
+                                        </form>
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            {% if 'ROLE_ADMIN' in user.roles %}Administrateur
+                                            {% elseif 'ROLE_MODERATOR' in user.roles %}Modérateur
+                                            {% else %}Utilisateur
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
                                 </td>
                                 <td class="text-end pe-4">
-                                    <a href="{{ path('app_admin_user_edit', {id: user.id}) }}"
-                                        class="btn btn-sm btn-outline-dark me-1">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <button class="btn btn-sm btn-outline-warning me-1"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalBan"
-                                        data-pseudo="{{ user.strFirstname }} {{ user.strName }}"
-                                        data-id="{{ user.id }}">
-                                        <i class="bi bi-slash-circle"></i> Bannir
-                                    </button>
-                                    <a href="{{ path('app_admin_user_delete', {id: user.id}) }}"
-                                        class="btn btn-sm btn-outline-danger"
-                                        onclick="return confirm('Supprimer cet utilisateur ?')">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    {% if user != app.user and is_granted('USER_EDIT_PROFILE', user) %}
+                                        <a href="{{ path('app_admin_user_edit', {id: user.id}) }}"
+                                            class="btn btn-sm btn-outline-dark me-1">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    {% endif %}
+                                    {% if is_granted('USER_BAN', user) %}
+                                        <button class="btn btn-sm btn-outline-warning me-1"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalBan"
+                                            data-pseudo="{{ user.strFirstname }} {{ user.strName }}"
+                                            data-id="{{ user.id }}"
+                                            data-token="{{ csrf_token('ban_user_' ~ user.id) }}">
+                                            <i class="bi bi-slash-circle"></i> Bannir
+                                        </button>
+                                    {% endif %}
+                                    {% if is_granted('USER_DELETE', user) %}
+                                        <form method="POST" action="{{ path('app_admin_user_delete', {id: user.id}) }}" class="d-inline"
+                                            onsubmit="return confirm('Supprimer cet utilisateur ?')">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% else %}
@@ -307,14 +325,19 @@
                                 class="btn btn-sm btn-outline-dark">
                                 <i class="bi bi-eye"></i> Voir
                             </a>
-                            <a href="{{ path('app_admin_recipe_reject', {id: recipe.id}) }}"
-                                class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-x-lg"></i> Refuser
-                            </a>
-                            <a href="{{ path('app_admin_recipe_approve', {id: recipe.id}) }}"
-                                class="btn btn-sm btn-success">
-                                <i class="bi bi-check-lg"></i> Valider
-                            </a>
+                            <form method="POST" action="{{ path('app_admin_recipe_reject', {id: recipe.id}) }}" class="d-inline"
+                                onsubmit="return confirm('Refuser cette recette ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('reject_recipe_' ~ recipe.id) }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-x-lg"></i> Refuser
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ path('app_admin_recipe_approve', {id: recipe.id}) }}" class="d-inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('approve_recipe_' ~ recipe.id) }}">
+                                <button type="submit" class="btn btn-sm btn-success">
+                                    <i class="bi bi-check-lg"></i> Valider
+                                </button>
+                            </form>
                         </div>
                     </li>
                     {% else %}
@@ -394,9 +417,8 @@
    ===================================================== #}
 <div class="modal fade" id="modalBan" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <form method="POST" action="{{ path('app_admin_user_ban_confirm') }}" class="modal-content border-0 shadow">
-        <input type="hidden" name="_token" value="{{ csrf_token('admin_ban') }}">
-            <input type="hidden" name="userId" id="banUserId">
+        <form method="POST" id="banForm" action="" class="modal-content border-0 shadow">
+            <input type="hidden" name="_token" id="banToken" value="">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
                     <i class="bi bi-exclamation-triangle-fill me-2"></i>Bannir l'utilisateur
@@ -437,11 +459,13 @@
     }
 })();
 
-// Injecte le pseudo et l'ID dans la modale de bannissement
+// Injecte les données de l'utilisateur ciblé dans la modale de ban
 document.getElementById('modalBan').addEventListener('show.bs.modal', function (e) {
     const btn = e.relatedTarget;
+    const userId = btn.dataset.id;
     document.getElementById('modalPseudoDisplay').textContent = btn.dataset.pseudo;
-    document.getElementById('banUserId').value                = btn.dataset.id;
+    document.getElementById('banForm').action = '/dashboard/user/' + userId + '/ban';
+    document.getElementById('banToken').value = btn.dataset.token;
 });
 </script>
 {% endblock %}
