@@ -81,6 +81,10 @@ class Recette
     #[ORM\OneToMany(targetEntity: Contenir::class, mappedBy: 'recette', cascade: ['persist', 'remove'])]
     private Collection $contenirs;
 
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: 'created_by', referencedColumnName: 'user_id', nullable: true)]
+    private ?User $createdBy = null;
+
     public function __construct()
     {
         $this->etapes           = new ArrayCollection();
@@ -379,6 +383,18 @@ class Recette
             }
         }
     
+        return $this;
+    }
+
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
+
         return $this;
     }
 }
