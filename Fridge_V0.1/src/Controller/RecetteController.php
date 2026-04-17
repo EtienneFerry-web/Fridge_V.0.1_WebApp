@@ -16,11 +16,17 @@ final class RecetteController extends AbstractController
 {
     // READ - Liste toutes les recettes
     #[Route('/recette', name: 'app_recette_index')]
-    public function index(RecetteRepository $objRepository): Response
+    public function index(RecetteRepository $objRepository, Request $objRequest): Response
     {
-        $arrRecettes = $objRepository->findAll();
+        $strRegime = $objRequest->query->get('regime', 'all');
+        $strSort   = $objRequest->query->get('sort', 'recent');
+
+        $arrRecettes = $objRepository->findWithFilters($strRegime, $strSort);
+
         return $this->render('recette/index.html.twig', [
-            'recettes' => $arrRecettes,
+            'recettes'      => $arrRecettes,
+            'activeRegime'  => $strRegime,
+            'activeSort'    => $strSort,
         ]);
     }
 
