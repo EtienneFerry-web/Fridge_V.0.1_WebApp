@@ -16,38 +16,75 @@
 
         <div id="contenirs-container">
             {% for contenir in form.contenirs %}
-                <div class="contenir-row d-flex gap-2 align-items-center mb-2 p-2 rounded bg-body-secondary">
+                <div class="contenir-row mb-2" data-confirmed="true">
 
-                {{ form_widget(contenir.ingredient, {
-                    attr: {
-                        class: 'ingredient-id-hidden',
-                        'data-ingredient-hidden': '1'
-                    }
-                }) }}
+                    {# Champ hidden Symfony — toujours présent #}
+                    {{ form_widget(contenir.ingredient, {
+                        attr: {
+                            class: 'ingredient-id-hidden',
+                            'data-ingredient-hidden': '1'
+                        }
+                    }) }}
+                    {{ form_widget(contenir.contenirQuantite, {
+                        attr: {class: 'contenir-quantite-hidden d-none'}
+                    }) }}
+                    {{ form_widget(contenir.contenirUnite, {
+                        attr: {class: 'contenir-unite-hidden d-none'}
+                    }) }}
 
-                    <div class="flex-grow-1">
-                        <input type="text"
-                            class="form-control ingredient-ts-input"
-                            placeholder="Rechercher un ingrédient…">
+                    {# Ligne visuelle (mode confirmé) #}
+                    <div class="contenir-display d-flex align-items-center gap-2 p-2 rounded"
+                        style="background-color: #d4876e; color: white;">
+                        <span class="flex-grow-1 fw-medium contenir-label">
+                            {{ contenir.vars.data.ingredient ? contenir.vars.data.ingredient.ingredientLibelle : '' }}
+                            <span class="opacity-75 fw-normal ms-1">
+                                · {{ contenir.vars.data.contenirQuantite }}
+                                {{ contenir.vars.data.contenirUnite }}
+                            </span>
+                        </span>
+                        <button type="button" class="btn btn-sm btn-modifier-contenir"
+                                style="color:white; border-color: rgba(255,255,255,0.5);">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-supprimer-contenir"
+                                style="color:white; border-color: rgba(255,255,255,0.5);">
+                            <i class="bi bi-trash"></i>
+                        </button>
                     </div>
 
-                    <div style="width: 90px">
-                        {{ form_widget(contenir.contenirQuantite, {
-                            attr: {class: 'form-control', placeholder: 'Qté'}
-                        }) }}
+                    {# Ligne formulaire (mode édition — cachée par défaut) #}
+                    <div class="contenir-form d-none d-flex gap-2 align-items-center p-2 rounded"
+                        style="background-color: #d4876e;">
+                        <div class="flex-grow-1" style="min-width: 160px;">
+                            <input type="text" class="form-control ingredient-ts-input"
+                                placeholder="Rechercher un ingrédient…">
+                        </div>
+                        <input type="number" class="form-control input-quantite"
+                            placeholder="Qté" style="width:80px; flex-shrink:0;">
+                        <select class="form-select input-unite" style="width:120px; flex-shrink:0;">
+                            <option value="">Unité</option>
+                            <option value="g">g</option>
+                            <option value="kg">kg</option>
+                            <option value="ml">ml</option>
+                            <option value="l">l</option>
+                            <option value="tsp">tsp</option>
+                            <option value="tbsp">tbsp</option>
+                            <option value="pièce(s)">pièce(s)</option>
+                            <option value="gousse(s)">gousse(s)</option>
+                            <option value="bouquet">bouquet</option>
+                            <option value="pincée">pincée</option>
+                            <option value="tranche(s)">tranche(s)</option>
+                        </select>
+                        <button type="button" class="btn btn-sm btn-confirmer-contenir flex-shrink-0"
+                                style="color:white; border-color: rgba(255,255,255,0.5);" title="Confirmer">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-annuler-contenir flex-shrink-0"
+                                style="color:white; border-color: rgba(255,255,255,0.5);" title="Annuler">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </div>
 
-                    <div style="width: 110px">
-                        {{ form_widget(contenir.contenirUnite, {
-                            attr: {class: 'form-control', placeholder: 'Unité'}
-                        }) }}
-                    </div>
-
-                    <button type="button"
-                            class="btn btn-sm btn-outline-danger btn-supprimer-contenir flex-shrink-0"
-                            title="Supprimer">
-                        <i class="bi bi-trash"></i>
-                    </button>
                 </div>
             {% endfor %}
         </div>
@@ -59,8 +96,7 @@
 
     <div id="contenirs-prototype"
         data-prototype="{{ form_widget(form.contenirs.vars.prototype)|e('html_attr') }}"
-        style="display:none"></div>
-        
+        style="display:none"></div>  
     {# ÉTAPES #}
     <div class="mb-4">
         <label class="form-label fw-bold">Étapes</label>
