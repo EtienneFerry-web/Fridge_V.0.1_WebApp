@@ -8,6 +8,13 @@ use App\Entity\User;
 use App\Repository\PlanningRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
+/**
+ * Service de génération de listes de courses à partir du planning hebdomadaire.
+ *
+ * Agrège les ingrédients de toutes les recettes planifiées par l'utilisateur.
+ * Les quantités sont additionnées par ingrédient si les unités sont identiques ;
+ * sinon des lignes séparées sont créées.
+ */
 class ListeCourseService
 {
     public function __construct(

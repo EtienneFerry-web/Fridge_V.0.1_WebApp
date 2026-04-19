@@ -18,6 +18,13 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
 
+/**
+ * Formulaire principal de création et d'édition d'une recette.
+ *
+ * Inclut des sous-collections pour les étapes (EtapeType) et les ingrédients (ContenirType).
+ * Le champ recettePhotoFile est non mappé (mapped: false) : le téléversement est géré manuellement dans RecetteController.
+ * Contraintes : image ≤ 4 Mo, formats JPEG / PNG / WebP acceptés.
+ */
 class RecetteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

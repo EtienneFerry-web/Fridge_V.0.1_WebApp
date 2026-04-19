@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des ingrédients du catalogue.
+ *
  * @extends ServiceEntityRepository<Ingredient>
  */
 class IngredientRepository extends ServiceEntityRepository

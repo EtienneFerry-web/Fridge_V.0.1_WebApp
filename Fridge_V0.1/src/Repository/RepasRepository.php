@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des repas planifiés pour un foyer (fonctionnalité en cours de développement).
+ *
  * @extends ServiceEntityRepository<Repas>
  */
 class RepasRepository extends ServiceEntityRepository

@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des régimes alimentaires.
+ *
  * @extends ServiceEntityRepository<Regime>
  */
 class RegimeRepository extends ServiceEntityRepository

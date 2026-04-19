@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des foyers (stock partagé, fonctionnalité en cours de développement).
+ *
  * @extends ServiceEntityRepository<Foyer>
  */
 class FoyerRepository extends ServiceEntityRepository

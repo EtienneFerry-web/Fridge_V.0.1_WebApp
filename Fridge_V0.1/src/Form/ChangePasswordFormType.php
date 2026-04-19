@@ -12,6 +12,12 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotCompromisedPassword;
 use Symfony\Component\Validator\Constraints\PasswordStrength;
 
+/**
+ * Formulaire de changement de mot de passe (flux réinitialisation).
+ *
+ * Le champ plainPassword est non mappé (mapped: false) : le hachage est effectué manuellement dans ResetPasswordController.
+ * Applique les contraintes PasswordStrength et NotCompromisedPassword pour la sécurité.
+ */
 class ChangePasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

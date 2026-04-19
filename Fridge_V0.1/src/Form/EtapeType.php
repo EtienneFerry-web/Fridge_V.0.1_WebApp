@@ -12,6 +12,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Positive;
 
+/**
+ * Formulaire d'une étape de préparation d'une recette.
+ *
+ * Utilisé en sous-formulaire CollectionType dans RecetteType.
+ * Le numéro d'étape (etapeNumero) est assigné dans RecetteController, pas ici.
+ */
 class EtapeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

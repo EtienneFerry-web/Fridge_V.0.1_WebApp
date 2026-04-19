@@ -11,10 +11,19 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Formulaire d'une ligne d'ingrédient dans une recette (Contenir).
+ *
+ * Le champ ingredient est un champ caché (HiddenType) dont la valeur est l'id de l'ingrédient.
+ * Un DataTransformer (IngredientToIdTransformer) convertit cet id en entité Ingredient lors de la soumission.
+ */
 class ContenirType extends AbstractType
 {
     public function __construct(private IngredientToIdTransformer $transformer) {}
 
+    /**
+     * Construit le formulaire et attache le DataTransformer sur le champ ingredient.
+     */
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder

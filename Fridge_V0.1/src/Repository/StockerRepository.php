@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des entrées de stock personnel des utilisateurs.
+ *
  * @extends ServiceEntityRepository<Stocker>
  */
 class StockerRepository extends ServiceEntityRepository

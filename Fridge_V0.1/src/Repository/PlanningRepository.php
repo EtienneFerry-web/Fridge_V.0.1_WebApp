@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository du planning hebdomadaire.
+ *
  * @extends ServiceEntityRepository<Planning>
  */
 class PlanningRepository extends ServiceEntityRepository

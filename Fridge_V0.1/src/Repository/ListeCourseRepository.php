@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des listes de courses.
+ *
  * @extends ServiceEntityRepository<ListeCourse>
  */
 class ListeCourseRepository extends ServiceEntityRepository

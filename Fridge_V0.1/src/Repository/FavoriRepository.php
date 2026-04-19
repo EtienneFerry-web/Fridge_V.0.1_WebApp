@@ -8,6 +8,10 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des favoris.
+ *
+ * Fournit des requêtes pour récupérer les favoris d'un utilisateur sous différentes formes (ids ou entités Recette).
+ *
  * @extends ServiceEntityRepository<Favori>
  */
 class FavoriRepository extends ServiceEntityRepository
@@ -17,7 +21,14 @@ class FavoriRepository extends ServiceEntityRepository
         parent::__construct($registry, Favori::class);
     }
 
-        public function findFavoriIdsByUser(User $objUser): array
+    /**
+     * Retourne un tableau associatif [recetteId => true] des recettes mises en favori par un utilisateur.
+     *
+     * Structure optimisée pour un accès O(1) lors de l'affichage des boutons favori.
+     *
+     * @return array<int, bool>
+     */
+    public function findFavoriIdsByUser(User $objUser): array
     {
         $arrResults = $this->createQueryBuilder('f')
             ->select('IDENTITY(f.favoriRecette) as recetteId')
@@ -34,6 +45,11 @@ class FavoriRepository extends ServiceEntityRepository
         return $arrFavoris;
     }
 
+    /**
+     * Retourne les entités Recette mises en favori par un utilisateur (utilisé dans le planning).
+     *
+     * @return Recette[]
+     */
     public function findFavoriRecettesByUser(User $objUser): array
     {
         $objEm = $this->getEntityManager();

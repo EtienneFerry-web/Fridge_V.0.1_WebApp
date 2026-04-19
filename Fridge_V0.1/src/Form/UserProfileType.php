@@ -14,6 +14,12 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 
+/**
+ * Formulaire d'édition du profil utilisateur.
+ *
+ * Permet de modifier les informations personnelles, les régimes alimentaires préférés et optionnellement le mot de passe.
+ * Le champ newPassword est non mappé (mapped: false) et non requis : le hachage n'est effectué que s'il est renseigné.
+ */
 class UserProfileType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

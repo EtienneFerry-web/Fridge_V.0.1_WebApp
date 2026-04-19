@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des étapes de préparation des recettes.
+ *
  * @extends ServiceEntityRepository<Etape>
  */
 class EtapeRepository extends ServiceEntityRepository

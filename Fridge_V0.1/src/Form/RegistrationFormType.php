@@ -16,6 +16,11 @@ use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Formulaire d'inscription d'un nouvel utilisateur.
+ *
+ * Le champ plainPassword est non mappé (mapped: false) : il est haché dans RegistrationController avant persistance.
+ */
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

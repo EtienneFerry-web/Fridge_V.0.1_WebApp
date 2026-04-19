@@ -9,6 +9,10 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des recettes.
+ *
+ * Fournit des requêtes DQL personnalisées pour la recherche multicritères, les filtres de la page liste et les stats du dashboard.
+ *
  * @extends ServiceEntityRepository<Recette>
  */
 class RecetteRepository extends ServiceEntityRepository
@@ -18,6 +22,11 @@ class RecetteRepository extends ServiceEntityRepository
         parent::__construct($registry, Recette::class);
     }
 
+    /**
+     * Retourne les recettes likées par un utilisateur avec le nombre total de likes de chaque recette.
+     *
+     * @return array{recette: Recette, likeCount: int}[]
+     */
     public function findLikedByUserWithCount(User $objUser): array
     {
         // r = Recette (racine), l = like de l'utilisateur, l2 = tous les likes de la recette
@@ -36,6 +45,21 @@ class RecetteRepository extends ServiceEntityRepository
         ], $results);
     }
 
+    /**
+     * Recherche multicritères des recettes publiées pour la page de recherche.
+     *
+     * Le temps maximum est la somme préparation + cuisson.
+     * Tri supporté : 'recent' (date desc) ou 'time' (temps total asc).
+     *
+     * @param string   $strQuery     Terme de recherche sur le libellé (partiel, insensible à la casse)
+     * @param string[] $arrDifficulte Filtres de difficulté (ex. ['Facile', 'Moyen'])
+     * @param string[] $arrRegime    Identifiants de régimes alimentaires
+     * @param string   $strOrigine   Origine géographique exacte
+     * @param int      $intTempsMax  Temps total maximum en minutes
+     * @param string   $strSort      Critère de tri ('recent' | 'time')
+     *
+     * @return Recette[]
+     */
     public function findBySearch(
         string $strQuery,
         array $arrDifficulte,
@@ -83,6 +107,16 @@ class RecetteRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+    /**
+     * Retourne les recettes publiées avec un filtre de régime et un tri pour la page liste principale.
+     *
+     * Tri 'popular' : tri par nombre de likes décroissant. Tout autre valeur : tri par date décroissante.
+     *
+     * @param string $regime Libellé du régime alimentaire ('all' = pas de filtre)
+     * @param string $sort   Critère de tri ('recent' | 'popular')
+     *
+     * @return Recette[]
+     */
     public function findWithFilters(string $regime = 'all', string $sort = 'recent'): array
     {
         $qb = $this->createQueryBuilder('r')

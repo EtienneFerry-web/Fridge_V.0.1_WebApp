@@ -7,6 +7,8 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * Repository des lignes d'ingrédients (Contenir) des listes de courses et recettes.
+ *
  * @extends ServiceEntityRepository<Contenir>
  */
 class ContenirRepository extends ServiceEntityRepository
