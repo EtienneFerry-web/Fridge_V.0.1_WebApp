@@ -12,8 +12,22 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Contrôleur de gestion des likes sur les recettes.
+ *
+ * Permet à un utilisateur connecté d'ajouter ou retirer un like sur une recette.
+ */
 final class LikeController extends AbstractController
 {
+    /**
+     * Bascule l'état like d'une recette pour l'utilisateur connecté.
+     *
+     * Retourne une réponse JSON avec le nouvel état et le nombre total de likes.
+     *
+     * @param Recette                $objRecette       La recette concernée
+     * @param LikeRecetteRepository  $likeRepository   Repository des likes
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/recette/{id}/like', name: 'app_like_toggle', methods: ['POST'])]
     public function toggle(
         Recette $objRecette,

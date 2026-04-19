@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Repository\CategorieRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une catégorie de recette (ex. entrée, plat, dessert).
+ */
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 class Categorie
 {

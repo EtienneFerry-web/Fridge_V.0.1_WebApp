@@ -5,6 +5,12 @@ namespace App\Entity;
 use App\Repository\ContenirRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une ligne d'ingrédient dans une liste de courses ou une recette.
+ *
+ * Fait le lien entre un ingrédient et une ListeCourse (et optionnellement une Recette source).
+ * Le champ contenirEstCoche indique si l'utilisateur a coché cet ingrédient dans sa liste de courses.
+ */
 #[ORM\Entity(repositoryClass: ContenirRepository::class)]
 class Contenir
 {

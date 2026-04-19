@@ -11,8 +11,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Contrôleur de la page d'accueil.
+ *
+ * Affiche le carrousel des dernières recettes et la liste paginée de toutes les recettes publiées.
+ */
 final class HomeController extends AbstractController
 {
+    /**
+     * Affiche la page d'accueil avec un carrousel et une liste paginée de recettes.
+     *
+     * @param RecetteRepository     $objRecetteRepository     Repository des recettes
+     * @param LikeRecetteRepository $objLikeRecetteRepository Repository des likes
+     * @param FavoriRepository      $objFavoriRepository      Repository des favoris
+     * @param PaginatorInterface    $paginator                Service de pagination KnpPaginator
+     * @param Request               $request                  Requête HTTP (paramètre ?page=)
+     */
     #[Route('/', name: 'app_home')]
     public function index(
         RecetteRepository     $objRecetteRepository,

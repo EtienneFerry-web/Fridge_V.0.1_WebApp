@@ -20,6 +20,12 @@ use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 
+/**
+ * Contrôleur de réinitialisation de mot de passe.
+ *
+ * Gère le flux complet : demande par email, page de confirmation, validation du token et changement de mot de passe.
+ * Utilise le bundle SymfonyCasts/ResetPasswordBundle.
+ */
 #[Route('/reset-password')]
 class ResetPasswordController extends AbstractController
 {
@@ -32,7 +38,11 @@ class ResetPasswordController extends AbstractController
     }
 
     /**
-     * Display & process form to request a password reset.
+     * Affiche et traite le formulaire de demande de réinitialisation de mot de passe.
+     *
+     * @param Request             $request    Requête HTTP
+     * @param MailerInterface     $mailer     Service d'envoi d'email
+     * @param TranslatorInterface $translator Service de traduction
      */
     #[Route('', name: 'app_forgot_password_request')]
     public function request(Request $request, MailerInterface $mailer, TranslatorInterface $translator): Response
@@ -54,7 +64,10 @@ class ResetPasswordController extends AbstractController
     }
 
     /**
-     * Confirmation page after a user has requested a password reset.
+     * Affiche la page de confirmation après la demande de réinitialisation.
+     *
+     * Un faux token est généré si aucun token de session n'est présent, afin d'éviter
+     * de révéler l'existence ou non d'un compte pour l'adresse email saisie.
      */
     #[Route('/check-email', name: 'app_check_email')]
     public function checkEmail(): Response
@@ -71,7 +84,14 @@ class ResetPasswordController extends AbstractController
     }
 
     /**
-     * Validates and process the reset URL that the user clicked in their email.
+     * Valide le token de réinitialisation et permet à l'utilisateur de définir un nouveau mot de passe.
+     *
+     * Le token est stocké en session dès la première visite pour éviter de le garder dans l'URL.
+     *
+     * @param Request                     $request        Requête HTTP
+     * @param UserPasswordHasherInterface $passwordHasher Service de hachage de mot de passe
+     * @param TranslatorInterface         $translator     Service de traduction
+     * @param string|null                 $token          Token de réinitialisation (optionnel, lu depuis l'URL)
      */
     #[Route('/reset/{token}', name: 'app_reset_password')]
     public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, ?string $token = null): Response
@@ -129,6 +149,15 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
+    /**
+     * Traite l'envoi de l'email de réinitialisation de mot de passe.
+     *
+     * Ne révèle pas si le compte existe ou non (redirige silencieusement vers check-email dans tous les cas).
+     *
+     * @param string              $emailFormData Adresse email saisie dans le formulaire
+     * @param MailerInterface     $mailer        Service d'envoi d'email
+     * @param TranslatorInterface $translator    Service de traduction
+     */
     private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer, TranslatorInterface $translator): RedirectResponse
     {
         $user = $this->entityManager->getRepository(User::class)->findOneBy([

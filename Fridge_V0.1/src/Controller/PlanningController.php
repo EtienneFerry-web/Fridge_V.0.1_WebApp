@@ -14,6 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Contrôleur de gestion du planning hebdomadaire de repas.
+ *
+ * Permet à l'utilisateur connecté de visualiser, ajouter, supprimer et vider
+ * les recettes planifiées sur une grille jour × moment de la journée.
+ */
 #[Route('/planning')]
 final class PlanningController extends AbstractController
 {
@@ -26,6 +32,13 @@ final class PlanningController extends AbstractController
         'dessert'        => 'Dessert',
     ];
 
+    /**
+     * Affiche la grille du planning hebdomadaire avec les recettes likées et favorites de l'utilisateur.
+     *
+     * @param PlanningRepository    $objPlanningRepository Repository du planning
+     * @param LikeRecetteRepository $objLikeRepository     Repository des likes
+     * @param FavoriRepository      $objFavoriRepository   Repository des favoris
+     */
     #[Route('', name: 'app_planning')]
     public function index(
         PlanningRepository    $objPlanningRepository,
@@ -60,6 +73,16 @@ final class PlanningController extends AbstractController
         ]);
     }
 
+    /**
+     * Ajoute une recette dans le planning à un jour et un moment donnés.
+     *
+     * Si un créneau existait déjà, il est remplacé. Retourne une réponse JSON avec les données de la recette planifiée.
+     *
+     * @param Request                $request               Requête HTTP (jour, moment, recette_id)
+     * @param RecetteRepository      $objRecetteRepository  Repository des recettes
+     * @param PlanningRepository     $objPlanningRepository Repository du planning
+     * @param EntityManagerInterface $objEntityManager      Gestionnaire d'entités Doctrine
+     */
     #[Route('/ajouter', name: 'app_planning_add', methods: ['POST'])]
     public function add(
         Request                $request,
@@ -111,6 +134,12 @@ final class PlanningController extends AbstractController
         ]);
     }
 
+    /**
+     * Supprime une entrée du planning appartenant à l'utilisateur connecté.
+     *
+     * @param Planning               $objPlanning      L'entrée de planning à supprimer
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/supprimer/{id}', name: 'app_planning_delete', methods: ['POST'])]
     public function delete(
         Planning               $objPlanning,
@@ -128,6 +157,12 @@ final class PlanningController extends AbstractController
         return new JsonResponse(['success' => true]);
     }
 
+    /**
+     * Vide intégralement le planning de l'utilisateur connecté.
+     *
+     * @param PlanningRepository     $objPlanningRepository Repository du planning
+     * @param EntityManagerInterface $objEntityManager      Gestionnaire d'entités Doctrine
+     */
     #[Route('/vider', name: 'app_planning_clear', methods: ['POST'])]
     public function clear(
         PlanningRepository     $objPlanningRepository,

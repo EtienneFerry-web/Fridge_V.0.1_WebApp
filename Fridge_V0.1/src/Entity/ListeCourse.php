@@ -7,6 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une liste de courses générée à partir du planning hebdomadaire.
+ *
+ * Une liste est créée avec le statut 'active' et la date de création à maintenant.
+ * Elle regroupe des lignes Contenir (ingrédient + quantité) que l'utilisateur peut cocher au fur et à mesure.
+ */
 #[ORM\Entity(repositoryClass: ListeCourseRepository::class)]
 class ListeCourse
 {
@@ -34,6 +40,9 @@ class ListeCourse
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'user_id', nullable: true)]
     private ?User $user = null;
 
+    /**
+     * Initialise la collection Doctrine, la date de création à maintenant et le statut à 'active'.
+     */
     public function __construct()
     {
         $this->contenirs        = new ArrayCollection();

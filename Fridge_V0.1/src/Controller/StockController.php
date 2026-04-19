@@ -12,9 +12,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Contrôleur de gestion du stock d'ingrédients de l'utilisateur.
+ *
+ * Permet à l'utilisateur connecté de consulter, ajouter, modifier, supprimer et vider son stock personnel.
+ */
 #[Route('/stock')]
 final class StockController extends AbstractController
 {
+    /**
+     * Affiche le stock de l'utilisateur connecté, trié par id décroissant.
+     *
+     * @param StockerRepository $objStockerRepository Repository des entrées de stock
+     */
     #[Route('', name: 'app_stock')]
     public function index(StockerRepository $objStockerRepository): Response
     {
@@ -30,6 +40,15 @@ final class StockController extends AbstractController
         ]);
     }
 
+    /**
+     * Ajoute un ingrédient au stock de l'utilisateur.
+     *
+     * Crée l'ingrédient en base s'il n'existe pas encore. Le nom est obligatoire.
+     *
+     * @param Request                $request               Requête HTTP (nom, quantité, unité, seuil, date de péremption)
+     * @param IngredientRepository   $objIngredientRepository Repository des ingrédients
+     * @param EntityManagerInterface $objEntityManager      Gestionnaire d'entités Doctrine
+     */
     #[Route('/ajouter', name: 'app_stock_add', methods: ['POST'])]
     public function add(
         Request                $request,
@@ -76,6 +95,15 @@ final class StockController extends AbstractController
         return $this->redirectToRoute('app_stock');
     }
 
+    /**
+     * Modifie la quantité, l'unité, le seuil et la date de péremption d'une entrée de stock.
+     *
+     * Vérifie que l'entrée appartient bien à l'utilisateur connecté.
+     *
+     * @param Stocker                $objStocker       L'entrée de stock à modifier
+     * @param Request                $request          Requête HTTP (quantité, unité, seuil, date de péremption)
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/modifier/{id}', name: 'app_stock_edit', methods: ['POST'])]
     public function edit(
         Stocker                $objStocker,
@@ -108,6 +136,12 @@ final class StockController extends AbstractController
         return $this->redirectToRoute('app_stock');
     }
 
+    /**
+     * Supprime une entrée du stock appartenant à l'utilisateur connecté.
+     *
+     * @param Stocker                $objStocker       L'entrée de stock à supprimer
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/supprimer/{id}', name: 'app_stock_delete', methods: ['POST'])]
     public function delete(
         Stocker                $objStocker,
@@ -126,6 +160,12 @@ final class StockController extends AbstractController
         return $this->redirectToRoute('app_stock');
     }
 
+    /**
+     * Vide entièrement le stock de l'utilisateur connecté.
+     *
+     * @param StockerRepository      $objStockerRepository Repository des entrées de stock
+     * @param EntityManagerInterface $objEntityManager     Gestionnaire d'entités Doctrine
+     */
     #[Route('/vider', name: 'app_stock_clear', methods: ['POST'])]
     public function clear(
         StockerRepository      $objStockerRepository,

@@ -6,6 +6,11 @@ use App\Repository\EtapeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une étape de préparation d'une recette.
+ *
+ * Les étapes sont ordonnées via etapeNumero, assigné séquentiellement dans RecetteController lors de la création.
+ */
 #[ORM\Entity(repositoryClass: EtapeRepository::class)]
 class Etape
 {

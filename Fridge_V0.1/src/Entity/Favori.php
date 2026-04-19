@@ -5,6 +5,11 @@ namespace App\Entity;
 use App\Repository\FavoriRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant la mise en favori d'une recette par un utilisateur.
+ *
+ * Table de jointure enrichie entre User et Recette, avec la date d'ajout aux favoris.
+ */
 #[ORM\Entity(repositoryClass: FavoriRepository::class)]
 class Favori
 {

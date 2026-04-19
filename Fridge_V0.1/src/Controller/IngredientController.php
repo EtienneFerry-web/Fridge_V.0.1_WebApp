@@ -9,8 +9,16 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Contrôleur de gestion des ingrédients.
+ *
+ * Fournit la page de liste des ingrédients ainsi qu'un endpoint de recherche autocomplète en JSON.
+ */
 final class IngredientController extends AbstractController
 {
+    /**
+     * Affiche la page principale des ingrédients.
+     */
     #[Route('/ingredient', name: 'app_ingredient')]
     public function index(): Response
     {
@@ -19,6 +27,14 @@ final class IngredientController extends AbstractController
         ]);
     }
 
+    /**
+     * Recherche des ingrédients par libellé (autocomplète).
+     *
+     * Retourne une liste JSON vide si la requête fait moins de 2 caractères.
+     *
+     * @param Request               $request              Requête HTTP (paramètre ?q=)
+     * @param IngredientRepository  $ingredientRepository Repository des ingrédients
+     */
     #[Route('/ingredient/search', name: 'app_ingredient_search', methods: ['GET'])]
     public function search(Request $request, IngredientRepository $ingredientRepository): JsonResponse
     {

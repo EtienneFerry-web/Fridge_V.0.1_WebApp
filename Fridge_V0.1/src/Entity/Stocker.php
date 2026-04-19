@@ -6,6 +6,13 @@ use App\Repository\StockerRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une entrée dans le stock personnel d'un utilisateur.
+ *
+ * Associe un ingrédient à un utilisateur avec une quantité disponible, une unité de mesure,
+ * un seuil d'alerte optionnel et une date de péremption optionnelle.
+ * Le champ foyer est prévu pour une future fonctionnalité de stock partagé.
+ */
 #[ORM\Entity(repositoryClass: StockerRepository::class)]
 class Stocker
 {

@@ -7,6 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant un régime alimentaire (ex. végétarien, sans gluten).
+ *
+ * Relation ManyToMany avec User (préférences) et Recette (régimes compatibles).
+ * Les méthodes add/remove synchronisent les deux côtés de la relation bidirectionnelle.
+ */
 #[ORM\Entity(repositoryClass: RegimeRepository::class)]
 class Regime
 {

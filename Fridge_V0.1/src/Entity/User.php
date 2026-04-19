@@ -11,6 +11,14 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * Entité représentant un utilisateur de l'application.
+ *
+ * Implémente UserInterface et PasswordAuthenticatedUserInterface pour l'intégration
+ * avec le système de sécurité Symfony. L'email et le pseudo sont uniques.
+ * La date d'inscription est initialisée automatiquement via un lifecycle callback PrePersist.
+ * La suppression de compte est gérée en soft delete via dateSuppression.
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['strEmail'])]
@@ -89,6 +97,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Planning::class, mappedBy: 'planningUser')]
     private Collection $plannings;
 
+    /**
+     * Initialise les collections Doctrine (obligatoire pour les relations OneToMany / ManyToMany).
+     */
     public function __construct()
     {
         $this->regimes = new ArrayCollection();
@@ -157,7 +168,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * A visual identifier that represents this user.
+     * Identifiant unique utilisé par Symfony pour reconnaître l'utilisateur (l'email ici).
      *
      * @see UserInterface
      */
@@ -167,12 +178,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
+     * Retourne les rôles de l'utilisateur. ROLE_USER est toujours inclus par défaut.
+     *
      * @see UserInterface
      */
     public function getRoles(): array
     {
         $roles = $this->arrRoles;
-        // guarantee every user at least has ROLE_USER
+
         $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
@@ -203,8 +216,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     /**
-     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
+     * Sérialise l'utilisateur pour la session en remplaçant le mot de passe en clair
+     * par son empreinte CRC32C, évitant ainsi de stocker le hash bcrypt complet en session.
      */
     public function __serialize(): array
     {
@@ -252,6 +267,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
     
+    /**
+     * Initialise automatiquement la date d'inscription à la première persistance en base.
+     * Déclenché par le lifecycle callback PrePersist de Doctrine.
+     */
     #[ORM\PrePersist]
     public function initDateInscription(): void
     {
@@ -303,7 +322,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeLikeRecette(LikeRecette $likeRecette): static
     {
         if ($this->likeRecette->removeElement($likeRecette)) {
-            // set the owning side to null (unless already changed)
+
             if ($likeRecette->getLikeUser() === $this) {
                 $likeRecette->setLikeUser(null);
             }
@@ -333,7 +352,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeFavori(Favori $favori): static
     {
         if ($this->favoris->removeElement($favori)) {
-            // set the owning side to null (unless already changed)
+
             if ($favori->getFavoriUser() === $this) {
                 $favori->setFavoriUser(null);
             }
@@ -363,7 +382,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removePlanning(Planning $planning): static
     {
         if ($this->plannings->removeElement($planning)) {
-            // set the owning side to null (unless already changed)
+
             if ($planning->getPlanningUser() === $this) {
                 $planning->setPlanningUser(null);
             }

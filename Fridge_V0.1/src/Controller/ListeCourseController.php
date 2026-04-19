@@ -13,10 +13,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * Contrôleur de gestion des listes de courses.
+ *
+ * Accessible uniquement aux utilisateurs connectés (ROLE_USER).
+ * Permet de consulter, générer, cocher et supprimer des listes de courses basées sur le planning.
+ */
 #[Route('/liste-courses')]
 #[IsGranted('ROLE_USER')]
 class ListeCourseController extends AbstractController
 {
+    /**
+     * Affiche toutes les listes de courses de l'utilisateur connecté, triées par date de création.
+     *
+     * @param ListeCourseRepository $listeCourseRepository Repository des listes de courses
+     */
     #[Route('/', name: 'app_liste_course_index')]
     public function index(ListeCourseRepository $listeCourseRepository): Response
     {
@@ -31,6 +42,11 @@ class ListeCourseController extends AbstractController
         ]);
     }
 
+    /**
+     * Génère automatiquement une liste de courses à partir du planning hebdomadaire de l'utilisateur.
+     *
+     * @param ListeCourseService $listeCourseService Service de génération de liste de courses
+     */
     #[Route('/generer', name: 'app_liste_course_generer', methods: ['POST'])]
     public function generer(ListeCourseService $listeCourseService): Response
     {
@@ -47,6 +63,15 @@ class ListeCourseController extends AbstractController
         return $this->redirectToRoute('app_liste_course_index', ['id' => $liste->getId()]);
     }
 
+    /**
+     * Coche ou décoche un ingrédient dans une liste de courses.
+     *
+     * Retourne une réponse JSON avec le résultat et le nouvel état de la case à cocher.
+     *
+     * @param int                    $id                Identifiant de l'entrée Contenir
+     * @param ContenirRepository     $contenirRepository Repository des lignes de liste
+     * @param EntityManagerInterface $em                Gestionnaire d'entités Doctrine
+     */
     #[Route('/check/{id}', name: 'app_liste_course_check', methods: ['POST'])]
     public function toggleCheck(int $id, ContenirRepository $contenirRepository, EntityManagerInterface $em): JsonResponse
     {
@@ -66,6 +91,12 @@ class ListeCourseController extends AbstractController
         return new JsonResponse(['success' => true, 'isCoche' => $contenir->isContenirEstCoche()]);
     }
 
+    /**
+     * Supprime une liste de courses appartenant à l'utilisateur connecté.
+     *
+     * @param ListeCourse            $liste La liste à supprimer
+     * @param EntityManagerInterface $em    Gestionnaire d'entités Doctrine
+     */
     #[Route('/supprimer/{id}', name: 'app_liste_course_delete', methods: ['POST'])]
     public function delete(ListeCourse $liste, EntityManagerInterface $em): Response
     {
@@ -81,6 +112,12 @@ class ListeCourseController extends AbstractController
         return $this->redirectToRoute('app_liste_course_index');
     }
 
+    /**
+     * Affiche le détail d'une liste de courses, regroupé par catégorie d'ingrédients.
+     *
+     * @param int                   $id                   Identifiant de la liste
+     * @param ListeCourseRepository $listeCourseRepository Repository des listes de courses
+     */
     #[Route('/{id}', name: 'app_liste_course_show')]
     public function show(int $id, ListeCourseRepository $listeCourseRepository): Response
     {

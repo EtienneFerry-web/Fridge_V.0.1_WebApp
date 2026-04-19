@@ -16,12 +16,26 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
+/**
+ * Contrôleur d'inscription des nouveaux utilisateurs.
+ *
+ * Gère le formulaire d'inscription, le hachage du mot de passe et l'envoi de l'email de vérification.
+ */
 class RegistrationController extends AbstractController
 {
     public function __construct(private EmailVerifier $emailVerifier)
     {
     }
 
+    /**
+     * Affiche et traite le formulaire d'inscription.
+     *
+     * Après soumission valide : hache le mot de passe, persiste l'utilisateur et envoie un email de confirmation.
+     *
+     * @param Request                     $request             Requête HTTP
+     * @param UserPasswordHasherInterface $userPasswordHasher  Service de hachage de mot de passe
+     * @param EntityManagerInterface      $entityManager       Gestionnaire d'entités Doctrine
+     */
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
@@ -58,6 +72,14 @@ class RegistrationController extends AbstractController
         ]);
     }
 
+    /**
+     * Vérifie le lien de confirmation d'email envoyé à l'utilisateur lors de l'inscription.
+     *
+     * Marque le compte comme vérifié ou redirige vers l'inscription en cas d'erreur.
+     *
+     * @param Request             $request    Requête HTTP contenant le token de vérification
+     * @param TranslatorInterface $translator Service de traduction pour les messages d'erreur
+     */
     #[Route('/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
     {

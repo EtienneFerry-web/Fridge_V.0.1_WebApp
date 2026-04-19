@@ -8,6 +8,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant un foyer (groupe d'utilisateurs partageant un espace commun).
+ *
+ * Fonctionnalité de stock partagé et de repas collectifs en cours de développement.
+ * Un foyer possède un stock d'ingrédients (Stocker) et un historique de repas (Repas).
+ */
 #[ORM\Entity(repositoryClass: FoyerRepository::class)]
 class Foyer
 {
@@ -105,7 +111,7 @@ class Foyer
     public function removeStocker(Stocker $stocker): static
     {
         if ($this->stockers->removeElement($stocker)) {
-            // set the owning side to null (unless already changed)
+            
             if ($stocker->getFoyer() === $this) {
                 $stocker->setFoyer(null);
             }
@@ -135,7 +141,7 @@ class Foyer
     public function removeRepa(Repas $repa): static
     {
         if ($this->repas->removeElement($repa)) {
-            // set the owning side to null (unless already changed)
+            
             if ($repa->getFoyer() === $this) {
                 $repa->setFoyer(null);
             }

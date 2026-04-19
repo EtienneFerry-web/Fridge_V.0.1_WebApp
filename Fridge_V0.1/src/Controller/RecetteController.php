@@ -16,9 +16,20 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+/**
+ * Contrôleur CRUD des recettes.
+ *
+ * Gère la liste, l'affichage, la création, la modification et la suppression des recettes,
+ * incluant le téléversement de la photo associée.
+ */
 final class RecetteController extends AbstractController
 {
-    // READ - Liste toutes les recettes
+    /**
+     * Liste toutes les recettes publiées avec filtres de régime et tri.
+     *
+     * @param RecetteRepository $objRepository Repository des recettes
+     * @param Request           $objRequest    Requête HTTP (paramètres ?regime= et ?sort=)
+     */
     #[Route('/recette', name: 'app_recette_index')]
     public function index(RecetteRepository $objRepository, Request $objRequest): Response
     {
@@ -34,7 +45,11 @@ final class RecetteController extends AbstractController
         ]);
     }
 
-    //READ - Détail d'une recette
+    /**
+     * Affiche le détail d'une recette.
+     *
+     * @param Recette $objRecette La recette à afficher (résolu automatiquement par le ParamConverter)
+     */
     #[Route('/recette/{id}', name: 'app_recette_show', requirements: ['id' => '\d+'])]
     public function show(Recette $objRecette): Response
     {
@@ -43,7 +58,15 @@ final class RecetteController extends AbstractController
         ]);
     }
 
-    // CREATE - Crée une nouvelle recette
+    /**
+     * Crée une nouvelle recette. Téléverse la photo si elle est fournie.
+     *
+     * La recette est enregistrée puis l'utilisateur est redirigé vers sa page de détail.
+     *
+     * @param Request                $objRequest       Requête HTTP
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     * @param SluggerInterface       $objSlugger       Service de génération de nom de fichier sécurisé
+     */
     #[Route('/recette/nouvelle', name: 'app_recette_new')]
     #[IsGranted('ROLE_USER')]
     public function new(
@@ -80,7 +103,16 @@ final class RecetteController extends AbstractController
         ]);
     }
 
-    // UPDATE - Modifie une recette existante
+    /**
+     * Modifie une recette existante. Remplace la photo si une nouvelle est fournie (supprime l'ancienne).
+     *
+     * L'accès est contrôlé par le RecetteVoter (auteur ou administrateur uniquement).
+     *
+     * @param Recette                $objRecette       La recette à modifier
+     * @param Request                $objRequest       Requête HTTP
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     * @param SluggerInterface       $objSlugger       Service de génération de nom de fichier sécurisé
+     */
     #[Route('/recette/{id}/modifier', name: 'app_recette_edit', requirements: ['id' => '\d+'])]
     #[IsGranted(RecetteVoter::EDIT, subject: 'recette')]
     public function edit(
@@ -121,6 +153,14 @@ final class RecetteController extends AbstractController
         ]);
     }
 
+    /**
+     * Téléverse la photo d'une recette dans le répertoire configuré et retourne le nom du fichier généré.
+     *
+     * @param UploadedFile     $objFile    Fichier image uploadé
+     * @param SluggerInterface $objSlugger Service de slugification du nom de fichier
+     *
+     * @throws \RuntimeException Si le déplacement du fichier échoue
+     */
     private function uploadPhoto(UploadedFile $objFile, SluggerInterface $objSlugger): string
     {
         $strNomOriginal = pathinfo($objFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -139,8 +179,15 @@ final class RecetteController extends AbstractController
         return $strNomFichier;
     }
 
-    // DELETE 
-
+    /**
+     * Supprime définitivement une recette après vérification du token CSRF.
+     *
+     * L'accès est contrôlé par le RecetteVoter (auteur ou administrateur uniquement).
+     *
+     * @param Recette                $objRecette       La recette à supprimer
+     * @param Request                $objRequest       Requête HTTP (contient le token CSRF)
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/recette/{id}/supprimer', name: 'app_recette_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted(RecetteVoter::DELETE, subject: 'recette')]
     public function delete(

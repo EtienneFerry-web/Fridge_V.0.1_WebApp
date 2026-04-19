@@ -6,6 +6,11 @@ use App\Repository\RepasRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant un repas planifié pour un foyer à une date donnée.
+ *
+ * Fonctionnalité liée au foyer partagé, actuellement en cours de développement.
+ */
 #[ORM\Entity(repositoryClass: RepasRepository::class)]
 class Repas
 {

@@ -5,6 +5,12 @@ namespace App\Entity;
 use App\Repository\PlanningRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une entrée dans le planning hebdomadaire d'un utilisateur.
+ *
+ * Associe une recette à un jour de la semaine et à un moment de la journée (petit-déjeuner, déjeuner, dîner, dessert).
+ * Un seul créneau (jour + moment) par utilisateur est autorisé — le PlanningController gère le remplacement.
+ */
 #[ORM\Entity(repositoryClass: PlanningRepository::class)]
 class Planning
 {

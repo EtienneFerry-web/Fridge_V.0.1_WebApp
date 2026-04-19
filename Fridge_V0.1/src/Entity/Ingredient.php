@@ -7,6 +7,13 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant un ingrédient du catalogue.
+ *
+ * Un ingrédient peut appartenir à un type (catégorie de rayon) et est référencé
+ * dans les stocks (Stocker) et les listes de courses (Contenir).
+ * Il peut être créé à la volée depuis le StockController si le libellé n'existe pas encore.
+ */
 #[ORM\Entity(repositoryClass: IngredientRepository::class)]
 class Ingredient
 {
@@ -89,7 +96,7 @@ class Ingredient
     public function removeStocker(Stocker $stocker): static
     {
         if ($this->stockers->removeElement($stocker)) {
-            // set the owning side to null (unless already changed)
+            
             if ($stocker->getIngredient() === $this) {
                 $stocker->setIngredient(null);
             }
@@ -119,7 +126,7 @@ class Ingredient
     public function removeContenir(Contenir $contenir): static
     {
         if ($this->contenirs->removeElement($contenir)) {
-            // set the owning side to null (unless already changed)
+            
             if ($contenir->getIngredient() === $this) {
                 $contenir->setIngredient(null);
             }

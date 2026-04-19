@@ -11,8 +11,22 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+/**
+ * Contrôleur de recherche de recettes.
+ *
+ * Permet de filtrer les recettes par mots-clés, difficulté, régime alimentaire, origine et temps de préparation.
+ */
 final class SearchController extends AbstractController
 {
+    /**
+     * Affiche les résultats de recherche filtrés et triés.
+     *
+     * @param Request               $request                  Requête HTTP (paramètres de filtres GET)
+     * @param RecetteRepository     $recetteRepository        Repository des recettes
+     * @param RegimeRepository      $regimeRepository         Repository des régimes alimentaires
+     * @param LikeRecetteRepository $objLikeRecetteRepository Repository des likes
+     * @param FavoriRepository      $objFavoriRepository      Repository des favoris
+     */
     #[Route('/search', name: 'app_search', methods: ['GET'])]
     public function index(
         Request $request,

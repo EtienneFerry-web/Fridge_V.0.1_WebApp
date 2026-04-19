@@ -16,10 +16,25 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+/**
+ * Contrôleur du tableau de bord d'administration.
+ *
+ * Accessible uniquement aux modérateurs (ROLE_MODERATOR).
+ * Permet de gérer les recettes en attente, les utilisateurs et les statistiques globales.
+ */
 #[Route('/dashboard')]
 #[IsGranted('ROLE_MODERATOR')]
 class DashboardController extends AbstractController
 {
+    /**
+     * Affiche le tableau de bord avec les statistiques, les recettes en attente et la liste des utilisateurs.
+     *
+     * @param RecetteRepository     $objRecetteRepository Repository des recettes
+     * @param LikeRecetteRepository $objLikeRepository    Repository des likes
+     * @param FavoriRepository      $objFavoriRepository  Repository des favoris
+     * @param UserRepository        $objUserRepository    Repository des utilisateurs
+     * @param Request               $request              Requête HTTP (filtres utilisateurs via ?q= et ?role=)
+     */
     #[Route('', name: 'app_dashboard')]
     public function index(
         RecetteRepository     $objRecetteRepository,
@@ -69,6 +84,13 @@ class DashboardController extends AbstractController
         ]);
     }
 
+    /**
+     * Approuve une recette en attente et la publie.
+     *
+     * @param Recette                $objRecette       La recette à approuver
+     * @param Request                $request          Requête HTTP (contient le token CSRF)
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/recipe/{id}/approve', name: 'app_admin_recipe_approve', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function recipeApprove(
         Recette                $objRecette,
@@ -87,6 +109,13 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Refuse une recette en attente.
+     *
+     * @param Recette                $objRecette       La recette à refuser
+     * @param Request                $request          Requête HTTP (contient le token CSRF)
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/recipe/{id}/reject', name: 'app_admin_recipe_reject', methods: ['POST'], requirements: ['id' => '\d+'])]
     public function recipeReject(
         Recette                $objRecette,
@@ -105,6 +134,13 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Met à jour le rôle d'un utilisateur (ex. ROLE_USER, ROLE_MODERATOR).
+     *
+     * @param User                   $objUser          L'utilisateur dont le rôle est modifié
+     * @param Request                $request          Requête HTTP (contient le token CSRF et le nouveau rôle)
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/user/{id}/role', name: 'app_admin_user_role', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted(UserVoter::EDIT_ROLE, subject: 'objUser')]
     public function userRole(
@@ -125,6 +161,13 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Supprime définitivement un compte utilisateur.
+     *
+     * @param User                   $objUser          L'utilisateur à supprimer
+     * @param Request                $request          Requête HTTP (contient le token CSRF)
+     * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
+     */
     #[Route('/user/{id}/delete', name: 'app_admin_user_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted(UserVoter::DELETE, subject: 'objUser')]
     public function userDelete(
@@ -144,6 +187,11 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Page d'édition du profil d'un utilisateur par un administrateur (fonctionnalité à venir).
+     *
+     * @param User $objUser L'utilisateur à éditer
+     */
     #[Route('/user/{id}/edit', name: 'app_admin_user_edit', requirements: ['id' => '\d+'])]
     #[IsGranted(UserVoter::EDIT_PROFILE, subject: 'objUser')]
     public function userEdit(User $objUser): Response
@@ -153,6 +201,12 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Bannit un utilisateur (fonctionnalité à venir).
+     *
+     * @param User    $objUser L'utilisateur à bannir
+     * @param Request $request Requête HTTP (contient le token CSRF)
+     */
     #[Route('/user/{id}/ban', name: 'app_admin_user_ban_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted(UserVoter::BAN, subject: 'objUser')]
     public function userBanConfirm(User $objUser, Request $request): Response
@@ -166,6 +220,12 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Masque un commentaire signalé (fonctionnalité à venir, réservée ROLE_ADMIN).
+     *
+     * @param int     $id      Identifiant du commentaire
+     * @param Request $request Requête HTTP (contient le token CSRF)
+     */
     #[Route('/comment/{id}/hide', name: 'app_admin_comment_hide', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_ADMIN')]
     public function commentHide(int $id, Request $request): Response
@@ -178,6 +238,12 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Supprime définitivement un commentaire (fonctionnalité à venir, réservée ROLE_ADMIN).
+     *
+     * @param int     $id      Identifiant du commentaire
+     * @param Request $request Requête HTTP (contient le token CSRF)
+     */
     #[Route('/comment/{id}/delete', name: 'app_admin_comment_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_ADMIN')]
     public function commentDelete(int $id, Request $request): Response
@@ -190,6 +256,12 @@ class DashboardController extends AbstractController
         return $this->redirectToRoute('app_dashboard');
     }
 
+    /**
+     * Ignore un signalement (fonctionnalité à venir).
+     *
+     * @param int     $id      Identifiant du signalement
+     * @param Request $request Requête HTTP (contient le token CSRF)
+     */
     #[Route('/report/{id}/dismiss', name: 'app_admin_report_dismiss', methods: ['POST'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_MODERATOR')]
     public function reportDismiss(int $id, Request $request): Response

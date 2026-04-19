@@ -8,6 +8,13 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant une recette de cuisine.
+ *
+ * Une recette est créée avec le statut 'en_attente' et doit être validée par un modérateur
+ * avant d'être publiée. Elle peut contenir des étapes, des ingrédients (via Contenir),
+ * des régimes alimentaires, et peut être likée ou mise en favori par les utilisateurs.
+ */
 #[ORM\Entity(repositoryClass: RecetteRepository::class)]
 class Recette
 {
@@ -85,16 +92,20 @@ class Recette
     #[ORM\JoinColumn(name: 'created_by', referencedColumnName: 'user_id', nullable: true)]
     private ?User $createdBy = null;
 
+    /**
+     * Initialise les collections Doctrine et applique les valeurs par défaut :
+     * statut 'en_attente' (en attente de validation modérateur) et date de création à maintenant.
+     */
     public function __construct()
     {
         $this->etapes           = new ArrayCollection();
         $this->likeRecettes     = new ArrayCollection();
         $this->favoris          = new ArrayCollection();
-        $this->recetteCreatedAt = new \DateTime(); 
+        $this->recetteCreatedAt = new \DateTime();
         $this->recetteStatut    = 'en_attente';
         $this->regimes = new ArrayCollection();
-        $this->plannings = new ArrayCollection();   
-        $this->contenirs = new ArrayCollection();          
+        $this->plannings = new ArrayCollection();
+        $this->contenirs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,7 +200,7 @@ class Recette
     public function removeEtape(Etape $etape): static
     {
         if ($this->etapes->removeElement($etape)) {
-            // set the owning side to null (unless already changed)
+            
             if ($etape->getRecette() === $this) {
                 $etape->setRecette(null);
             }
@@ -219,7 +230,7 @@ class Recette
     public function removeLikeRecette(LikeRecette $likeRecette): static
     {
         if ($this->likeRecettes->removeElement($likeRecette)) {
-            // set the owning side to null (unless already changed)
+            
             if ($likeRecette->getLikeRecette() === $this) {
                 $likeRecette->setLikeRecette(null);
             }
@@ -249,7 +260,7 @@ class Recette
     public function removeFavori(Favori $favori): static
     {
         if ($this->favoris->removeElement($favori)) {
-            // set the owning side to null (unless already changed)
+            
             if ($favori->getFavoriRecette() === $this) {
                 $favori->setFavoriRecette(null);
             }
@@ -351,7 +362,7 @@ class Recette
     public function removePlanning(Planning $planning): static
     {
         if ($this->plannings->removeElement($planning)) {
-            // set the owning side to null (unless already changed)
+            
             if ($planning->getPlanningRecette() === $this) {
                 $planning->setPlanningRecette(null);
             }

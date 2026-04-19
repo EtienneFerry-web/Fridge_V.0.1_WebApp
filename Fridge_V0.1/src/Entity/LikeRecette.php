@@ -5,6 +5,12 @@ namespace App\Entity;
 use App\Repository\LikeRecetteRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/**
+ * Entité représentant le like d'une recette par un utilisateur.
+ *
+ * Table de jointure enrichie entre User et Recette, avec la date du like.
+ * Un utilisateur ne peut liker une recette qu'une seule fois (géré dans LikeController).
+ */
 #[ORM\Entity(repositoryClass: LikeRecetteRepository::class)]
 class LikeRecette
 {
