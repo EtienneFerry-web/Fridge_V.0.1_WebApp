@@ -4,9 +4,6 @@
 {% block title %}Inscription - Fridge{% endblock %}
 
 {% block body %}
-    {# Import du Header via _partials #}
-    {% include '_partials/header.html.twig' %}
-
     <main class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-8 col-lg-6">
@@ -18,8 +15,6 @@
                             Créez votre compte en quelques secondes et débloquez des fonctionnalités exclusives !
                         </p>
                         
-                        {% include '_partials/flash.html.twig' %}
-
                         {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                             
                             <div class="row">
@@ -83,6 +78,4 @@
         </div>
     </main>
 
-    {# Import du Footer via _partials #}
-    {% include '_partials/footer.html.twig' %}
 {% endblock %}

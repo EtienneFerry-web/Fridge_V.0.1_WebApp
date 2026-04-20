@@ -1,7 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ recette.recetteLibelle }} - Fridge{% endblock %}
 {% block body %}
-    {% include '_partials/header.html.twig' %}
     <main class="container py-4">
 
         <nav aria-label="Fil d'ariane">
@@ -11,8 +10,6 @@
                 <li class="breadcrumb-item active">{{ recette.recetteLibelle }}</li>
             </ol>
         </nav>
-
-        {% include '_partials/flash.html.twig' %}
 
         {% if recette.recettePhoto is defined and recette.recettePhoto %}
             <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
@@ -99,5 +96,4 @@
             {% endif %}
         </div>
     </main>
-    {% include '_partials/footer.html.twig' %}
 {% endblock %}

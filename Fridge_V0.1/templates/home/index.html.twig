@@ -10,9 +10,6 @@
 {% block body %}
 {% set activeRegime = activeRegime|default('all') %}
 {% set activeSort   = activeSort|default('recent') %}
-    {# 1. HEADER #}
-    {% include '_partials/header.html.twig' %}
-
     <main>
         {# 2. COMPONENT HERO #}
         {% include 'components/_hero.html.twig' %}
@@ -131,8 +128,6 @@
         </section>
     </main>
 
-    {# 5. FOOTER #}
-    {% include '_partials/footer.html.twig' %}
 {% endblock %}
 
 {% block javascripts %}

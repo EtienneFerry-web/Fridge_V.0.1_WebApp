@@ -1,12 +1,10 @@
 {% extends 'base.html.twig' %}
 {% block title %}Modifier {{ recette.recetteLibelle }} - Fridge{% endblock %}
 {% block body %}
-    {% include '_partials/header.html.twig' %}
     <main class="container py-4">
         <h1 class="h3 fw-bold mb-4">Modifier : {{ recette.recetteLibelle }}</h1>
         <div class="bg-white rounded shadow-sm p-4">
             {% include 'recette/_form.html.twig' %}
         </div>
     </main>
-    {% include '_partials/footer.html.twig' %}
 {% endblock %}

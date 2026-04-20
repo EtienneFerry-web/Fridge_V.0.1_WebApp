@@ -3,7 +3,6 @@
 {% block title %}Recettes - Fridge{% endblock %}
 
 {% block body %}
-        {% include '_partials/header.html.twig' %}
     <main class="container py-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="h3 fw-bold mb-0">Toutes les recettes</h1>
@@ -13,8 +12,6 @@
                 </a>
             {% endif %}
         </div>
-
-        {% include '_partials/flash.html.twig' %}
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for recette in recettes %}
@@ -52,5 +49,4 @@
             {% endfor %}
         </div>
     </main>
-    {% include '_partials/footer.html.twig' %}
 {% endblock %}

@@ -4,8 +4,6 @@
 
 {% block body %}
 
-{% include '_partials/header.html.twig' %}
-
 <nav class="breadcrumb-nav" aria-label="Fil d'ariane">
     <div class="container">
         <ol class="breadcrumb">
@@ -21,7 +19,6 @@
 </nav>
 
 <main class="container py-5">
-    {% include '_partials/flash.html.twig' %}
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8">
 
@@ -142,6 +139,4 @@
         </div>
     </div>
 </div>
-{% include '_partials/footer.html.twig' %}
-
 {% endblock %}

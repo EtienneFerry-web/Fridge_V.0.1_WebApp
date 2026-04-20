@@ -3,7 +3,6 @@
 {% block title %}Mes Listes de Courses - Fridge{% endblock %}
 
 {% block body %}
-{% include '_partials/header.html.twig' %}
 
 <nav class="breadcrumb-nav" aria-label="Fil d'ariane">
     <div class="container">
@@ -30,8 +29,6 @@
             </button>
         </form>
     </div>
-
-    {% include '_partials/flash.html.twig' %}
 
     {% if listes is empty %}
         <div class="text-center py-5 bg-white rounded shadow-sm">
@@ -92,5 +89,4 @@
     {% endif %}
 </main>
 
-{% include '_partials/footer.html.twig' %}
 {% endblock %}

@@ -3,7 +3,6 @@
 {% block title %}Mon Stock - Fridge{% endblock %}
 
 {% block body %}
-{% include '_partials/header.html.twig' %}
 
 <nav class="breadcrumb-nav" aria-label="Fil d'ariane">
     <div class="container">
@@ -17,8 +16,6 @@
 </nav>
 
 <main class="container py-4 py-md-5">
-
-    {% include '_partials/flash.html.twig' %}
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
         <div>
@@ -284,5 +281,4 @@
     </div>
 </div>
 
-{% include '_partials/footer.html.twig' %}
 {% endblock %}
