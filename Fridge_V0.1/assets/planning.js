@@ -106,12 +106,10 @@ window.applyFilters = function () {
 /* ---------- Génération du tableau ---------- */
 
 window.clearPlanning = function () {
-    if (confirm('Voulez-vous vraiment vider tout le planning ?')) {
-        document.querySelectorAll('.meal-cell').forEach(cell => {
-            cell.innerHTML = `<div class="btn-add" onclick="openModal(this)"><i class="bi bi-plus-lg"></i></div>`;
-            cell.onclick = null;
-        });
-    }
+    document.querySelectorAll('.meal-cell').forEach(cell => {
+        cell.innerHTML = `<div class="btn-add" onclick="openModal(this)"><i class="bi bi-plus-lg"></i></div>`;
+        cell.onclick = null;
+    });
 };
 
 function initPlanningTable() {

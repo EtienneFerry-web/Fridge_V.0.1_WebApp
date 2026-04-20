@@ -68,7 +68,8 @@
                                     <i class="bi bi-eye me-1"></i>Voir les détails
                                 </a>
                                 <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST"
-                                      onsubmit="return confirm('Supprimer cette liste définitivement ?')">
+                                      data-confirm="Voulez-vous vraiment supprimer cette liste définitivement ?"
+                                      data-confirm-title="Supprimer la liste">
                                     <button type="submit" class="btn btn-outline-danger btn-sm w-100 bg-white">
                                         <i class="bi bi-trash me-1"></i>Supprimer
                                     </button>

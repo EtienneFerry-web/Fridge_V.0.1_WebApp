@@ -24,7 +24,9 @@
             <a href="{{ path('app_liste_course_index') }}" class="btn btn-outline-secondary btn-sm">
                 <i class="bi bi-arrow-left me-1"></i>Retour
             </a>
-            <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST" onsubmit="return confirm('Supprimer ?')">
+            <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST"
+                data-confirm="Voulez-vous vraiment supprimer cette liste de courses ?"
+                data-confirm-title="Supprimer la liste">
                 <button type="submit" class="btn btn-outline-danger btn-sm">
                     <i class="bi bi-trash me-1"></i>Supprimer
                 </button>

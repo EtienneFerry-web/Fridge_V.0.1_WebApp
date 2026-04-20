@@ -245,7 +245,8 @@
                                     {% endif %}
                                     {% if is_granted('USER_DELETE', user) %}
                                         <form method="POST" action="{{ path('app_admin_user_delete', {id: user.id}) }}" class="d-inline"
-                                            onsubmit="return confirm('Supprimer cet utilisateur ?')">
+                                            data-confirm="Voulez-vous vraiment supprimer cet utilisateur ? Cette action est irréversible."
+                                            data-confirm-title="Supprimer l'utilisateur">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="bi bi-trash"></i>
@@ -321,7 +322,8 @@
                                 <i class="bi bi-eye"></i> Voir
                             </a>
                             <form method="POST" action="{{ path('app_admin_recipe_reject', {id: recipe.id}) }}" class="d-inline"
-                                onsubmit="return confirm('Refuser cette recette ?')">
+                                data-confirm="Voulez-vous vraiment refuser cette recette ?"
+                                data-confirm-title="Refuser la recette">
                                 <input type="hidden" name="_token" value="{{ csrf_token('reject_recipe_' ~ recipe.id) }}">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-x-lg"></i> Refuser

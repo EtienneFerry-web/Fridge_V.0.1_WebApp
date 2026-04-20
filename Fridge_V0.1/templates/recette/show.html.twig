@@ -32,7 +32,8 @@
                         {% endif %}
                         {% if is_granted('RECETTE_DELETE', recette) %}
                             <form action="{{ path('app_recette_delete', {id: recette.id}) }}" method="POST"
-                                onsubmit="return confirm('Supprimer cette recette ?')">
+                                data-confirm="Voulez-vous vraiment supprimer cette recette ? Cette action est irréversible."
+                                data-confirm-title="Supprimer la recette">
                                 <input type="hidden" name="_token" value="{{ csrf_token('delete_recette_' ~ recette.id) }}">
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
                                     <i class="bi bi-trash me-1"></i>Supprimer

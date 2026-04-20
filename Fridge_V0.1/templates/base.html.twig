@@ -29,10 +29,59 @@
 
     {% include '_partials/footer.html.twig' %}
 
+    {# Modal de confirmation générique #}
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <span id="confirmModalTitle">Confirmation</span>
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="confirmModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-danger" id="confirmModalBtn">Confirmer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% block javascripts %}
         <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         {{ importmap('app') }}
+        <script>
+        function initConfirmModals() {
+            document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+                if (form.dataset.confirmBound === 'true') return;
+                form.dataset.confirmBound = 'true';
+                form.addEventListener('submit', function (e) {
+                    if (form.dataset.confirmed === 'true') {
+                        form.dataset.confirmed = 'false';
+                        return;
+                    }
+                    e.preventDefault();
+                    document.getElementById('confirmModalTitle').textContent = form.dataset.confirmTitle || 'Confirmation';
+                    document.getElementById('confirmModalBody').textContent = form.dataset.confirm;
+                    const modalEl = document.getElementById('confirmModal');
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                    const btn = document.getElementById('confirmModalBtn');
+                    const fresh = btn.cloneNode(true);
+                    btn.parentNode.replaceChild(fresh, btn);
+                    fresh.addEventListener('click', function () {
+                        modal.hide();
+                        form.dataset.confirmed = 'true';
+                        form.requestSubmit();
+                    });
+                    modal.show();
+                });
+            });
+        }
+        document.addEventListener('turbo:load', initConfirmModals);
+        </script>
     {% endblock %}
 </body>
 </html>
