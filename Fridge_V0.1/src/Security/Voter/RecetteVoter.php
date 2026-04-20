@@ -10,23 +10,32 @@ use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
 
+/**
+ * Gère les droits d'accès pour l'entité Recette.
+ */
 final class RecetteVoter extends Voter
 {
     public const EDIT = 'RECETTE_EDIT';
     public const DELETE = 'RECETTE_DELETE';
+    public const VIEW = 'RECETTE_VIEW';
 
     public function __construct(
         private readonly Security $security,
     ) {
     }
-    public const VIEW = 'RECETTE_VIEW';
 
+    /**
+     * Détermine si le voter supporte l'attribut et l'objet fournis.
+     */
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::EDIT, self::DELETE, self::VIEW])
             && $subject instanceof Recette;
     }
 
+    /**
+     * Vote sur la permission accordée ou non.
+     */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         $user = $token->getUser();

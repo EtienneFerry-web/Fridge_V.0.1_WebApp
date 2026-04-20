@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Contenir;
 use App\Entity\Etape;
 use App\Entity\Recette;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -49,11 +50,25 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
 
     public function getDependencies(): array
     {
-        return [RegimeFixtures::class, IngredientFixtures::class];
+        return [
+            RegimeFixtures::class,
+            IngredientFixtures::class,
+            UserFixtures::class, // ← ajout
+        ];
     }
 
     public function load(ObjectManager $manager): void
     {
+        // Récupération des auteurs pour les fixtures
+        /** @var User $objAdmin */
+        $objAdmin    = $this->getReference(UserFixtures::ADMIN, User::class);
+        /** @var User $objEtienne */
+        $objEtienne  = $this->getReference(UserFixtures::USER_ETIENNE, User::class);
+        /** @var User $objAlice */
+        $objAlice    = $this->getReference(UserFixtures::USER_ALICE, User::class);
+        /** @var User $objBob */
+        $objBob      = $this->getReference(UserFixtures::USER_BOB, User::class);
+
         $arrRecettesData = [
 
             self::PATES_TOMATE => [
@@ -64,6 +79,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 20,
                 'statut'       => 'publie',
+                'createdBy'    => $objAdmin,
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1588013273468-315fd88ea34c?w=800',
                 'photoNom'     => 'pates-tomate.jpg',
@@ -93,6 +109,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 60,
                 'statut'       => 'publie',
+                'createdBy'    => $objAdmin,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1598103442097-8b74394b95c8?w=800',
                 'photoNom'     => 'poulet-roti.jpg',
@@ -121,6 +138,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 0,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1541783245831-57d6fb0926d3?w=800',
                 'photoNom'     => 'mousse-chocolat.jpg',
@@ -149,6 +167,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 25,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1547592180-85f173990554?w=800',
                 'photoNom'     => 'soupe-tomates.jpg',
@@ -178,6 +197,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 20,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1519676867240-f03562e64548?w=800',
                 'photoNom'     => 'crepes-maison.jpg',
@@ -206,6 +226,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 35,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=800',
                 'photoNom'     => 'risotto-champignons.jpg',
@@ -238,6 +259,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 30,
                 'tempsCuisson' => 40,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1568571780765-9276f4b1e57f?w=800',
                 'photoNom'     => 'tarte-pomme.jpg',
@@ -268,6 +290,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 25,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800',
                 'photoNom'     => 'curry-legumes.jpg',
@@ -301,6 +324,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 35,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800',
                 'photoNom'     => 'quiche-lorraine.jpg',
@@ -332,6 +356,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 30,
                 'tempsCuisson' => 45,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1572453800999-e8d2d1589b7c?w=800',
                 'photoNom'     => 'ratatouille.jpg',
@@ -363,6 +388,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 10,
                 'statut'       => 'publie',
+                'createdBy'    => $objAdmin,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800',
                 'photoNom'     => 'salade-nicoise.jpg',
@@ -395,6 +421,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 30,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800',
                 'photoNom'     => 'gateau-chocolat.jpg',
@@ -423,6 +450,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 5,
                 'tempsCuisson' => 8,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=800',
                 'photoNom'     => 'omelette-champignons.jpg',
@@ -451,6 +479,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 60,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1621510456681-2330135e5871?w=800',
                 'photoNom'     => 'gratin-dauphinois.jpg',
@@ -480,6 +509,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 12,
                 'statut'       => 'publie',
+                'createdBy'    => $objAdmin,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=800',
                 'photoNom'     => 'saumon-citron.jpg',
@@ -509,6 +539,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 15,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=800',
                 'photoNom'     => 'pad-thai.jpg',
@@ -540,6 +571,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 90,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1622973536968-3ead9e780960?w=800',
                 'photoNom'     => 'bolognese.jpg',
@@ -571,6 +603,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 30,
                 'tempsCuisson' => 0,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800',
                 'photoNom'     => 'tiramisu.jpg',
@@ -599,6 +632,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 20,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1607330289024-1535c6b4e1c1?w=800',
                 'photoNom'     => 'veloute-courgette.jpg',
@@ -628,6 +662,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 30,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800',
                 'photoNom'     => 'poulet-curry.jpg',
@@ -660,6 +695,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 45,
                 'tempsCuisson' => 25,
                 'statut'       => 'publie',
+                'createdBy'    => $objAdmin,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=800',
                 'photoNom'     => 'tarte-citron.jpg',
@@ -689,6 +725,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 5,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'it',
                 'photo'        => 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=800',
                 'photoNom'     => 'bruschetta.jpg',
@@ -718,6 +755,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 15,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'asia',
                 'photo'        => 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800',
                 'photoNom'     => 'riz-cantonais.jpg',
@@ -746,6 +784,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 8,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=800',
                 'photoNom'     => 'crevettes-ail.jpg',
@@ -773,6 +812,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 12,
                 'statut'       => 'publie',
+                'createdBy'    => $objAdmin,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=800',
                 'photoNom'     => 'fondant-chocolat.jpg',
@@ -802,6 +842,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 20,
                 'tempsCuisson' => 15,
                 'statut'       => 'publie',
+                'createdBy'    => $objEtienne,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1512852939750-1305098529bf?w=800',
                 'photoNom'     => 'salade-caesar.jpg',
@@ -834,6 +875,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 15,
                 'tempsCuisson' => 35,
                 'statut'       => 'publie',
+                'createdBy'    => $objAlice,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800',
                 'photoNom'     => 'clafoutis-fraise.jpg',
@@ -863,6 +905,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 10,
                 'statut'       => 'publie',
+                'createdBy'    => $objBob,
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
                 'photoNom'     => 'poele-champignons.jpg',
@@ -882,6 +925,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 ],
             ],
 
+            // Recettes en attente de modération — auteur : Etienne (user standard)
             self::SANDWICH_THON => [
                 'libelle'      => 'Sandwich au thon et crudités',
                 'description'  => 'Un sandwich généreux au thon avec légumes croquants.',
@@ -890,6 +934,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 10,
                 'tempsCuisson' => 0,
                 'statut'       => 'en_attente',
+                'createdBy'    => $objEtienne, // ← auteur identifiable pour le voter
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?w=800',
                 'photoNom'     => 'sandwich-thon.jpg',
@@ -918,6 +963,7 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 'tempsPrepa'   => 5,
                 'tempsCuisson' => 0,
                 'statut'       => 'en_attente',
+                'createdBy'    => $objAlice, // ← auteur différent pour varier les tests
                 'origine'      => 'fr',
                 'photo'        => 'https://images.unsplash.com/photo-1502741224143-90386d7f8c82?w=800',
                 'photoNom'     => 'smoothie-fraise.jpg',
@@ -963,7 +1009,8 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                        ->setRecetteTempsCuisson($arrData['tempsCuisson'])
                        ->setRecetteStatut($arrData['statut'])
                        ->setRecetteOrigine($arrData['origine'])
-                       ->setRecettePhoto($strPhotoNom);
+                       ->setRecettePhoto($strPhotoNom)
+                       ->setCreatedBy($arrData['createdBy']); // ← ajout
 
             foreach ($arrData['regimes'] as $strRegimeRef) {
                 $objRegime = $this->getReference($strRegimeRef, \App\Entity\Regime::class);
@@ -982,7 +1029,6 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                 $manager->persist($objEtape);
             }
 
-            // Ingrédients de la recette via Contenir (listeCourse = null = template recette)
             foreach ($arrData['ingredients'] as [$strIngredientRef, $fltQuantite, $strUnite]) {
                 $objIngredient = $this->getReference($strIngredientRef, \App\Entity\Ingredient::class);
                 $objContenir   = new Contenir();
@@ -990,7 +1036,6 @@ class RecetteFixtures extends Fixture implements DependentFixtureInterface
                             ->setContenirQuantite($fltQuantite)
                             ->setContenirUnite($strUnite)
                             ->setRecette($objRecette);
-                // listeCourse volontairement null : ces lignes sont le template de la recette
                 $manager->persist($objContenir);
             }
 

@@ -35,9 +35,11 @@ final class HomeController extends AbstractController
         PaginatorInterface    $paginator,
         Request               $request
     ): Response {
-        $arrRecettesCarousel = $objRecetteRepository->findBy([], ['id' => 'DESC'], 6);
+        $arrRecettesCarousel = $objRecetteRepository->findBy(['recetteStatut' => 'publie'], ['id' => 'DESC'], 6);
 
         $queryRecettes = $objRecetteRepository->createQueryBuilder('r')
+            ->where('r.recetteStatut = :statut')
+            ->setParameter('statut', 'publie')
             ->orderBy('r.recetteCreatedAt', 'DESC')
             ->getQuery();
 
