@@ -97,6 +97,7 @@
 {% block javascripts %}
 {{ parent() }}
 <script>
+function initCheckIngredients() {
 document.querySelectorAll('.check-ingredient').forEach(checkbox => {
     checkbox.addEventListener('change', async function() {
         const id = this.dataset.id;
@@ -126,5 +127,7 @@ document.querySelectorAll('.check-ingredient').forEach(checkbox => {
         }
     });
 });
+}
+document.addEventListener('turbo:load', initCheckIngredients);
 </script>
 {% endblock %}

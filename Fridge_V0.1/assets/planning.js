@@ -142,4 +142,4 @@ function initPlanningTable() {
 
 /* ---------- Init ---------- */
 
-document.addEventListener('DOMContentLoaded', initPlanningTable);
+document.addEventListener('turbo:load', initPlanningTable);

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('turbo:load', function () {
 
     // --- 0. Validation des Formulaires (Bootstrap + temps réel) ---
 
@@ -294,7 +294,7 @@ filterSelect.addEventListener('change', updateCatalog);
 sortSelect.addEventListener('change', updateCatalog);
 
 // 6. Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
     updateCatalog();
 });
 

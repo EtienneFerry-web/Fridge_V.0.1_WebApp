@@ -1,7 +1,7 @@
 // ==========================================
 // Gestion des ingrédients
 // ==========================================
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('turbo:load', function () {
 
     const SEARCH_URL  = '/ingredient/search';
     const container   = document.getElementById('contenirs-container');
@@ -241,10 +241,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 // ==========================================
-// Gestion des étapes  
+// Gestion des étapes
 // ==========================================
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('turbo:load', function () {
     const container  = document.getElementById('etapes-container');
     const btnAjouter = document.getElementById('btn-ajouter-etape');
 
