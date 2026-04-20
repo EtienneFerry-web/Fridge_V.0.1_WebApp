@@ -19,10 +19,11 @@ final class RecetteVoter extends Voter
         private readonly Security $security,
     ) {
     }
+    public const VIEW = 'RECETTE_VIEW';
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        return in_array($attribute, [self::EDIT, self::DELETE])
+        return in_array($attribute, [self::EDIT, self::DELETE, self::VIEW])
             && $subject instanceof Recette;
     }
 
@@ -43,8 +44,13 @@ final class RecetteVoter extends Voter
         $recette = $subject;
 
         return match ($attribute) {
+
+        self::VIEW => $recette->getRecetteStatut() === 'publie'
+                      || $recette->getCreatedBy() === $user
+                      || $this->security->isGranted('ROLE_MODERATOR'),        
             self::EDIT, self::DELETE => $recette->getCreatedBy() === $user,
             default => false,
         };
     }
+    
 }

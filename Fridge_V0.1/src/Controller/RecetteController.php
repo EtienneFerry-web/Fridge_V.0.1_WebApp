@@ -53,6 +53,8 @@ final class RecetteController extends AbstractController
     #[Route('/recette/{id}', name: 'app_recette_show', requirements: ['id' => '\d+'])]
     public function show(Recette $objRecette): Response
     {
+        $this->denyAccessUnlessGranted(RecetteVoter::VIEW, $objRecette);
+
         return $this->render('recette/show.html.twig', [
             'recette' => $objRecette,
         ]);
@@ -89,8 +91,9 @@ final class RecetteController extends AbstractController
             $intNumero = 1;
             foreach ($objRecette->getEtapes() as $objEtape) {
                 $objEtape->setEtapeNumero($intNumero++);
-            }
-
+                }
+            $objRecette->setRecetteStatut('en_attente');
+            $objRecette->setCreatedBy($this->getUser());
             $objEntityManager->persist($objRecette);
             $objEntityManager->flush();
 
@@ -129,7 +132,6 @@ final class RecetteController extends AbstractController
             $objPhotoFile = $objForm->get('recettePhotoFile')->getData();
 
             if ($objPhotoFile) {
-                // Optionnel : supprimer l'ancienne photo
                 if ($objRecette->getRecettePhoto()) {
                     $strAnciennePhoto = $this->getParameter('photos_directory') . '/' . $objRecette->getRecettePhoto();
                     if (file_exists($strAnciennePhoto)) {
@@ -141,6 +143,10 @@ final class RecetteController extends AbstractController
                 $objRecette->setRecettePhoto($strNomFichier);
             }
 
+            if (!$this->isGranted('ROLE_MODERATOR') && !$this->isGranted('ROLE_ADMIN')) {
+                $objRecette->setRecetteStatut('en_attente');
+            }
+            
             $objEntityManager->flush();
 
             $this->addFlash('success', 'Recette modifié avec succés !');

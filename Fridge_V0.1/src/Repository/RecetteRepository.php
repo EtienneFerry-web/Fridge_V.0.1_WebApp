@@ -11,7 +11,8 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * Repository des recettes.
  *
- * Fournit des requêtes DQL personnalisées pour la recherche multicritères, les filtres de la page liste et les stats du dashboard.
+ * Fournit des requêtes DQL personnalisées pour la recherche multicritères,
+ * les filtres de la page liste et les stats du dashboard.
  *
  * @extends ServiceEntityRepository<Recette>
  */
@@ -23,13 +24,32 @@ class RecetteRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne toutes les recettes correspondant à un statut donné.
+     *
+     * Utilisée par le dashboard pour lister les recettes en attente ('en_attente'),
+     * publiées ('publie') ou refusées ('refuse').
+     *
+     * @param string $strStatut Statut de modération ('en_attente' | 'publie' | 'refuse')
+     *
+     * @return Recette[]
+     */
+    public function findByStatut(string $strStatut): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.recetteStatut = :statut')
+            ->setParameter('statut', $strStatut)
+            ->orderBy('r.recetteCreatedAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Retourne les recettes likées par un utilisateur avec le nombre total de likes de chaque recette.
      *
      * @return array{recette: Recette, likeCount: int}[]
      */
     public function findLikedByUserWithCount(User $objUser): array
     {
-        // r = Recette (racine), l = like de l'utilisateur, l2 = tous les likes de la recette
         $results = $this->createQueryBuilder('r')
             ->select('r', 'COUNT(l2.id) as likeCount')
             ->innerJoin(LikeRecette::class, 'l',  'WITH', 'l.likeRecette = r AND l.likeUser = :user')
@@ -48,60 +68,58 @@ class RecetteRepository extends ServiceEntityRepository
     /**
      * Recherche multicritères des recettes publiées pour la page de recherche.
      *
-     * Le temps maximum est la somme préparation + cuisson.
-     * Tri supporté : 'recent' (date desc) ou 'time' (temps total asc).
+     * Seules les recettes au statut 'publie' sont retournées — les recettes
+     * en attente ou refusées sont exclues.
      *
-     * @param string   $strQuery     Terme de recherche sur le libellé (partiel, insensible à la casse)
+     * @param string   $strQuery      Terme de recherche sur le libellé (partiel, insensible à la casse)
      * @param string[] $arrDifficulte Filtres de difficulté (ex. ['Facile', 'Moyen'])
-     * @param string[] $arrRegime    Identifiants de régimes alimentaires
-     * @param string   $strOrigine   Origine géographique exacte
-     * @param int      $intTempsMax  Temps total maximum en minutes
-     * @param string   $strSort      Critère de tri ('recent' | 'time')
+     * @param string[] $arrRegime     Identifiants de régimes alimentaires
+     * @param string   $strOrigine    Origine géographique exacte
+     * @param int      $intTempsMax   Temps total maximum en minutes (prépa + cuisson)
+     * @param string   $strSort       Critère de tri ('recent' | 'time')
      *
      * @return Recette[]
      */
     public function findBySearch(
         string $strQuery,
-        array $arrDifficulte,
-        array $arrRegime,
+        array  $arrDifficulte,
+        array  $arrRegime,
         string $strOrigine,
-        int $intTempsMax,
+        int    $intTempsMax,
         string $strSort
     ): array {
         $qb = $this->createQueryBuilder('r')
             ->where('r.recetteStatut = :statut')
-            ->setParameter('statut', 'publie');
+            ->setParameter('statut', 'publie');  // ← seules les recettes modérées
 
         if ($strQuery !== '') {
             $qb->andWhere('LOWER(r.recetteLibelle) LIKE LOWER(:q)')
-            ->setParameter('q', '%' . $strQuery . '%');
+               ->setParameter('q', '%' . $strQuery . '%');
         }
 
         if (!empty($arrDifficulte)) {
             $qb->andWhere('r.recetteDifficulte IN (:difficulte)')
-            ->setParameter('difficulte', $arrDifficulte);
+               ->setParameter('difficulte', $arrDifficulte);
         }
 
         if (!empty($arrRegime)) {
             $qb->join('r.regimes', 'reg')
-            ->andWhere('reg.id IN (:regimes)')
-            ->setParameter('regimes', $arrRegime);
+               ->andWhere('reg.id IN (:regimes)')
+               ->setParameter('regimes', $arrRegime);
         }
 
         if ($strOrigine !== '') {
             $qb->andWhere('r.recetteOrigine = :origine')
-            ->setParameter('origine', $strOrigine);
+               ->setParameter('origine', $strOrigine);
         }
 
-        // Temps total = prépa + cuisson
         $qb->andWhere('(r.recetteTempsPrepa + r.recetteTempsCuisson) <= :tempsMax')
-        ->setParameter('tempsMax', $intTempsMax);
+           ->setParameter('tempsMax', $intTempsMax);
 
         match ($strSort) {
-            'recent' => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
-            'time'   => $qb->addSelect('(r.recetteTempsPrepa + r.recetteTempsCuisson) AS HIDDEN tempsTotal')
-                        ->orderBy('tempsTotal', 'ASC'),
-            default  => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
+            'time'  => $qb->addSelect('(r.recetteTempsPrepa + r.recetteTempsCuisson) AS HIDDEN tempsTotal')
+                          ->orderBy('tempsTotal', 'ASC'),
+            default => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
         };
 
         return $qb->getQuery()->getResult();
@@ -110,26 +128,29 @@ class RecetteRepository extends ServiceEntityRepository
     /**
      * Retourne les recettes publiées avec un filtre de régime et un tri pour la page liste principale.
      *
-     * Tri 'popular' : tri par nombre de likes décroissant. Tout autre valeur : tri par date décroissante.
+     * Seules les recettes au statut 'publie' sont retournées — les recettes
+     * en attente ou refusées sont exclues.
      *
-     * @param string $regime Libellé du régime alimentaire ('all' = pas de filtre)
-     * @param string $sort   Critère de tri ('recent' | 'popular')
+     * Tri 'popular' : par nombre de likes décroissant. Tout autre valeur : par date décroissante.
+     *
+     * @param string $strRegime Libellé du régime alimentaire ('all' = pas de filtre)
+     * @param string $strSort   Critère de tri ('recent' | 'popular')
      *
      * @return Recette[]
      */
-    public function findWithFilters(string $regime = 'all', string $sort = 'recent'): array
+    public function findWithFilters(string $strRegime = 'all', string $strSort = 'recent'): array
     {
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.regimes', 'reg')
             ->where('r.recetteStatut = :statut')
-            ->setParameter('statut', 'publie');
+            ->setParameter('statut', 'publie');  // ← seules les recettes modérées
 
-        if ($regime !== 'all') {
+        if ($strRegime !== 'all') {
             $qb->andWhere('reg.regimeLibelle = :regime')
-            ->setParameter('regime', $regime);
+               ->setParameter('regime', $strRegime);
         }
 
-        match ($sort) {
+        match ($strSort) {
             'popular' => $qb->leftJoin('r.likeRecettes', 'lr')
                             ->addSelect('COUNT(lr.id) AS HIDDEN likeCount')
                             ->groupBy('r.id')
