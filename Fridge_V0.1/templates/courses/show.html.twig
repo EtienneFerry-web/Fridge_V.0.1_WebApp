@@ -44,11 +44,7 @@
                     {% endfor %}
                     {% set percent = total > 0 ? (coches / total * 100)|round : 0 %}
                     
-                    <h3 class="h5 fw-bold mb-3">Progression des courses : {{ percent }}%</h3>
-                    <div class="progress mb-2" style="height: 12px; border-radius: 10px;">
-                        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" 
-                             style="width: {{ percent }}%" aria-valuenow="{{ percent }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+                    <h3 class="h5 fw-bold mb-3">Progression des courses</h3>
                     <p class="text-muted small mb-0">{{ coches }} article(s) sur {{ total }} achetés</p>
                 </div>
             </div>
