@@ -35,22 +35,6 @@
     </div>
 
     <div class="row g-4">
-        {# Progession #}
-        <div class="col-12">
-            <div class="card shadow-sm border-0 mb-4" style="background: var(--gradient-hero);">
-                <div class="card-body p-4 text-center">
-                    {% set total = liste.contenirs|length %}
-                    {% set coches = 0 %}
-                    {% for item in liste.contenirs %}
-                        {% if item.contenirEstCoche %}{% set coches = coches + 1 %}{% endif %}
-                    {% endfor %}
-                    {% set percent = total > 0 ? (coches / total * 100)|round : 0 %}
-                    
-                    <h3 class="h5 fw-bold mb-3">Progression des courses</h3>
-                    <p class="text-muted small mb-0">{{ coches }} article(s) sur {{ total }} achetés</p>
-                </div>
-            </div>
-        </div>
 
         <div class="col-lg-12">
             <div class="card shadow-sm border-0 p-4 bg-white">

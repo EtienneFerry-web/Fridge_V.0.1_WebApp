@@ -1,14 +1,31 @@
-<footer class="bg-dark text-white mt-auto py-5">
-    <div class="container">
-        <div class="row gy-4">
+<footer class="bg-dark text-white mt-auto">
+    <div class="container py-5">
+        <div class="row gy-4 align-items-start">
             <div class="col-md-4 text-center text-md-start">
-                <h5 class="fw-bold mb-2">FRIDGE</h5>
-                <p class="small mb-0 text-secondary">Cuisinez intelligemment avec ce que vous avez sous la main.</p>
+                <h5 class="fw-bold mb-3">FRIDGE</h5>
+                <p class="small mb-3 text-secondary">Cuisinez intelligemment avec ce que vous avez sous la main.</p>
+                <div class="d-flex justify-content-center justify-content-md-start gap-3">
+                    <a href="#" class="text-white-50 text-decoration-none" aria-label="Instagram">
+                        <i class="bi bi-instagram fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none" aria-label="Facebook">
+                        <i class="bi bi-facebook fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none" aria-label="TikTok">
+                        <i class="bi bi-tiktok fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none" aria-label="YouTube">
+                        <i class="bi bi-youtube fs-5"></i>
+                    </a>
+                    <a href="#" class="text-white-50 text-decoration-none" aria-label="Pinterest">
+                        <i class="bi bi-pinterest fs-5"></i>
+                    </a>
+                </div>
             </div>
 
             <div class="col-md-4 text-center">
-                <h6 class="text-uppercase fw-bold mb-3 small">Navigation</h6>
-                <ul class="list-unstyled d-flex flex-wrap justify-content-center gap-3 mb-0">
+                <h6 class="text-uppercase fw-bold mb-3 small text-secondary">Navigation</h6>
+                <ul class="list-unstyled d-flex flex-column align-items-center gap-2 mb-0">
                     <li><a href="{{ path('app_home') }}" class="text-white-50 text-decoration-none small">Accueil</a></li>
                     <li><a href="{{ path('app_search') }}" class="text-white-50 text-decoration-none small">Recettes</a></li>
 
@@ -21,18 +38,24 @@
             </div>
 
             <div class="col-md-4 text-center text-md-end">
-                <h6 class="text-uppercase fw-bold mb-3 small">Liens utiles</h6>
-                <div class="mb-2">
+                <h6 class="text-uppercase fw-bold mb-3 small text-secondary">Liens utiles</h6>
+                <ul class="list-unstyled d-flex flex-column align-items-center align-items-md-end gap-2 mb-0">
                     {% if app.user %}
-                        <a href="{{ path('app_user_profil') }}" class="text-white-50 text-decoration-none small px-2">Mon Compte</a>
+                        <li><a href="{{ path('app_user_profil') }}" class="text-white-50 text-decoration-none small">Mon Compte</a></li>
                     {% else %}
-                        <a href="{{ path('app_login') }}" class="text-white-50 text-decoration-none small px-2">Connexion / Inscription</a>
+                        <li><a href="{{ path('app_login') }}" class="text-white-50 text-decoration-none small">Connexion / Inscription</a></li>
                     {% endif %}
+                    <li><a href="#" class="text-white-50 text-decoration-none small">Mentions légales</a></li>
+                    <li><a href="#" class="text-white-50 text-decoration-none small">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-                    <a href="#" class="text-white-50 text-decoration-none small px-2">Mentions légales</a>
-                    <a href="#" class="text-white-50 text-decoration-none small px-2">Contact</a>
-                </div>
-                <div class="small text-white-50 mt-3">© 2026 FRIDGE. Tous droits réservés.</div>
+    <div class="border-top border-secondary border-opacity-25">
+        <div class="container py-3">
+            <div class="text-center small text-white-50">
+                © 2026 FRIDGE. Tous droits réservés.
             </div>
         </div>
     </div>

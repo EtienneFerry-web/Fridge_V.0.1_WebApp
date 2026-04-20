@@ -55,12 +55,6 @@
                                 <i class="bi bi-calendar-event me-1"></i>
                                 Créée le {{ liste.listeDateCreation|date('d/m/Y à H:i') }}
                             </p>
-                            {% set total = liste.contenirs|length %}
-                            {% set coches = 0 %}
-                            {% for item in liste.contenirs %}
-                                {% if item.contenirEstCoche %}{% set coches = coches + 1 %}{% endif %}
-                            {% endfor %}
-                            <p class="small text-muted mb-3">{{ coches }}/{{ total }} article(s)</p>
                         </div>
                         <div class="card-footer bg-white border-0 pt-0 pb-3 px-3">
                             <div class="d-grid gap-2">

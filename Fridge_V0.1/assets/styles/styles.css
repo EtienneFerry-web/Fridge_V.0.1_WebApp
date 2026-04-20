@@ -1082,11 +1082,11 @@ small, .small { font-size: 0.85rem; color: var(--grey-warm); }
 }
 
 .modal-backdrop {
-  background-color: rgba(35, 31, 32, 0.45);
+  background-color: rgba(35, 31, 32, 0.55) !important;
 }
 
 .modal-backdrop.show {
-  opacity: 1;
+  opacity: 1 !important;
   backdrop-filter: blur(3px);
 }
 
