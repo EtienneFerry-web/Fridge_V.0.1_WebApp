@@ -47,12 +47,14 @@
                     {# Ligne visuelle (mode confirmé) #}
                     <div class="contenir-display d-flex align-items-center gap-2 p-2 rounded"
                         style="background-color: #d4876e; color: white;">
+                        <i class="bi bi-check2-circle me-1"></i>
                         <span class="flex-grow-1 fw-medium contenir-label">
                             {{ contenir.vars.data.ingredient ? contenir.vars.data.ingredient.ingredientLibelle : '' }}
-                            <span class="opacity-75 fw-normal ms-1">
-                                · {{ contenir.vars.data.contenirQuantite }}
-                                {{ contenir.vars.data.contenirUnite }}
-                            </span>
+                        </span>
+                        <span class="badge rounded-pill contenir-badge"
+                            style="background-color: rgba(0,0,0,0.2); color: white;">
+                            {{ contenir.vars.data.contenirQuantite }}
+                            {{ contenir.vars.data.contenirUnite }}
                         </span>
                         <button type="button" class="btn btn-sm btn-modifier-contenir"
                                 style="color:white; border-color: rgba(255,255,255,0.5);">

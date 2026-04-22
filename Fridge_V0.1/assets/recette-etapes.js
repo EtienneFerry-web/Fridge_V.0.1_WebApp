@@ -1,7 +1,7 @@
 // ==========================================
 // Gestion des ingrédients
 // ==========================================
-document.addEventListener('turbo:load', function () {
+function initIngredients() {
 
     const SEARCH_URL  = '/ingredient/search';
     const container   = document.getElementById('contenirs-container');
@@ -9,6 +9,8 @@ document.addEventListener('turbo:load', function () {
     const prototypeEl = document.getElementById('contenirs-prototype');
 
     if (!container || !btnAjouter || !prototypeEl) return;
+    if (btnAjouter.dataset.initialized) return;
+    btnAjouter.dataset.initialized = '1';
 
     let index = container.querySelectorAll('.contenir-row').length;
 
@@ -53,8 +55,10 @@ document.addEventListener('turbo:load', function () {
         }
         qteInput.classList.remove('is-invalid');
 
-        const libelle = ts ? ts.getItem(hiddenId.value)?.textContent?.trim()
-                           : tsInput?.value;
+        const tsLibelle = ts ? ts.getItem(hiddenId.value)?.textContent?.trim() : null;
+        // Si TomSelect n'a pas l'item (ex: ligne existante sans recherche), conserver le label actuel
+        const label   = row.querySelector('.contenir-label');
+        const libelle = tsLibelle || tsInput?.value || label?.textContent?.trim() || '';
         const qte     = qteInput.value;
         const unite   = uniteInput?.value || '';
 
@@ -64,8 +68,7 @@ document.addEventListener('turbo:load', function () {
         if (sfQte)   sfQte.value   = qte;
         if (sfUnite) sfUnite.value = unite;
 
-        // Met à jour le label affiché
-        const label = row.querySelector('.contenir-label');
+        // Met à jour le label et le badge affichés
         const badge = row.querySelector('.contenir-badge');
         if (label) label.textContent = libelle;
         if (badge) badge.textContent = `${qte} ${unite}`;
@@ -111,7 +114,8 @@ document.addEventListener('turbo:load', function () {
         if (hidden) hidden.setAttribute('data-ingredient-hidden', '1');
 
         // Récupère les noms des champs générés par Symfony
-        const sfQteEl   = temp.querySelector('input[type="number"], input[id*="quantite"]');
+        // NumberType Symfony génère <input type="text">, donc on exclut les hidden
+        const sfQteEl   = temp.querySelector('input:not([type="hidden"])');
         const sfUniteEl = temp.querySelector('select');
 
         const sfQteHtml   = sfQteEl
@@ -235,20 +239,32 @@ document.addEventListener('turbo:load', function () {
     container.querySelectorAll('.contenir-row[data-confirmed="true"]').forEach(row => {
         const hidden = row.querySelector('.ingredient-id-hidden');
         if (hidden) hidden.setAttribute('data-ingredient-hidden', '1');
-
     });
+}
+
+// Réinitialise le guard avant que Turbo mette la page en cache
+document.addEventListener('turbo:before-cache', () => {
+    const btn = document.getElementById('btn-ajouter-contenir');
+    if (btn) delete btn.dataset.initialized;
 });
+
+// Écoute turbo:load pour les navigations Turbo
+document.addEventListener('turbo:load', initIngredients);
+// Appel immédiat pour couvrir le cas où turbo:load a déjà tiré avant le chargement du module
+initIngredients();
 
 
 // ==========================================
 // Gestion des étapes
 // ==========================================
 
-document.addEventListener('turbo:load', function () {
+function initEtapes() {
     const container  = document.getElementById('etapes-container');
     const btnAjouter = document.getElementById('btn-ajouter-etape');
 
     if (!container || !btnAjouter) return;
+    if (btnAjouter.dataset.initialized) return;
+    btnAjouter.dataset.initialized = '1';
 
     const prototype = document.getElementById('etapes-prototype').dataset.prototype;
     let index       = container.querySelectorAll('.etape-row').length;
@@ -291,4 +307,12 @@ document.addEventListener('turbo:load', function () {
     container.querySelectorAll('.btn-supprimer-etape').forEach(bindSupprimer);
     mettreAJourNumeros();
     btnAjouter.addEventListener('click', ajouterEtape);
+}
+
+document.addEventListener('turbo:before-cache', () => {
+    const btn = document.getElementById('btn-ajouter-etape');
+    if (btn) delete btn.dataset.initialized;
 });
+
+document.addEventListener('turbo:load', initEtapes);
+initEtapes();
