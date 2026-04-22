@@ -122,7 +122,7 @@ function initIngredients() {
             ? `<input type="hidden" name="${sfQteEl.name}" class="contenir-quantite-hidden">`
             : '';
         const sfUniteHtml = sfUniteEl
-            ? `<select name="${sfUniteEl.name}" class="contenir-unite-hidden d-none">${sfUniteEl.innerHTML}</select>`
+            ? `<input type="hidden" name="${sfUniteEl.name}" class="contenir-unite-hidden">`
             : '';
 
         wrapper.innerHTML = `
