@@ -117,7 +117,7 @@ final class RecetteController extends AbstractController
      * @param SluggerInterface       $objSlugger       Service de génération de nom de fichier sécurisé
      */
     #[Route('/recette/{id}/modifier', name: 'app_recette_edit', requirements: ['id' => '\d+'])]
-    #[IsGranted(RecetteVoter::EDIT, subject: 'recette')]
+    #[IsGranted(RecetteVoter::EDIT, subject: 'objRecette')]
     public function edit(
         Recette $objRecette,
         Request $objRequest,
@@ -195,7 +195,7 @@ final class RecetteController extends AbstractController
      * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
      */
     #[Route('/recette/{id}/supprimer', name: 'app_recette_delete', methods: ['POST'], requirements: ['id' => '\d+'])]
-    #[IsGranted(RecetteVoter::DELETE, subject: 'recette')]
+    #[IsGranted(RecetteVoter::DELETE, subject: 'objRecette')]
     public function delete(
         Recette $objRecette,
         Request $objRequest,
