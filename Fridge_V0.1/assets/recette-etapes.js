@@ -185,6 +185,25 @@ function initIngredients() {
         return wrapper;
     }
 
+    // ─── AUTO-CONFIRM AU SUBMIT ───────────────────────────────
+    const form = container.closest('form');
+    if (form) {
+        form.addEventListener('submit', function () {
+            container.querySelectorAll('.contenir-row').forEach(row => {
+                const hiddenId  = row.querySelector('[data-ingredient-hidden]');
+                const qteInput  = row.querySelector('.input-quantite');
+                const sfQte     = row.querySelector('.contenir-quantite-hidden');
+                const sfUnite   = row.querySelector('.contenir-unite-hidden');
+                const uniteInput= row.querySelector('.input-unite');
+
+                if (hiddenId?.value && sfQte && qteInput?.value) {
+                    sfQte.value = qteInput.value;
+                    if (sfUnite && uniteInput) sfUnite.value = uniteInput.value;
+                }
+            });
+        });
+    }
+
     // ─── AJOUTER ──────────────────────────────────────────────
     btnAjouter.addEventListener('click', function () {
         const html    = prototypeEl.dataset.prototype.replace(/__name__/g, index);
