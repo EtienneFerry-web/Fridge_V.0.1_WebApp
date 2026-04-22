@@ -106,32 +106,23 @@ function initIngredients() {
         const wrapper = document.createElement('div');
         wrapper.className = 'contenir-row mb-2';
 
-        // Parse le HTML du prototype pour récupérer les champs Symfony
         const temp = document.createElement('div');
         temp.innerHTML = html;
 
-        const hidden = temp.querySelector('input[type="hidden"]');
+        const hidden    = temp.querySelector('input[type="hidden"]');
         if (hidden) hidden.setAttribute('data-ingredient-hidden', '1');
 
-        // Récupère les noms des champs générés par Symfony
-        // NumberType Symfony génère <input type="text">, donc on exclut les hidden
         const sfQteEl   = temp.querySelector('input:not([type="hidden"])');
         const sfUniteEl = temp.querySelector('select');
 
-        const sfQteHtml   = sfQteEl
-            ? `<input type="hidden" name="${sfQteEl.name}" class="contenir-quantite-hidden">`
-            : '';
-        const sfUniteHtml = sfUniteEl
-            ? `<input type="hidden" name="${sfUniteEl.name}" class="contenir-unite-hidden">`
-            : '';
+        // Les inputs visuels reçoivent directement les noms Symfony → soumis avec le formulaire
+        const qteName   = sfQteEl?.name   ?? '';
+        const uniteName = sfUniteEl?.name ?? '';
 
         wrapper.innerHTML = `
             ${hidden?.outerHTML ?? ''}
-            ${sfQteHtml}
-            ${sfUniteHtml}
 
-            <!-- Mode confirmé (caché au départ) -->
-            <div class="contenir-display d-none align-items-center gap-2 p-2 rounded list-group-item d-flex justify-content-between "
+            <div class="contenir-display d-none align-items-center gap-2 p-2 rounded list-group-item d-flex justify-content-between"
                 style="background: white; border: 0.5px solid #e0d5cc;">
                 <i class="bi bi-check2-circle me-1" style="color: var(--tomato-jam);"></i>
                 <span class="flex-grow-1 fw-medium contenir-label" style="color: #333;"></span>
@@ -148,16 +139,15 @@ function initIngredients() {
                 </button>
             </div>
 
-            <!-- Mode formulaire (visible au départ) -->
             <div class="contenir-form d-flex gap-2 align-items-center p-2 rounded"
                  style="background-color: #e0d3c6;">
                 <div class="flex-grow-1" style="min-width:160px;">
                     <input type="text" class="form-control ingredient-ts-input"
                            placeholder="Rechercher un ingrédient…">
                 </div>
-                <input type="number" class="form-control input-quantite"
+                <input type="number" name="${qteName}" class="form-control input-quantite"
                        placeholder="Qté" style="width:80px; flex-shrink:0;">
-                <select class="form-select input-unite" style="width:120px; flex-shrink:0;">
+                <select name="${uniteName}" class="form-select input-unite" style="width:120px; flex-shrink:0;">
                     <option value="">Unité</option>
                     <option value="g">g</option>
                     <option value="kg">kg</option>
