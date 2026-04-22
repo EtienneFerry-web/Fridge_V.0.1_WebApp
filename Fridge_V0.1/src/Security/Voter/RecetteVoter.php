@@ -40,6 +40,12 @@ final class RecetteVoter extends Voter
     {
         $user = $token->getUser();
 
+        $recette = $subject;
+
+        if ($attribute === self::VIEW && $recette->getRecetteStatut() === 'publie') {
+            return true;
+        }
+
         if (!$user instanceof UserInterface) {
             $vote?->addReason('L\'utilisateur doit être connecté.');
 
@@ -50,15 +56,11 @@ final class RecetteVoter extends Voter
             return true;
         }
 
-        $recette = $subject;
-
         return match ($attribute) {
-
-        self::VIEW => $recette->getRecetteStatut() === 'publie'
-                      || $recette->getCreatedBy() === $user
-                      || $this->security->isGranted('ROLE_MODERATOR'),        
-            self::EDIT, self::DELETE => $recette->getCreatedBy() === $user,
-            default => false,
+            self::VIEW        => $recette->getCreatedBy() === $user,
+            self::EDIT,
+            self::DELETE      => $recette->getCreatedBy() === $user,
+            default           => false,
         };
     }
     
