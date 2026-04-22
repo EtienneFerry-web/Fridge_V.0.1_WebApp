@@ -37,11 +37,10 @@ final class HomeController extends AbstractController
     ): Response {
         $arrRecettesCarousel = $objRecetteRepository->findBy(['recetteStatut' => 'publie'], ['id' => 'DESC'], 6);
 
-        $queryRecettes = $objRecetteRepository->createQueryBuilder('r')
-            ->where('r.recetteStatut = :statut')
-            ->setParameter('statut', 'publie')
-            ->orderBy('r.recetteCreatedAt', 'DESC')
-            ->getQuery();
+        $strRegime = $request->query->get('regime', 'all');
+        $strSort   = $request->query->get('tri', 'recent');
+
+        $queryRecettes = $objRecetteRepository->createQueryBuilderWithFilters($strRegime, $strSort);
 
         $arrRecettes = $paginator->paginate(
             $queryRecettes,
@@ -76,6 +75,8 @@ final class HomeController extends AbstractController
             'arrLikedIds'         => $arrLikedIds,
             'arrLikeCounts'       => $arrLikeCounts,
             'arrFavoriIds'        => $arrFavoriIds,
+            'activeRegime'        => $strRegime,
+            'activeSort'          => $strSort,
         ]);
     }
 }

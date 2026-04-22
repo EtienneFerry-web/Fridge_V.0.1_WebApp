@@ -160,4 +160,27 @@ class RecetteRepository extends ServiceEntityRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    public function createQueryBuilderWithFilters(string $strRegime = 'all', string $strSort = 'recent'): \Doctrine\ORM\Query
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->leftJoin('r.regimes', 'reg')
+            ->where('r.recetteStatut = :statut')
+            ->setParameter('statut', 'publie');
+
+        if ($strRegime !== 'all') {
+            $qb->andWhere('reg.regimeLibelle = :regime')
+               ->setParameter('regime', $strRegime);
+        }
+
+        match ($strSort) {
+            'popular' => $qb->leftJoin('r.likeRecettes', 'lr')
+                            ->addSelect('COUNT(lr.id) AS HIDDEN likeCount')
+                            ->groupBy('r.id')
+                            ->orderBy('likeCount', 'DESC'),
+            default   => $qb->orderBy('r.recetteCreatedAt', 'DESC'),
+        };
+
+        return $qb->getQuery();
+    }
 }

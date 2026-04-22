@@ -8,8 +8,6 @@
 {% endblock %}
 
 {% block body %}
-{% set activeRegime = activeRegime|default('all') %}
-{% set activeSort   = activeSort|default('recent') %}
     <main>
         {# 2. COMPONENT HERO #}
         {% include 'components/_hero.html.twig' %}
@@ -62,14 +60,14 @@
                         <ul class="dropdown-menu shadow">
                             <li>
                                 <a class="dropdown-item {{ activeRegime == 'all' ? 'active' }}"
-                                href="{{ path('app_recette_index', {sort: activeSort}) }}">
+                                href="{{ path('app_home', {tri: activeSort}) }}">
                                     Tous les régimes
                                 </a>
                             </li>
                             {% for label in ['Vegan', 'Végétarien', 'Omnivore'] %}
                                 <li>
                                     <a class="dropdown-item {{ activeRegime == label ? 'active' }}"
-                                    href="{{ path('app_recette_index', {regime: label, sort: activeSort}) }}">
+                                    href="{{ path('app_home', {regime: label, tri: activeSort}) }}">
                                         {{ label }}
                                     </a>
                                 </li>
@@ -85,13 +83,13 @@
                         <ul class="dropdown-menu shadow">
                             <li>
                                 <a class="dropdown-item {{ activeSort == 'recent' ? 'active' }}"
-                                href="{{ path('app_recette_index', {sort: 'recent', regime: activeRegime}) }}">
+                                href="{{ path('app_home', {tri: 'recent', regime: activeRegime}) }}">
                                     Plus récents
                                 </a>
                             </li>
                             <li>
                                 <a class="dropdown-item {{ activeSort == 'popular' ? 'active' }}"
-                                href="{{ path('app_recette_index', {sort: 'popular', regime: activeRegime}) }}">
+                                href="{{ path('app_home', {tri: 'popular', regime: activeRegime}) }}">
                                     Plus populaires
                                 </a>
                             </li>
