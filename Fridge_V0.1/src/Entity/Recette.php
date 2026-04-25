@@ -38,16 +38,16 @@ class Recette
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $recetteDescription = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20, nullable: true)]
     private ?string $recetteDifficulte = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $recettePortion = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $recetteTempsPrepa = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
     private ?int $recetteTempsCuisson = null;
 
     /**
@@ -149,7 +149,7 @@ class Recette
         return $this->recetteDifficulte;
     }
 
-    public function setRecetteDifficulte(string $recetteDifficulte): static
+    public function setRecetteDifficulte(?string $recetteDifficulte): static
     {
         $this->recetteDifficulte = $recetteDifficulte;
         return $this;
@@ -160,7 +160,7 @@ class Recette
         return $this->recettePortion;
     }
 
-    public function setRecettePortion(int $recettePortion): static
+    public function setRecettePortion(?int $recettePortion): static
     {
         $this->recettePortion = $recettePortion;
         return $this;
@@ -171,7 +171,7 @@ class Recette
         return $this->recetteTempsPrepa;
     }
 
-    public function setRecetteTempsPrepa(int $recetteTempsPrepa): static
+    public function setRecetteTempsPrepa(?int $recetteTempsPrepa): static
     {
         $this->recetteTempsPrepa = $recetteTempsPrepa;
         return $this;
@@ -182,7 +182,7 @@ class Recette
         return $this->recetteTempsCuisson;
     }
 
-    public function setRecetteTempsCuisson(int $recetteTempsCuisson): static
+    public function setRecetteTempsCuisson(?int $recetteTempsCuisson): static
     {
         $this->recetteTempsCuisson = $recetteTempsCuisson;
         return $this;

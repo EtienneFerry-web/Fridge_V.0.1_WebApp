@@ -38,6 +38,13 @@ class Contenir
     #[ORM\Column(options: ['default' => false])]
     private bool $contenirEstCoche = false;
 
+    /**
+     * Libellé brut de l'ingrédient (utilisé pour les ingrédients importés depuis Spoonacular).
+     * Permet de stocker un ingrédient sans créer d'entité Ingredient (mapping FR/EN à venir au point 5).
+     */
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $contenirLibelleBrut = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -112,6 +119,17 @@ class Contenir
     {
         $this->contenirEstCoche = $contenirEstCoche;
 
+        return $this;
+    }
+
+    public function getContenirLibelleBrut(): ?string
+    {
+        return $this->contenirLibelleBrut;
+    }
+
+    public function setContenirLibelleBrut(?string $contenirLibelleBrut): static
+    {
+        $this->contenirLibelleBrut = $contenirLibelleBrut;
         return $this;
     }
 }
