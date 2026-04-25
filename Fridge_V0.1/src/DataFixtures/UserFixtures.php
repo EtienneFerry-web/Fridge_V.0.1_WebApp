@@ -16,6 +16,10 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     const USER_ETIENNE = 'user-etienne';
     const USER_ALICE   = 'user-alice';
     const USER_BOB     = 'user-bob';
+    
+    // User système Spoonacular — sert d'auteur aux recettes importées via l'API.
+    // Ne doit jamais pouvoir se connecter (mot de passe random).
+    const SPOONACULAR  = 'user-spoonacular';
 
     public function __construct(
         private UserPasswordHasherInterface $objHasher
@@ -88,6 +92,21 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                ->addRegime($this->getReference(RegimeFixtures::OMNIVORE, \App\Entity\Regime::class));
         $manager->persist($objBob);
         $this->addReference(self::USER_BOB, $objBob);
+
+        // --- Spoonacular (user système, ne se connecte jamais) ---
+        // Le mot de passe est généré aléatoirement à chaque chargement de fixtures.
+        // Personne ne le connaît, donc impossible de se connecter sur ce compte.
+        $objSpoonacular = new User();
+        $strRandomPassword = bin2hex(random_bytes(32)); // 64 caractères hexa imprévisibles
+        $objSpoonacular->setStrName('Spoonacular')
+                       ->setStrFirstname('Système')
+                       ->setStrUsername('spoonacular')
+                       ->setStrEmail('spoonacular@system.local')
+                       ->setRoles(['ROLE_SYSTEM'])
+                       ->setPassword($this->objHasher->hashPassword($objSpoonacular, $strRandomPassword))
+                       ->setIsVerified(true);
+        $manager->persist($objSpoonacular);
+        $this->addReference(self::SPOONACULAR, $objSpoonacular);
 
         $manager->flush();
     }

@@ -20,14 +20,18 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
  * Contrôleur du tableau de bord d'administration.
  *
  * Accessible uniquement aux modérateurs (ROLE_MODERATOR).
- * Permet de gérer les recettes en attente, les utilisateurs et les statistiques globales.
+ * Permet de gérer les utilisateurs, consulter les statistiques globales et les dernières recettes publiées.
+ *
+ * Note : la modération de recettes a été désactivée. Toutes les recettes user sont créées
+ * directement en statut 'prive' (visibles uniquement par leur créateur). Les routes
+ * recipeApprove/recipeReject sont conservées au cas où la modération serait réactivée.
  */
 #[Route('/dashboard')]
 #[IsGranted('ROLE_MODERATOR')]
 class DashboardController extends AbstractController
 {
     /**
-     * Affiche le tableau de bord avec les statistiques, les recettes en attente et la liste des utilisateurs.
+     * Affiche le tableau de bord avec les statistiques, les recettes récentes et la liste des utilisateurs.
      *
      * @param RecetteRepository     $objRecetteRepository Repository des recettes
      * @param LikeRecetteRepository $objLikeRepository    Repository des likes
@@ -52,12 +56,13 @@ class DashboardController extends AbstractController
         $arrTopLiked = $objLikeRepository->findTopLikedRecettes(5);
 
         // --- Recettes en attente ---
-        $arrPending = $objRecetteRepository->findBy(
-            ['recetteStatut' => 'en_attente'],
-            ['recetteCreatedAt' => 'DESC']
-        );
+        // Système de modération désactivé : aucune recette n'est plus en 'en_attente'.
+        // Toutes les recettes user sont créées directement en 'prive'.
+        // Variable conservée pour compatibilité avec le template, au cas où la modération
+        // serait réactivée plus tard.
+        $arrPending = [];
 
-        // --- Dernières recettes publiées ---
+        // --- Dernières recettes publiées (Spoonacular uniquement) ---
         $arrLatest = $objRecetteRepository->findBy(
             ['recetteStatut' => 'publie'],
             ['recetteCreatedAt' => 'DESC'],
@@ -87,6 +92,8 @@ class DashboardController extends AbstractController
     /**
      * Approuve une recette en attente et la publie.
      *
+     * Note : route conservée pour compatibilité, mais la modération est désactivée.
+     *
      * @param Recette                $objRecette       La recette à approuver
      * @param Request                $request          Requête HTTP (contient le token CSRF)
      * @param EntityManagerInterface $objEntityManager Gestionnaire d'entités Doctrine
@@ -111,6 +118,8 @@ class DashboardController extends AbstractController
 
     /**
      * Refuse une recette en attente.
+     *
+     * Note : route conservée pour compatibilité, mais la modération est désactivée.
      *
      * @param Recette                $objRecette       La recette à refuser
      * @param Request                $request          Requête HTTP (contient le token CSRF)

@@ -11,9 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Entité représentant une recette de cuisine.
  *
- * Une recette est créée avec le statut 'en_attente' et doit être validée par un modérateur
- * avant d'être publiée. Elle peut contenir des étapes, des ingrédients (via Contenir),
- * des régimes alimentaires, et peut être likée ou mise en favori par les utilisateurs.
+ * Une recette créée par un utilisateur a la source 'user' et le statut 'prive' :
+ * elle n'est visible que par son créateur. Les recettes importées depuis Spoonacular
+ * ont la source 'spoonacular' et le statut 'publie' : elles sont visibles publiquement.
+ * Elle peut contenir des étapes, des ingrédients (via Contenir), des régimes alimentaires,
+ * et peut être likée ou mise en favori par les utilisateurs.
  */
 #[ORM\Entity(repositoryClass: RecetteRepository::class)]
 class Recette
@@ -103,7 +105,7 @@ class Recette
 
     /**
      * Initialise les collections Doctrine et applique les valeurs par défaut :
-     * statut 'en_attente' (en attente de validation modérateur) et date de création à maintenant.
+     * statut 'prive' (visible uniquement par le créateur) et date de création à maintenant.
      */
     public function __construct()
     {
@@ -111,7 +113,7 @@ class Recette
         $this->likeRecettes     = new ArrayCollection();
         $this->favoris          = new ArrayCollection();
         $this->recetteCreatedAt = new \DateTime();
-        $this->recetteStatut    = 'en_attente';
+        $this->recetteStatut    = 'prive';
         $this->regimes = new ArrayCollection();
         $this->plannings = new ArrayCollection();
         $this->contenirs = new ArrayCollection();

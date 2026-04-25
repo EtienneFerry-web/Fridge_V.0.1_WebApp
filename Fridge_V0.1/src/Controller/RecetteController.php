@@ -92,7 +92,7 @@ final class RecetteController extends AbstractController
             foreach ($objRecette->getEtapes() as $objEtape) {
                 $objEtape->setEtapeNumero($intNumero++);
                 }
-            $objRecette->setRecetteStatut('en_attente');
+            $objRecette->setRecetteStatut('prive');
             $objRecette->setCreatedBy($this->getUser());
             $objEntityManager->persist($objRecette);
             $objEntityManager->flush();
@@ -141,10 +141,6 @@ final class RecetteController extends AbstractController
 
                 $strNomFichier = $this->uploadPhoto($objPhotoFile, $objSlugger);
                 $objRecette->setRecettePhoto($strNomFichier);
-            }
-
-            if (!$this->isGranted('ROLE_MODERATOR') && !$this->isGranted('ROLE_ADMIN')) {
-                $objRecette->setRecetteStatut('en_attente');
             }
             
             $objEntityManager->flush();

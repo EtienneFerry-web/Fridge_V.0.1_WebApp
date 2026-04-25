@@ -15,6 +15,10 @@ use Symfony\Component\Routing\Attribute\Route;
  * Contrôleur de recherche de recettes.
  *
  * Permet de filtrer les recettes par mots-clés, difficulté, régime alimentaire, origine et temps de préparation.
+ *
+ * Visibilité :
+ * - Visiteurs non connectés : uniquement les recettes Spoonacular publiées en BDD
+ * - Utilisateurs connectés : leurs propres recettes + les recettes Spoonacular publiées
  */
 final class SearchController extends AbstractController
 {
@@ -35,14 +39,18 @@ final class SearchController extends AbstractController
         LikeRecetteRepository $objLikeRecetteRepository,
         FavoriRepository      $objFavoriRepository
     ): Response {
-        $query = $request->query->get('q', '');
+        $query                  = $request->query->get('q', '');
         $arrDifficulte          = $request->query->all('difficulte');
         $arrRegimes             = $request->query->all('regimes');
         $strOrigine             = $request->query->get('origine', '');
         $intTempsPreparationMax = $request->query->getInt('temps_preparation_max', 120);
         $strSortBy              = $request->query->get('sort_by', 'pertinence');
 
-        $arrRecettes                = $recetteRepository->findBySearch(
+        // Récupération de l'utilisateur connecté (null si visiteur anonyme)
+        $objUser = $this->getUser();
+
+        $arrRecettes = $recetteRepository->findBySearch(
+            $objUser,                  // ← nouveau paramètre : restreint la visibilité
             $query,
             $arrDifficulte,
             $arrRegimes,
@@ -51,14 +59,13 @@ final class SearchController extends AbstractController
             $strSortBy
         );
 
-        // Likes
+        // Likes & favoris (uniquement pour les users connectés)
         $arrLikedIds   = [];
         $arrLikeCounts = [];
-        $arrFavoriIds = [];
-        $objUser       = $this->getUser();
+        $arrFavoriIds  = [];
 
         if ($objUser) {
-            $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
+            $arrLikedIds  = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
             $arrFavoriIds = $objFavoriRepository->findFavoriIdsByUser($objUser);
         }
 
