@@ -419,4 +419,37 @@ class Recette
 
         return $this;
     }
+
+    public function getRecetteSource(): string
+    {
+        return $this->recetteSource;
+    }
+
+    public function setRecetteSource(string $recetteSource): static
+    {
+        $this->recetteSource = $recetteSource;
+        return $this;
+    }
+
+    public function getSpoonacularId(): ?int
+    {
+        return $this->spoonacularId;
+    }
+
+    public function setSpoonacularId(?int $spoonacularId): static
+    {
+        $this->spoonacularId = $spoonacularId;
+        return $this;
+    }
+
+    public function getSourceUrl(): ?string
+    {
+        return $this->sourceUrl;
+    }
+
+    public function setSourceUrl(?string $sourceUrl): static
+    {
+        $this->sourceUrl = $sourceUrl;
+        return $this;
+    }
 }

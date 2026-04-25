@@ -390,4 +390,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
+    public function getIntId(): ?int
+    {
+        return $this->intId;
+    }
+
+    public function getArrRoles(): array
+    {
+        return $this->arrRoles;
+    }
+
+    public function setArrRoles(array $arrRoles): static
+    {
+        $this->arrRoles = $arrRoles;
+
+        return $this;
+    }
+
+    public function getStrPassword(): ?string
+    {
+        return $this->strPassword;
+    }
+
+    public function setStrPassword(string $strPassword): static
+    {
+        $this->strPassword = $strPassword;
+
+        return $this;
+    }
 }
