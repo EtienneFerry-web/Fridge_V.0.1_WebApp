@@ -23,6 +23,15 @@ class Recette
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 20)]
+    private string $recetteSource = 'user'; // 'user' | 'spoonacular'
+
+    #[ORM\Column(nullable: true)]
+    private ?int $spoonacularId = null;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $sourceUrl = null;
+
     #[ORM\Column(length: 150)]
     private ?string $recetteLibelle = null;
 

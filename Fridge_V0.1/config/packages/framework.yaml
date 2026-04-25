@@ -8,6 +8,14 @@ framework:
     #fragments: true
     error_controller: App\Controller\ErrorController::show
 
+    http_client:
+        scoped_clients:
+            spoonacular.client:
+                base_uri: '%env(SPOONACULAR_BASE_URL)%'
+                headers:
+                    x-api-key: '%env(SPOONACULAR_API_KEY)%'
+                    Accept: 'application/json'
+
 when@test:
     framework:
         test: true
