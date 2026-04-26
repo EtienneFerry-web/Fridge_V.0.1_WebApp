@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ data.title }} - Fridge{% endblock %}
+
+{% block body %}
+    <main class="container py-4">
+
+        <nav aria-label="Fil d'ariane">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_recette_index') }}">Découvrir</a></li>
+                <li class="breadcrumb-item active">{{ data.title }}</li>
+            </ol>
+        </nav>
+
+        {% if data.image is defined and data.image %}
+            <img src="{{ data.image }}"
+                 class="w-100 rounded shadow-sm mb-4"
+                 alt="{{ data.title }}"
+                 style="height: 350px; object-fit: cover;">
+        {% endif %}
+
+        <div class="bg-white rounded shadow-sm p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
+                <div>
+                    <h1 class="h2 fw-bold mb-1">{{ data.title }}</h1>
+                    <p class="text-muted small mb-0">
+                        <i class="bi bi-stars me-1"></i>Recette Spoonacular
+                        {% if data.sourceName is defined and data.sourceName %}
+                            · Source : {{ data.sourceName }}
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if app.user %}
+                    <form action="{{ path('app_recette_spoonacular_save', {spoonacularId: data.id}) }}" method="POST">
+                        <input type="hidden" name="_token" value="{{ csrf_token('save_spoonacular_' ~ data.id) }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-bookmark-plus me-1"></i> Sauvegarder
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-bookmark-plus me-1"></i> Connectez-vous pour sauvegarder
+                    </a>
+                {% endif %}
+            </div>
+
+            {# --- Badges info --- #}
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                {% if data.readyInMinutes is defined %}
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-clock me-1"></i>{{ data.readyInMinutes }} min
+                    </span>
+                {% endif %}
+                {% if data.servings is defined %}
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-people me-1"></i>{{ data.servings }} portions
+                    </span>
+                {% endif %}
+                {% if data.vegetarian is defined and data.vegetarian %}
+                    <span class="badge bg-success">Végétarien</span>
+                {% endif %}
+                {% if data.vegan is defined and data.vegan %}
+                    <span class="badge bg-success">Vegan</span>
+                {% endif %}
+                {% if data.glutenFree is defined and data.glutenFree %}
+                    <span class="badge bg-info">Sans gluten</span>
+                {% endif %}
+                {% if data.dairyFree is defined and data.dairyFree %}
+                    <span class="badge bg-info">Sans lactose</span>
+                {% endif %}
+            </div>
+
+            {# --- Description (HTML strippé) --- #}
+            {% if data.summary is defined and data.summary %}
+                <div class="text-muted mb-4">
+                    {{ data.summary|striptags|raw }}
+                </div>
+            {% endif %}
+
+            {# --- Ingrédients --- #}
+            {% if data.extendedIngredients is defined and data.extendedIngredients|length > 0 %}
+                <h2 class="h5 fw-bold mb-3">Ingrédients</h2>
+                <ul class="list-group mb-4">
+                    {% for ing in data.extendedIngredients %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="bi bi-check2-circle text-primary me-2"></i>
+                                {{ ing.name }}
+                            </div>
+                            {% if ing.amount > 0 %}
+                                <span class="badge rounded-pill bg-secondary">
+                                    {{ ing.amount }} {{ ing.unit }}
+                                </span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {# --- Étapes --- #}
+            {% if data.analyzedInstructions is defined and data.analyzedInstructions|length > 0 %}
+                <h2 class="h5 fw-bold mb-3">Étapes</h2>
+                <ol class="list-group list-group-numbered mb-4">
+                    {% for bloc in data.analyzedInstructions %}
+                        {% for etape in bloc.steps %}
+                            <li class="list-group-item">{{ etape.step }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ol>
+            {% elseif data.instructions is defined and data.instructions %}
+                <h2 class="h5 fw-bold mb-3">Instructions</h2>
+                <div class="text-muted">{{ data.instructions|striptags|raw }}</div>
+            {% endif %}
+
+            {# --- Lien source --- #}
+            {% if data.sourceUrl is defined and data.sourceUrl %}
+                <p class="text-muted small mt-4 mb-0">
+                    <i class="bi bi-link-45deg me-1"></i>
+                    <a href="{{ data.sourceUrl }}" target="_blank" rel="noopener">
+                        Voir la recette originale
+                    </a>
+                </p>
+            {% endif %}
+        </div>
+    </main>
+{% endblock %}

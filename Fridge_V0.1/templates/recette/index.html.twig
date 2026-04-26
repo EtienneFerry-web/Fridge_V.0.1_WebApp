@@ -1,52 +1,83 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Recettes - Fridge{% endblock %}
+{% block title %}Découvrir des recettes - Fridge{% endblock %}
 
 {% block body %}
     <main class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="h3 fw-bold mb-0">Toutes les recettes</h1>
-            {% if is_granted('ROLE_USER') %}
-                <a href="{{ path('app_recette_new') }}" class="btn btn-primary">
-                    <i class="bi bi-plus-lg me-1"></i> Nouvelle recette
-                </a>
-            {% endif %}
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold mb-1">Découvrir des recettes</h1>
+                <p class="text-muted mb-0 small">
+                    <i class="bi bi-stars me-1"></i>
+                    Recettes du monde entier, propulsées par Spoonacular
+                </p>
+            </div>
         </div>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for recette in recettes %}
-                <div class="col">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ recette.recetteLibelle }}</h5>
-                            <p class="card-text text-muted small">{{ recette.recetteDescription|slice(0, 100) }}...</p>
-                            <div class="d-flex gap-2 flex-wrap">
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-clock me-1"></i>{{ recette.recetteTempsPrepa + recette.recetteTempsCuisson }} min
-                                </span>
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-bar-chart me-1"></i>{{ recette.recetteDifficulte }}
-                                </span>
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-people me-1"></i>{{ recette.recettePortion }} pers.
-                                </span>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-between">
-                            <a href="{{ path('app_recette_show', {id: recette.id}) }}" class="btn btn-sm btn-outline-dark">
-                                Voir la recette
-                            </a>
-                            {% if is_granted('ROLE_USER') %}
-                                <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-sm btn-outline-secondary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            {% else %}
-                <p class="text-muted">Aucune recette disponible pour le moment.</p>
+        {# --- Filtres régime --- #}
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            {% set regimes = ['all', 'Omnivore', 'Végétarien', 'Vegan', 'Sans gluten', 'Sans lactose'] %}
+            {% for regime in regimes %}
+                <a href="{{ path('app_recette_index', {regime: regime, sort: activeSort}) }}"
+                   class="btn btn-sm {{ activeRegime == regime ? 'btn-dark' : 'btn-outline-dark' }}">
+                    {{ regime == 'all' ? 'Tous' : regime }}
+                </a>
             {% endfor %}
         </div>
+
+        {# --- Liste des recettes --- #}
+        {% if recettes is empty %}
+            <div class="text-center py-5">
+                <i class="bi bi-emoji-frown display-4 text-muted"></i>
+                <p class="text-muted mt-3">Aucune recette trouvée pour ces critères.</p>
+            </div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for recette in recettes %}
+                    <div class="col">
+                        <a href="{{ path('app_recette_spoonacular_show', {spoonacularId: recette.id}) }}"
+                           class="text-decoration-none text-dark">
+                            <div class="card h-100 shadow-sm hover-lift">
+                                {% if recette.image is defined and recette.image %}
+                                    <img src="{{ recette.image }}"
+                                         class="card-img-top"
+                                         alt="{{ recette.title }}"
+                                         style="height: 200px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h5 class="card-title mb-3">{{ recette.title }}</h5>
+                                    <div class="d-flex gap-2 flex-wrap">
+                                        {% if recette.readyInMinutes is defined %}
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="bi bi-clock me-1"></i>{{ recette.readyInMinutes }} min
+                                            </span>
+                                        {% endif %}
+                                        {% if recette.servings is defined %}
+                                            <span class="badge bg-light text-dark border">
+                                                <i class="bi bi-people me-1"></i>{{ recette.servings }} pers.
+                                            </span>
+                                        {% endif %}
+                                        {% if recette.vegetarian is defined and recette.vegetarian %}
+                                            <span class="badge bg-success">Végé</span>
+                                        {% endif %}
+                                        {% if recette.vegan is defined and recette.vegan %}
+                                            <span class="badge bg-success">Vegan</span>
+                                        {% endif %}
+                                        {% if recette.glutenFree is defined and recette.glutenFree %}
+                                            <span class="badge bg-info">Sans gluten</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-0 pt-0">
+                                    <span class="btn btn-sm btn-outline-dark w-100">
+                                        Voir la recette <i class="bi bi-arrow-right ms-1"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
     </main>
 {% endblock %}

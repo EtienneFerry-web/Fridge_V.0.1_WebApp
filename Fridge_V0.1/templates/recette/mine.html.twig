@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes recettes - Fridge{% endblock %}
+
+{% block body %}
+    <main class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+            <div>
+                <h1 class="h3 fw-bold mb-1">Mes recettes</h1>
+                <p class="text-muted mb-0 small">
+                    Vos créations personnelles. Visibles uniquement par vous.
+                </p>
+            </div>
+            <a href="{{ path('app_recette_new') }}" class="btn btn-primary">
+                <i class="bi bi-plus-lg me-1"></i> Nouvelle recette
+            </a>
+        </div>
+
+        {# --- Filtres régime --- #}
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            {% set regimes = ['all', 'Omnivore', 'Végétarien', 'Vegan', 'Sans gluten', 'Sans lactose'] %}
+            {% for regime in regimes %}
+                <a href="{{ path('app_recette_mine', {regime: regime, sort: activeSort}) }}"
+                   class="btn btn-sm {{ activeRegime == regime ? 'btn-dark' : 'btn-outline-dark' }}">
+                    {{ regime == 'all' ? 'Tous' : regime }}
+                </a>
+            {% endfor %}
+        </div>
+
+        {# --- Liste des recettes utilisateur --- #}
+        {% if recettes is empty %}
+            <div class="text-center py-5 bg-light rounded">
+                <i class="bi bi-journal-text display-4 text-muted"></i>
+                <p class="text-muted mt-3 mb-3">Vous n'avez pas encore créé de recette.</p>
+                <a href="{{ path('app_recette_new') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Créer ma première recette
+                </a>
+            </div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for recette in recettes %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            {% if recette.recettePhoto %}
+                                <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
+                                     class="card-img-top"
+                                     alt="{{ recette.recetteLibelle }}"
+                                     style="height: 200px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ recette.recetteLibelle }}</h5>
+                                {% if recette.recetteDescription %}
+                                    <p class="card-text text-muted small">
+                                        {{ recette.recetteDescription|slice(0, 100) }}{% if recette.recetteDescription|length > 100 %}...{% endif %}
+                                    </p>
+                                {% endif %}
+                                <div class="d-flex gap-2 flex-wrap">
+                                    {% if recette.recetteTempsPrepa or recette.recetteTempsCuisson %}
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-clock me-1"></i>{{ (recette.recetteTempsPrepa ?? 0) + (recette.recetteTempsCuisson ?? 0) }} min
+                                        </span>
+                                    {% endif %}
+                                    {% if recette.recetteDifficulte %}
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-bar-chart me-1"></i>{{ recette.recetteDifficulte }}
+                                        </span>
+                                    {% endif %}
+                                    {% if recette.recettePortion %}
+                                        <span class="badge bg-light text-dark border">
+                                            <i class="bi bi-people me-1"></i>{{ recette.recettePortion }} pers.
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="card-footer d-flex justify-content-between bg-white">
+                                <a href="{{ path('app_recette_show', {id: recette.id}) }}" class="btn btn-sm btn-outline-dark">
+                                    Voir
+                                </a>
+                                {% if is_granted('RECETTE_EDIT', recette) %}
+                                    <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </main>
+{% endblock %}

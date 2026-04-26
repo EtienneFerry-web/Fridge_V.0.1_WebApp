@@ -12,9 +12,17 @@
         </nav>
 
         {% if recette.recettePhoto is defined and recette.recettePhoto %}
-            <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
-                class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
-                style="height: 350px; object-fit: cover;">
+            {# Si la photo est une URL absolue (Spoonacular), on l'utilise telle quelle.
+            Sinon (upload utilisateur local), on passe par asset(). #}
+            {% if recette.recettePhoto starts with 'http' %}
+                <img src="{{ recette.recettePhoto }}"
+                    class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
+                    style="height: 350px; object-fit: cover;">
+            {% else %}
+                <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
+                    class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
+                    style="height: 350px; object-fit: cover;">
+            {% endif %}
         {% else %}
             <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200"
                 class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
@@ -62,22 +70,24 @@
                 <p class="text-muted mb-4">{{ recette.recetteDescription }}</p>
             {% endif %}
 
-            {% if recette.contenirs|length > 0 %}
-                <h2 class="h5 fw-bold mb-3">Ingrédients</h2>
-                <ul class="list-group mb-4">
-                    {% for contenir in recette.contenirs %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <i class="bi bi-check2-circle text-primary me-2"></i>
-                                {{ contenir.ingredient.ingredientLibelle }}
-                            </div>
-                            <span class="badge rounded-pill shadow-sm" style="background-color: var(--tomato-jam); color: var(--linen); border: 1.5px solid var(--tomato-dark);">
-                                {{ contenir.contenirQuantite }} {{ contenir.contenirUnite }}
-                            </span>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
+            {% for contenir in recette.contenirs %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <i class="bi bi-check2-circle text-primary me-2"></i>
+                        {# Recettes user : ingrédient en BDD via la relation. Recettes Spoonacular : libellé brut. #}
+                        {% if contenir.ingredient %}
+                            {{ contenir.ingredient.ingredientLibelle }}
+                        {% elseif contenir.contenirLibelleBrut %}
+                            {{ contenir.contenirLibelleBrut }}
+                        {% endif %}
+                    </div>
+                    {% if contenir.contenirQuantite %}
+                        <span class="badge rounded-pill shadow-sm" style="background-color: var(--tomato-jam); color: var(--linen); border: 1.5px solid var(--tomato-dark);">
+                            {{ contenir.contenirQuantite }} {{ contenir.contenirUnite }}
+                        </span>
+                    {% endif %}
+                </li>
+            {% endfor %}
 
             {% if recette.etapes|length > 0 %}
                 <h2 class="h5 fw-bold mb-3">Étapes</h2>
