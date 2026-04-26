@@ -129,4 +129,25 @@ class SpoonacularMapper
 
         return $arrRegimes;
     }
+
+    /**
+     * Convertit un libellé de régime BDD en paramètres pour Spoonacular complexSearch.
+     *
+     * Spoonacular distingue 'diet' (vegan/vegetarian) et 'intolerances' (gluten/dairy),
+     * d'où le retour d'un tableau associatif qui peut contenir l'une ou l'autre clé.
+     *
+     * @param string $strRegime Libellé exact du régime BDD ou 'all' pour aucun filtre
+     *
+     * @return array{diet?: string, intolerances?: string} Paramètres à fusionner dans la query API
+     */
+    public function mapRegimeToApiParams(string $strRegime): array
+    {
+        return match ($strRegime) {
+            self::REGIME_VEGETARIEN   => ['diet' => 'vegetarian'],
+            self::REGIME_VEGAN        => ['diet' => 'vegan'],
+            self::REGIME_SANS_GLUTEN  => ['intolerances' => 'gluten'],
+            self::REGIME_SANS_LACTOSE => ['intolerances' => 'dairy'],
+            default                   => [], // 'Omnivore', 'all', ou inconnu → pas de filtre
+        };
+    }
 }

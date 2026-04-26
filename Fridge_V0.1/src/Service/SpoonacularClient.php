@@ -83,4 +83,72 @@ class SpoonacularClient
             return $response->toArray();
         });
     }
+
+    /**
+     * Recherche avancée de recettes avec filtres et tri (catalogue de découverte).
+     *
+     * Utilisé par la liste publique /recette. Supporte régime, intolérances, tri et pagination.
+     *
+     * @param int    $intNumber Nombre de recettes à retourner (max 100)
+     * @param int    $intOffset Décalage pour pagination (0 = première page)
+     * @param string $strSort   Tri Spoonacular : 'popularity', 'healthiness', 'time', 'random', 'meta-score'
+     * @param array  $arrFilters Filtres additionnels : ['diet' => 'vegan', 'intolerances' => 'gluten', 'cuisine' => 'italian', ...]
+     *
+     * @return array Réponse Spoonacular avec clés : results, offset, number, totalResults
+     */
+    public function complexSearch(
+        int $intNumber = 12,
+        int $intOffset = 0,
+        string $strSort = 'popularity',
+        array $arrFilters = []
+    ): array {
+        ksort($arrFilters); // pour stabiliser la clé de cache
+        $strCacheKey = 'spoon_search_' . md5(serialize([$intNumber, $intOffset, $strSort, $arrFilters]));
+
+        return $this->cache->get($strCacheKey, function (ItemInterface $item) use ($intNumber, $intOffset, $strSort, $arrFilters) {
+            $item->expiresAfter(3600); // 1h : la liste publique évolue, on ne sur-cache pas
+
+            $arrQuery = array_merge($arrFilters, [
+                'number'             => $intNumber,
+                'offset'             => $intOffset,
+                'sort'               => $strSort,
+                'addRecipeInformation' => 'true', // pour avoir image, readyInMinutes, servings dans les résultats
+            ]);
+
+            $objResponse = $this->spoonacularClient->request('GET', '/recipes/complexSearch', [
+                'query' => $arrQuery,
+            ]);
+
+            return $objResponse->toArray();
+        });
+    }
+
+    /**
+     * Récupère un lot de recettes aléatoires (mode "surprends-moi").
+     *
+     * Pas de pagination ni de tri — utile pour une page d'inspiration.
+     *
+     * @param int      $intNumber Nombre de recettes (max 100)
+     * @param string[] $arrTags   Tags Spoonacular (cuisines, régimes, types de plat) — joints par virgule
+     */
+    public function getRandomRecipes(int $intNumber = 12, array $arrTags = []): array
+    {
+        sort($arrTags);
+        $strCacheKey = 'spoon_random_' . md5($intNumber . '_' . implode(',', $arrTags));
+
+        return $this->cache->get($strCacheKey, function (ItemInterface $item) use ($intNumber, $arrTags) {
+            $item->expiresAfter(1800); // 30min : on veut un peu de variété mais sans cramer le quota
+
+            $arrQuery = ['number' => $intNumber];
+            if (!empty($arrTags)) {
+                $arrQuery['tags'] = implode(',', $arrTags);
+            }
+
+            $objResponse = $this->spoonacularClient->request('GET', '/recipes/random', [
+                'query' => $arrQuery,
+            ]);
+
+            return $objResponse->toArray();
+        });
+    }
 }

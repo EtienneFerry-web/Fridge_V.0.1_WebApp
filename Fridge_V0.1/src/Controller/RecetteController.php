@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Service\SpoonacularClient;
+use App\Service\SpoonacularMapper;
 
 /**
  * Contrôleur CRUD des recettes.
@@ -30,18 +32,62 @@ final class RecetteController extends AbstractController
      * @param RecetteRepository $objRepository Repository des recettes
      * @param Request           $objRequest    Requête HTTP (paramètres ?regime= et ?sort=)
      */
+/**
+     * Liste de découverte : recettes Spoonacular en API directe avec filtres et tri.
+     *
+     * Aucune lecture BDD ici — la liste publique est entièrement servie par Spoonacular.
+     * Les recettes ne sont importées en BDD qu'au clic "Sauvegarder" (cf. spoonacularSave).
+     *
+     * @param Request           $objRequest Requête HTTP (paramètres ?regime= et ?sort=)
+     * @param SpoonacularClient $objClient  Client API Spoonacular
+     * @param SpoonacularMapper $objMapper  Mapper de régimes vers paramètres API
+     */
     #[Route('/recette', name: 'app_recette_index')]
-    public function index(RecetteRepository $objRepository, Request $objRequest): Response
-    {
+    public function index(
+        Request $objRequest,
+        SpoonacularClient $objClient,
+        SpoonacularMapper $objMapper
+    ): Response {
         $strRegime = $objRequest->query->get('regime', 'all');
         $strSort   = $objRequest->query->get('sort', 'recent');
 
-        $arrRecettes = $objRepository->findWithFilters($strRegime, $strSort);
+        // Mapping du tri interne vers le tri Spoonacular
+        $strApiSort = match ($strSort) {
+            'popular' => 'popularity',
+            'recent'  => 'popularity', // pas d'équivalent natif côté API
+            default   => 'popularity',
+        };
+
+        // Mapping du régime interne vers les paramètres API (diet ou intolerances)
+        $arrFilters = $strRegime !== 'all'
+            ? $objMapper->mapRegimeToApiParams($strRegime)
+            : [];
+
+        $arrRecettes = [];
+        $strFlashError = null;
+
+        try {
+            $arrResponse = $objClient->complexSearch(
+                intNumber:  24,
+                intOffset:  0,
+                strSort:    $strApiSort,
+                arrFilters: $arrFilters
+            );
+            $arrRecettes = $arrResponse['results'] ?? [];
+        } catch (\Throwable $e) {
+            // En cas d'erreur API (quota, réseau, etc.) on dégrade proprement
+            $strFlashError = 'Impossible de charger les recettes pour le moment. Réessaie dans un instant.';
+        }
+
+        if ($strFlashError !== null) {
+            $this->addFlash('error', $strFlashError);
+        }
 
         return $this->render('recette/index.html.twig', [
-            'recettes'      => $arrRecettes,
-            'activeRegime'  => $strRegime,
-            'activeSort'    => $strSort,
+            'recettes'     => $arrRecettes,
+            'activeRegime' => $strRegime,
+            'activeSort'   => $strSort,
+            'isApiList'    => true, // flag pour le template : on est en mode Spoonacular brut
         ]);
     }
 
