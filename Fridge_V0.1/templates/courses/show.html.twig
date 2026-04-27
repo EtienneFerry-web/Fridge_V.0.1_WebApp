@@ -57,9 +57,9 @@
                                                        {{ item.contenirEstCoche ? 'checked' : '' }}
                                                        style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                                             </div>
-                                            <label class="form-check-label mb-0 {{ item.contenirEstCoche ? 'text-decoration-line-through text-muted' : 'fw-bold' }}" 
+                                            <label class="form-check-label mb-0 {{ item.contenirEstCoche ? 'text-decoration-line-through text-muted' : 'fw-bold' }}"
                                                    for="check-{{ item.id }}" style="cursor: pointer;">
-                                                {{ item.ingredient.ingredientLibelle }}
+                                                {{ item.ingredient ? item.ingredient.ingredientLibelle : item.contenirLibelleBrut }}
                                             </label>
                                         </div>
                                         <div class="text-end">

@@ -51,23 +51,41 @@ class ListeCourseService
                     continue;
                 }
 
-                $ingredient = $contenir->getIngredient();
-                if ($ingredient === null) {
-                    continue;
+                $ingredient    = $contenir->getIngredient();
+                $libelleBrut   = $contenir->getContenirLibelleBrut();
+
+                // Recette locale : ingrédient en BDD
+                if ($ingredient !== null) {
+                    $unite  = $contenir->getContenirUnite() ?? '';
+                    $cleAgg = 'id_' . $ingredient->getId() . '|' . $unite;
+
+                    if (!isset($agregat[$cleAgg])) {
+                        $agregat[$cleAgg] = [
+                            'ingredient'  => $ingredient,
+                            'libelleBrut' => null,
+                            'quantite'    => 0,
+                            'unite'       => $contenir->getContenirUnite(),
+                        ];
+                    }
+
+                    $agregat[$cleAgg]['quantite'] += $contenir->getContenirQuantite() ?? 0;
+
+                // Recette Spoonacular : ingrédient stocké comme libellé brut
+                } elseif ($libelleBrut !== null && $libelleBrut !== '') {
+                    $unite  = $contenir->getContenirUnite() ?? '';
+                    $cleAgg = 'brut_' . mb_strtolower($libelleBrut) . '|' . $unite;
+
+                    if (!isset($agregat[$cleAgg])) {
+                        $agregat[$cleAgg] = [
+                            'ingredient'  => null,
+                            'libelleBrut' => $libelleBrut,
+                            'quantite'    => 0,
+                            'unite'       => $contenir->getContenirUnite(),
+                        ];
+                    }
+
+                    $agregat[$cleAgg]['quantite'] += $contenir->getContenirQuantite() ?? 0;
                 }
-
-                $unite  = $contenir->getContenirUnite() ?? '';
-                $cleAgg = $ingredient->getId() . '|' . $unite;
-
-                if (!isset($agregat[$cleAgg])) {
-                    $agregat[$cleAgg] = [
-                        'ingredient' => $ingredient,
-                        'quantite'   => 0,
-                        'unite'      => $contenir->getContenirUnite(),
-                    ];
-                }
-
-                $agregat[$cleAgg]['quantite'] += $contenir->getContenirQuantite() ?? 0;
             }
         }
 
@@ -83,6 +101,7 @@ class ListeCourseService
         foreach ($agregat as $ligne) {
             $contenir = new Contenir();
             $contenir->setIngredient($ligne['ingredient'])
+                     ->setContenirLibelleBrut($ligne['libelleBrut'])
                      ->setContenirQuantite($ligne['quantite'])
                      ->setContenirUnite($ligne['unite'])
                      ->setListeCourse($listeCourse);

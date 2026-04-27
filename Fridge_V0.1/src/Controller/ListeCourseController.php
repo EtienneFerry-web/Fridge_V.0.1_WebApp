@@ -132,7 +132,12 @@ class ListeCourseController extends AbstractController
         $parCategorie = [];
         foreach ($liste->getContenirs() as $contenir) {
             $ingredient = $contenir->getIngredient();
-            $categorie  = $ingredient?->getIngredientType() ?? 'Autre';
+            if ($ingredient !== null) {
+                $categorie = $ingredient->getIngredientType() ?? 'Autre';
+            } else {
+                // Ingrédients Spoonacular : pas de catégorie connue
+                $categorie = 'Spoonacular';
+            }
             $parCategorie[$categorie][] = $contenir;
         }
         ksort($parCategorie);
