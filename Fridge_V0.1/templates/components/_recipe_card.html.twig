@@ -9,15 +9,9 @@
      {% endif %}
 >
     <div class="position-relative">
-        {% if photo is defined and photo %}
-            <img src="{{ asset('uploads/recettes/' ~ photo) }}"
-                 class="card-img-top" alt="{{ title }}"
-                 style="height: 200px; object-fit: cover;">
-        {% else %}
-            <img src="{{ image|default('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500') }}"
-                 class="card-img-top" alt="{{ title }}"
-                 style="height: 200px; object-fit: cover;">
-        {% endif %}
+        <img src="{{ photo|default('')|recette_photo }}"
+             class="card-img-top" alt="{{ title }}"
+             style="height: 200px; object-fit: cover;">
 
         {% if rating is defined %}
             <span class="position-absolute top-0 end-0 m-2 badge rounded-pill bg-white text-dark shadow-sm">
