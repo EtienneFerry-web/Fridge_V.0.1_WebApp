@@ -55,9 +55,7 @@
                                 {% if objPlanning and objPlanning.planningRecette %}
                                     <div class="d-flex flex-column align-items-center gap-1 h-100 justify-content-center position-relative">
                                         {% if objPlanning.planningRecette.recettePhoto %}
-                                            <img src="{{ asset('uploads/recettes/' ~ objPlanning.planningRecette.recettePhoto) }}"
-                                                 class="rounded-circle" style="width:42px; height:42px; object-fit:cover;"
-                                                 alt="{{ objPlanning.planningRecette.recetteLibelle }}">
+                                            <img src="{{ objPlanning.planningRecette.recettePhoto|recette_photo }}"
                                         {% endif %}
                                         <span class="small fw-bold text-dark" style="font-size:0.72rem; line-height:1.2;">
                                             {{ objPlanning.planningRecette.recetteLibelle|slice(0, 20) }}{% if objPlanning.planningRecette.recetteLibelle|length > 20 %}…{% endif %}
@@ -124,9 +122,7 @@
                                          onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
                                          style="cursor:pointer;">
                                         {% if objRecette.recettePhoto %}
-                                            <img src="{{ asset('uploads/recettes/' ~ objRecette.recettePhoto) }}"
-                                                 class="card-img-top" style="height:100px; object-fit:cover;"
-                                                 alt="{{ objRecette.recetteLibelle }}">
+                                            <img src="{{ objRecette.recettePhoto|recette_photo }}"
                                         {% endif %}
                                         <div class="card-body p-2 text-center">
                                             <p class="small fw-bold mb-1">{{ objRecette.recetteLibelle }}</p>
@@ -154,9 +150,7 @@
                                          onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
                                          style="cursor:pointer;">
                                         {% if objRecette.recettePhoto %}
-                                            <img src="{{ asset('uploads/recettes/' ~ objRecette.recettePhoto) }}"
-                                                 class="card-img-top" style="height:100px; object-fit:cover;"
-                                                 alt="{{ objRecette.recetteLibelle }}">
+                                            ? `<img src="${objData.photo.startsWith('http') ? objData.photo : '/uploads/recettes/' + objData.photo}" class="rounded-circle" style="width:42px;height:42px;object-fit:cover;" alt="${objData.titre}">`
                                         {% endif %}
                                         <div class="card-body p-2 text-center">
                                             <p class="small fw-bold mb-1">{{ objRecette.recetteLibelle }}</p>

@@ -5,9 +5,7 @@
     <div class="mb-3">
         {% if form.vars.data.recettePhoto %}
             <div class="mb-2">
-                <img src="{{ asset('uploads/recettes/' ~ form.vars.data.recettePhoto) }}"
-                    alt="Photo actuelle"
-                    style="max-width: 200px; height: auto; border-radius: 8px;">
+                <img src="{{ form.vars.data.recettePhoto|recette_photo }}"
                 <p class="small text-muted mt-1">Photo actuelle — choisissez-en une nouvelle pour la remplacer.</p>
             </div>
         {% endif %}

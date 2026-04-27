@@ -41,12 +41,10 @@
                 {% for recette in recettes %}
                     <div class="col">
                         <div class="card h-100 shadow-sm">
-                            {% if recette.recettePhoto %}
-                                <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
-                                     class="card-img-top"
-                                     alt="{{ recette.recetteLibelle }}"
-                                     style="height: 200px; object-fit: cover;">
-                            {% endif %}
+                            <img src="{{ recette.recettePhoto|recette_photo }}"
+                                class="card-img-top"
+                                alt="{{ recette.recetteLibelle }}"
+                                style="height: 200px; object-fit: cover;">
                             <div class="card-body">
                                 <h5 class="card-title">{{ recette.recetteLibelle }}</h5>
                                 {% if recette.recetteDescription %}

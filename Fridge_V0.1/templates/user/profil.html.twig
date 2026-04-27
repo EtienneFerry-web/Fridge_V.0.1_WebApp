@@ -78,9 +78,7 @@
                 {% for objFavori in arrFavoris %}
                     <li class="list-group-item px-0 d-flex align-items-center gap-3 bg-transparent">
                         {% if objFavori.favoriRecette.recettePhoto %}
-                            <img src="{{ asset('uploads/recettes/' ~ objFavori.favoriRecette.recettePhoto) }}"
-                                alt="{{ objFavori.favoriRecette.recetteLibelle }}"
-                                class="rounded" style="width:48px; height:48px; object-fit:cover;">
+                            <img src="{{ objFavori.favoriRecette.recettePhoto|recette_photo }}"
                         {% else %}
                             <div class="rounded bg-secondary-subtle" style="width:48px; height:48px;"></div>
                         {% endif %}

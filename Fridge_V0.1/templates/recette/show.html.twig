@@ -10,15 +10,10 @@
                 <li class="breadcrumb-item active">{{ recette.recetteLibelle }}</li>
             </ol>
         </nav>
-
-        {% if recette.recettePhoto is defined and recette.recettePhoto %}
-            {# Si la photo est une URL absolue (Spoonacular), on l'utilise telle quelle.
-            Sinon (upload utilisateur local), on passe par asset(). #}
-            {% if recette.recettePhoto starts with 'http' %}
-                <img src="{{ recette.recettePhoto }}"
-                    class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
+        <img src="{{ recette.recettePhoto|recette_photo }}"
+                    class="w-100 rounded shadow-sm mb-4"
+                    alt="{{ recette.recetteLibelle }}"
                     style="height: 350px; object-fit: cover;">
-            {% else %}
                 <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
                     class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
                     style="height: 350px; object-fit: cover;">
