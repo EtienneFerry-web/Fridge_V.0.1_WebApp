@@ -51,9 +51,15 @@
                         <td class="fw-bold text-start ps-3 category-row">{{ strLabel }}</td>
                         {% for strJour in arrJours %}
                             {% set objPlanning = arrGrille[strJour][strMoment] %}
-                            <td class="meal-cell p-1" style="min-width: 110px; height: 90px;">
+                            <td class="meal-cell p-1"
+                                style="min-width: 110px; height: 90px;"
+                                data-jour="{{ strJour }}"
+                                data-moment="{{ strMoment }}"
+                                data-label="{{ strLabel }}">
                                 {% if objPlanning and objPlanning.planningRecette %}
-                                    <div class="d-flex flex-column align-items-center gap-1 h-100 justify-content-center position-relative">
+                                    <div class="d-flex flex-column align-items-center gap-1 h-100 justify-content-center position-relative planning-drag-item"
+                                         data-planning-id="{{ objPlanning.id }}"
+                                         draggable="true">
                                         <img src="{{ objPlanning.planningRecette.recettePhoto|recette_photo }}"
                                              class="rounded-circle" style="width:42px;height:42px;object-fit:cover;"
                                              alt="{{ objPlanning.planningRecette.recetteLibelle }}">

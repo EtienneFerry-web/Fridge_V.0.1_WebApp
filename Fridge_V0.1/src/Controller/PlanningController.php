@@ -178,4 +178,57 @@ final class PlanningController extends AbstractController
         $this->addFlash('success', 'Planning vidé.');
         return $this->redirectToRoute('app_planning');
     }
+
+    /**
+     * Déplace une entrée du planning vers un nouveau jour et moment.
+     *
+     * Si la case cible est déjà occupée, l'ancienne recette est remplacée (supprimée).
+     * Appelée en AJAX par le drag & drop du tableau.
+     *
+     * @param Request                $request               Requête HTTP (planning_id, nouveau_jour, nouveau_moment)
+     * @param PlanningRepository     $objPlanningRepository Repository du planning
+     * @param EntityManagerInterface $objEntityManager      Gestionnaire d'entités Doctrine
+     */
+    #[Route('/deplacer', name: 'app_planning_move', methods: ['POST'])]
+    public function move(
+        Request                $request,
+        PlanningRepository     $objPlanningRepository,
+        EntityManagerInterface $objEntityManager
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $objUser = $this->getUser();
+
+        $intPlanningId  = (int) $request->request->get('planning_id');
+        $strNouveauJour = $request->request->get('nouveau_jour');
+        $strNouveauMoment = $request->request->get('nouveau_moment');
+
+        // Validation
+        if (!in_array($strNouveauJour, self::JOURS) || !in_array($strNouveauMoment, self::MOMENTS)) {
+            return new JsonResponse(['error' => 'Données invalides.'], 400);
+        }
+
+        // Récupérer l'entrée à déplacer
+        $objPlanning = $objPlanningRepository->find($intPlanningId);
+        if (!$objPlanning || $objPlanning->getPlanningUser() !== $objUser) {
+            return new JsonResponse(['error' => 'Planning introuvable ou accès refusé.'], 403);
+        }
+
+        // Si la case cible est déjà occupée → supprimer l'existante (remplacement)
+        $objExistant = $objPlanningRepository->findOneBy([
+            'planningUser'   => $objUser,
+            'planningJour'   => $strNouveauJour,
+            'planningMoment' => $strNouveauMoment,
+        ]);
+        if ($objExistant && $objExistant->getId() !== $objPlanning->getId()) {
+            $objEntityManager->remove($objExistant);
+        }
+
+        // Déplacer
+        $objPlanning->setPlanningJour($strNouveauJour)
+                    ->setPlanningMoment($strNouveauMoment);
+
+        $objEntityManager->flush();
+
+        return new JsonResponse(['success' => true]);
+    }
 }
