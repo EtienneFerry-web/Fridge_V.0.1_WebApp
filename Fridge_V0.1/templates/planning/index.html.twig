@@ -153,10 +153,13 @@
                     {% else %}
                         <div class="row row-cols-2 row-cols-md-3 g-3">
                             {% for objRecette in arrLikedRecettes %}
-                                <div class="col">
+                                <div class="col planning-recette-item">
                                     <div class="card h-100 shadow-sm border-0 planning-recette-card"
-                                         onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
-                                         style="cursor:pointer;">
+                                        onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
+                                        style="cursor:pointer;"
+                                        data-recette-libelle="{{ objRecette.recetteLibelle|lower|e('html_attr') }}"
+                                        data-recette-temps="{{ (objRecette.recetteTempsPrepa ?? 0) + (objRecette.recetteTempsCuisson ?? 0) }}"
+                                        data-recette-regimes="{% for r in objRecette.regimes %}{{ r.regimeLibelle }}|{% endfor %}">
                                         <img src="{{ objRecette.recettePhoto|recette_photo }}"
                                              class="card-img-top" style="height:80px;object-fit:cover;"
                                              alt="{{ objRecette.recetteLibelle|e('html_attr') }}">
@@ -181,10 +184,13 @@
                     {% else %}
                         <div class="row row-cols-2 row-cols-md-3 g-3">
                             {% for objRecette in arrFavoriRecettes %}
-                                <div class="col">
+                                <div class="col planning-recette-item">
                                     <div class="card h-100 shadow-sm border-0 planning-recette-card"
-                                         onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
-                                         style="cursor:pointer;">
+                                        onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
+                                        style="cursor:pointer;"
+                                        data-recette-libelle="{{ objRecette.recetteLibelle|lower|e('html_attr') }}"
+                                        data-recette-temps="{{ (objRecette.recetteTempsPrepa ?? 0) + (objRecette.recetteTempsCuisson ?? 0) }}"
+                                        data-recette-regimes="{% for r in objRecette.regimes %}{{ r.regimeLibelle }}|{% endfor %}">
                                         <img src="{{ objRecette.recettePhoto|recette_photo }}"
                                              class="card-img-top" style="height:80px;object-fit:cover;"
                                              alt="{{ objRecette.recetteLibelle|e('html_attr') }}">
@@ -308,6 +314,81 @@ async function supprimerPlanning(intId, objBtn) {
                 title="Ajouter une recette">
             <i class="bi bi-plus-lg text-muted"></i>
         </button>`;
+}
+
+// ========================================
+// FILTRAGE DES RECETTES DANS LA MODAL
+// ========================================
+
+function appliquerFiltresPlanning() {
+    const strSearch  = document.getElementById('planningFilterSearch').value.toLowerCase().trim();
+    const strRegime  = document.getElementById('planningFilterRegime').value;
+    const intTempsMax = parseInt(document.getElementById('planningFilterTemps').value, 10);
+
+    const arrCartes = document.querySelectorAll('.planning-recette-item');
+    let intVisibles = 0;
+
+    arrCartes.forEach(objItem => {
+        const objCard = objItem.querySelector('.planning-recette-card');
+        if (!objCard) return;
+
+        const strLibelle = objCard.dataset.recetteLibelle || '';
+        const intTemps   = parseInt(objCard.dataset.recetteTemps || '0', 10);
+        const strRegimes = objCard.dataset.recetteRegimes || '';
+
+        let bMatch = true;
+
+        // Filtre recherche par nom
+        if (strSearch !== '' && !strLibelle.includes(strSearch)) {
+            bMatch = false;
+        }
+
+        // Filtre régime
+        if (strRegime !== 'all' && !strRegimes.includes(strRegime + '|')) {
+            bMatch = false;
+        }
+
+        // Filtre temps (0 = pas de filtre)
+        if (intTempsMax > 0 && intTemps > intTempsMax) {
+            bMatch = false;
+        }
+
+        objItem.style.display = bMatch ? '' : 'none';
+        if (bMatch) intVisibles++;
+    });
+
+    // Compteur de résultats
+    const objCounter = document.getElementById('planningFilterCounter');
+    if (objCounter) {
+        objCounter.textContent = intVisibles + ' recette' + (intVisibles > 1 ? 's' : '') + ' trouvée' + (intVisibles > 1 ? 's' : '');
+    }
+}
+
+function reinitFiltresPlanning() {
+    const objSearch = document.getElementById('planningFilterSearch');
+    const objRegime = document.getElementById('planningFilterRegime');
+    const objTemps  = document.getElementById('planningFilterTemps');
+    if (objSearch) objSearch.value = '';
+    if (objRegime) objRegime.value = 'all';
+    if (objTemps)  objTemps.value  = '0';
+    appliquerFiltresPlanning();
+}
+
+// Branchement des événements sur les filtres
+document.addEventListener('DOMContentLoaded', () => {
+    const objSearch = document.getElementById('planningFilterSearch');
+    const objRegime = document.getElementById('planningFilterRegime');
+    const objTemps  = document.getElementById('planningFilterTemps');
+
+    if (objSearch) objSearch.addEventListener('input', appliquerFiltresPlanning);
+    if (objRegime) objRegime.addEventListener('change', appliquerFiltresPlanning);
+    if (objTemps)  objTemps.addEventListener('change', appliquerFiltresPlanning);
+});
+
+// Réinitialise les filtres à chaque ouverture de la modal
+const objAddModal = document.getElementById('addModal');
+if (objAddModal) {
+    objAddModal.addEventListener('shown.bs.modal', reinitFiltresPlanning);
 }
 </script>
 {% endblock %}
