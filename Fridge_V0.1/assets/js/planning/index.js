@@ -209,16 +209,19 @@ function activerDrag(objItem) {
  * Appelé au chargement pour toutes les cellules.
  */
 function activerDrop(objTd) {
-    objTd.addEventListener('dragover', (evt) => {
+    objTd.addEventListener('dragenter', (evt) => {
         evt.preventDefault();
-        evt.dataTransfer.dropEffect = 'move';
         if (objDraggedItem && objTd !== objDragSourceCell) {
             objTd.classList.add('sortable-over');
         }
     });
 
+    objTd.addEventListener('dragover', (evt) => {
+        evt.preventDefault();
+        evt.dataTransfer.dropEffect = 'move';
+    });
+
     objTd.addEventListener('dragleave', (evt) => {
-        // Vérifier qu'on quitte vraiment la cellule (et pas juste un enfant)
         if (!objTd.contains(evt.relatedTarget)) {
             objTd.classList.remove('sortable-over');
         }
@@ -227,24 +230,21 @@ function activerDrop(objTd) {
     objTd.addEventListener('drop', async (evt) => {
         evt.preventDefault();
         objTd.classList.remove('sortable-over');
-
-        // Drop sur la même cellule ou pas d'élément en cours → rien à faire
+        
         if (!objDraggedItem || objTd === objDragSourceCell) return;
-
+        
         const intPlanningId    = parseInt(objDraggedItem.dataset.planningId, 10);
         const strNouveauJour   = objTd.dataset.jour;
         const strNouveauMoment = objTd.dataset.moment;
-
-        // Sauvegarder le contenu de la cible AVANT la mise à jour optimiste
-        // (pour pouvoir restaurer en cas d'erreur AJAX)
+        
         const strContenuCible = objTd.innerHTML;
-        const objSource       = objDragSourceCell; // Capturer avant reset
-
+        const objSource       = objDragSourceCell;
+        
         // --- Mise à jour optimiste ---
         objTd.innerHTML = '';
         objTd.appendChild(objDraggedItem);
         nettoyerCellulesVides(objSource);
-
+        
         // --- Appel AJAX ---
         try {
             const objResponse = await fetch(window.FRIDGE_URLS.planningMove, {
@@ -259,14 +259,11 @@ function activerDrop(objTd) {
                     nouveau_moment: strNouveauMoment,
                 })
             });
-
             const objData = await objResponse.json();
-
             if (!objData.success) {
-                console.error('Erreur déplacement planning :', objData.error);
+                console.error('Erreur déplacement :', objData.error);
                 annulerDeplacement(objDraggedItem, objSource, objTd, strContenuCible);
             }
-
         } catch (e) {
             console.error('Erreur réseau :', e);
             annulerDeplacement(objDraggedItem, objSource, objTd, strContenuCible);

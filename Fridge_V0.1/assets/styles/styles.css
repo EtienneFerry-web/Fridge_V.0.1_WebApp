@@ -1762,3 +1762,8 @@ footer .text-white-50:hover {
 #addModal .modal-body {
     border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
 }
+
+/* Fix pour les événements de souris des enfants pendant le drag */
+.planning-drag-item * {
+    pointer-events: none;
+}
