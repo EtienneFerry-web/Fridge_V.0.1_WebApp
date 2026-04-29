@@ -3,6 +3,7 @@ let strCurrentMoment = null;
 let objCurrentBtn    = null;
 let objDraggedItem   = null;
 let objDragSourceCell = null;
+let objDraggedModalItem = null;
 
 // ========================================
 // MODAL — OUVERTURE / TABS
@@ -176,6 +177,23 @@ function initDragAndDrop() {
     document.querySelectorAll('.meal-cell').forEach(objTd => {
         activerDrop(objTd);
     });
+
+    // Activer le drag sur les cartes de la modale
+    document.querySelectorAll('.planning-recette-card').forEach(objCard => {
+        objCard.addEventListener('dragstart', (evt) => {
+            objDraggedModalItem = objCard;
+            objDraggedItem      = null; // Pour faire la distinction avec un drag interne
+            objDragSourceCell   = null;
+            evt.dataTransfer.effectAllowed = 'copy';
+        });
+        
+        objCard.addEventListener('dragend', () => {
+            objDraggedModalItem = null;
+            document.querySelectorAll('.meal-cell').forEach(td => {
+                td.classList.remove('sortable-over');
+            });
+        });
+    });
 }
 
 /**
@@ -211,7 +229,7 @@ function activerDrag(objItem) {
 function activerDrop(objTd) {
     objTd.addEventListener('dragenter', (evt) => {
         evt.preventDefault();
-        if (objDraggedItem && objTd !== objDragSourceCell) {
+        if ((objDraggedItem || objDraggedModalItem) && objTd !== objDragSourceCell) {
             objTd.classList.add('sortable-over');
         }
     });
@@ -231,6 +249,69 @@ function activerDrop(objTd) {
         evt.preventDefault();
         objTd.classList.remove('sortable-over');
         
+        // --- Cas 1 : Drop depuis la modale ---
+        if (objDraggedModalItem) {
+            const intRecetteId = parseInt(objDraggedModalItem.dataset.recetteId, 10);
+            const strNouveauJour = objTd.dataset.jour;
+            const strNouveauMoment = objTd.dataset.moment;
+            
+            try {
+                const objResponse = await fetch(window.FRIDGE_URLS.planningAdd, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: new URLSearchParams({
+                        jour: strNouveauJour,
+                        moment: strNouveauMoment,
+                        recette_id: intRecetteId
+                    })
+                });
+
+                const objData = await objResponse.json();
+                if (objData.success) {
+                    const strPhotoUrl = objData.photo
+                        ? (objData.photo.startsWith('http://') || objData.photo.startsWith('https://') || objData.photo.startsWith('//')
+                            ? objData.photo
+                            : '/uploads/recettes/' + objData.photo)
+                        : null;
+                    const strPhoto = strPhotoUrl
+                        ? `<img src="${strPhotoUrl}" class="rounded-circle" style="width:42px;height:42px;object-fit:cover;" alt="${objData.titre}">`
+                        : '';
+
+                    const objNouvelItem = document.createElement('div');
+                    objNouvelItem.className = 'd-flex flex-column align-items-center gap-1 h-100 justify-content-center planning-drag-item';
+                    objNouvelItem.dataset.planningId = objData.id;
+                    objNouvelItem.innerHTML = `
+                        ${strPhoto}
+                        <span class="small fw-bold text-dark" style="font-size:0.72rem;line-height:1.2;">
+                            ${objData.titre.substring(0, 20)}${objData.titre.length > 20 ? '…' : ''}
+                        </span>
+                        <button class="btn btn-sm p-0 text-danger" style="font-size:0.75rem;"
+                                onclick="supprimerPlanning(${objData.id}, this)" title="Retirer">
+                            <i class="bi bi-x-circle"></i>
+                        </button>`;
+
+                    objTd.innerHTML = '';
+                    objTd.appendChild(objNouvelItem);
+                    activerDrag(objNouvelItem);
+                    
+                    const modalEl = document.getElementById('addModal');
+                    if (modalEl) {
+                        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Erreur réseau lors de l\'ajout :', e);
+            }
+            return;
+        }
+
+        // --- Cas 2 : Drop interne au tableau ---
         if (!objDraggedItem || objTd === objDragSourceCell) return;
         
         const intPlanningId    = parseInt(objDraggedItem.dataset.planningId, 10);

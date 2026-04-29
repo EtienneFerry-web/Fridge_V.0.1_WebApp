@@ -98,6 +98,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $plannings;
 
     /**
+     * @var Collection<int, Liste>
+     */
+    #[ORM\OneToMany(targetEntity: Liste::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $listes;
+
+
+    /**
      * Initialise les collections Doctrine (obligatoire pour les relations OneToMany / ManyToMany).
      */
     public function __construct()
@@ -106,6 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->likeRecette = new ArrayCollection();
         $this->favoris = new ArrayCollection();
         $this->plannings = new ArrayCollection();
+        $this->listes = new ArrayCollection();
     }
 
     // --- ID ---
@@ -385,6 +393,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
             if ($planning->getPlanningUser() === $this) {
                 $planning->setPlanningUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Liste>
+     */
+    public function getListes(): Collection
+    {
+        return $this->listes;
+    }
+
+    public function addListe(Liste $liste): static
+    {
+        if (!$this->listes->contains($liste)) {
+            $this->listes->add($liste);
+            $liste->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListe(Liste $liste): static
+    {
+        if ($this->listes->removeElement($liste)) {
+            // set the owning side to null (unless already changed)
+            if ($liste->getUser() === $this) {
+                $liste->setUser(null);
             }
         }
 

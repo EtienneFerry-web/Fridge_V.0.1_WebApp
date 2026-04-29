@@ -104,6 +104,12 @@ class Recette
     private ?User $createdBy = null;
 
     /**
+     * @var Collection<int, Liste>
+     */
+    #[ORM\ManyToMany(targetEntity: Liste::class, mappedBy: 'recettes')]
+    private Collection $listes;
+
+    /**
      * Initialise les collections Doctrine et applique les valeurs par défaut :
      * statut 'prive' (visible uniquement par le créateur) et date de création à maintenant.
      */
@@ -117,6 +123,7 @@ class Recette
         $this->regimes = new ArrayCollection();
         $this->plannings = new ArrayCollection();
         $this->contenirs = new ArrayCollection();
+        $this->listes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -450,6 +457,33 @@ class Recette
     public function setSourceUrl(?string $sourceUrl): static
     {
         $this->sourceUrl = $sourceUrl;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Liste>
+     */
+    public function getListes(): Collection
+    {
+        return $this->listes;
+    }
+
+    public function addListe(Liste $liste): static
+    {
+        if (!$this->listes->contains($liste)) {
+            $this->listes->add($liste);
+            $liste->addRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeListe(Liste $liste): static
+    {
+        if ($this->listes->removeElement($liste)) {
+            $liste->removeRecette($this);
+        }
+
         return $this;
     }
 }

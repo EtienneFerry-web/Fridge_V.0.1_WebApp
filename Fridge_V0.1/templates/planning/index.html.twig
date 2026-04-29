@@ -163,6 +163,8 @@
                                     <div class="card h-100 shadow-sm border-0 planning-recette-card"
                                         onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
                                         style="cursor:pointer;"
+                                        draggable="true"
+                                        data-recette-id="{{ objRecette.id }}"
                                         data-recette-libelle="{{ objRecette.recetteLibelle|lower|e('html_attr') }}"
                                         data-recette-temps="{{ (objRecette.recetteTempsPrepa ?? 0) + (objRecette.recetteTempsCuisson ?? 0) }}"
                                         data-recette-regimes="{% for r in objRecette.regimes %}{{ r.regimeLibelle }}|{% endfor %}">
@@ -194,6 +196,8 @@
                                     <div class="card h-100 shadow-sm border-0 planning-recette-card"
                                         onclick="ajouterAuPlanning({{ objRecette.id }}, '{{ objRecette.recetteLibelle|e('html_attr') }}', this)"
                                         style="cursor:pointer;"
+                                        draggable="true"
+                                        data-recette-id="{{ objRecette.id }}"
                                         data-recette-libelle="{{ objRecette.recetteLibelle|lower|e('html_attr') }}"
                                         data-recette-temps="{{ (objRecette.recetteTempsPrepa ?? 0) + (objRecette.recetteTempsCuisson ?? 0) }}"
                                         data-recette-regimes="{% for r in objRecette.regimes %}{{ r.regimeLibelle }}|{% endfor %}">
