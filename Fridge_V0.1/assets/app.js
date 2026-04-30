@@ -1,3 +1,4 @@
+import { registerReactControllerComponents } from '@symfony/ux-react';
 import './stimulus_bootstrap.js';
 /*
  * Welcome to your app's main JavaScript file!
@@ -7,3 +8,4 @@ import './stimulus_bootstrap.js';
  */
 import './styles/styles.css';
 import './recette-etapes.js'; 
+registerReactControllerComponents();
