@@ -50,26 +50,49 @@ final class PlanningController extends AbstractController
 
         $arrPlannings = $objPlanningRepository->findBy(['planningUser' => $objUser]);
 
-        $arrGrille = [];
+        $arrGrilleFormat = [];
         foreach (self::JOURS as $strJour) {
             foreach (self::MOMENTS as $strMoment) {
-                $arrGrille[$strJour][$strMoment] = null;
+                $arrGrilleFormat[$strJour][$strMoment] = null;
             }
         }
         foreach ($arrPlannings as $objPlanning) {
-            $arrGrille[$objPlanning->getPlanningJour()][$objPlanning->getPlanningMoment()] = $objPlanning;
+            $recette = $objPlanning->getPlanningRecette();
+            $arrGrilleFormat[$objPlanning->getPlanningJour()][$objPlanning->getPlanningMoment()] = [
+                'id' => $objPlanning->getId(),
+                'planningRecette' => $recette ? [
+                    'id' => $recette->getId(),
+                    'recetteLibelle' => $recette->getRecetteLibelle(),
+                    'recettePhoto' => $recette->getRecettePhoto(),
+                ] : null
+            ];
         }
 
         $arrLikedRecettes  = $objLikeRepository->findLikedRecettesByUser($objUser);
         $arrFavoriRecettes = $objFavoriRepository->findFavoriRecettesByUser($objUser);
 
+        $formatRecette = function($r) {
+            $regimes = [];
+            foreach ($r->getRegimes() as $regime) {
+                $regimes[] = ['regimeLibelle' => $regime->getRegimeLibelle()];
+            }
+            return [
+                'id' => $r->getId(),
+                'recetteLibelle' => $r->getRecetteLibelle(),
+                'recettePhoto' => $r->getRecettePhoto(),
+                'recetteTempsPrepa' => $r->getRecetteTempsPrepa(),
+                'recetteTempsCuisson' => $r->getRecetteTempsCuisson(),
+                'regimes' => $regimes,
+            ];
+        };
+
+        $arrLikesFormat = array_map($formatRecette, $arrLikedRecettes);
+        $arrFavorisFormat = array_map($formatRecette, $arrFavoriRecettes);
+
         return $this->render('planning/index.html.twig', [
-            'arrGrille'         => $arrGrille,
-            'arrJours'          => self::JOURS,
-            'arrMoments'        => self::MOMENTS,
-            'arrMomentsLabels'  => self::MOMENTS_LABELS,
-            'arrLikedRecettes'  => $arrLikedRecettes,
-            'arrFavoriRecettes' => $arrFavoriRecettes,
+            'arrGrilleJson'     => json_encode($arrGrilleFormat),
+            'arrLikesJson'      => json_encode($arrLikesFormat),
+            'arrFavorisJson'    => json_encode($arrFavorisFormat),
         ]);
     }
 
