@@ -50,4 +50,7 @@ return [
     '@symfony/ux-react' => [
         'path' => './vendor/symfony/ux-react/assets/dist/loader.js',
     ],
+    '@splidejs/splide' => [
+        'version' => '4.1.4',
+    ],
 ];

@@ -1,105 +1,123 @@
 {% extends 'base.html.twig' %}
 {% block title %}{{ recette.recetteLibelle }} - Fridge{% endblock %}
 {% block body %}
-    <main class="container py-4">
+<div class="search-hero mb-4">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+            <div>
+                <h1 class="display-4 fw-bold mb-2">{{ recette.recetteLibelle }}</h1>
+                <div class="d-flex flex-wrap gap-3 mt-3">
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                        <i class="bi bi-clock me-2 text-primary"></i>{{ recette.recetteTempsPrepa }} min prépa
+                    </span>
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                        <i class="bi bi-fire me-2 text-primary"></i>{{ recette.recetteTempsCuisson }} min cuisson
+                    </span>
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                        <i class="bi bi-people me-2 text-primary"></i>{{ recette.recettePortion }} portions
+                    </span>
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                        <i class="bi bi-bar-chart me-2 text-primary"></i>{{ recette.recetteDifficulte }}
+                    </span>
+                </div>
+            </div>
+            <div class="d-flex gap-2">
+                {% if is_granted('RECETTE_EDIT', recette) %}
+                    <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-pencil me-1"></i>Modifier
+                    </a>
+                {% endif %}
+                {% if is_granted('RECETTE_DELETE', recette) %}
+                    <form action="{{ path('app_recette_delete', {id: recette.id}) }}" method="POST"
+                        data-confirm="Voulez-vous vraiment supprimer cette recette ?"
+                        data-confirm-title="Supprimer la recette">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete_recette_' ~ recette.id) }}">
+                        <button type="submit" class="btn btn-outline-danger">
+                            <i class="bi bi-trash me-1"></i>Supprimer
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 
-        <nav aria-label="Fil d'ariane">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
-                <li class="breadcrumb-item"><a href="{{ path('app_recette_index') }}">Recettes</a></li>
-                <li class="breadcrumb-item active">{{ recette.recetteLibelle }}</li>
-            </ol>
-        </nav>
-        <img src="{{ recette.recettePhoto|recette_photo }}"
-                    class="w-100 rounded shadow-sm mb-4"
-                    alt="{{ recette.recetteLibelle }}"
-                    style="height: 350px; object-fit: cover;">
-                <img src="{{ asset('uploads/recettes/' ~ recette.recettePhoto) }}"
-                    class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
-                    style="height: 350px; object-fit: cover;">
-            {% endif %}
-        {% else %}
-            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200"
-                class="w-100 rounded shadow-sm mb-4" alt="{{ recette.recetteLibelle }}"
-                style="height: 350px; object-fit: cover;">
-        {% endif %}
-
-        <div class="bg-white rounded shadow-sm p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-                <h1 class="h2 fw-bold">{{ recette.recetteLibelle }}</h1>
-                    <div class="d-flex gap-2">
-                        {% if is_granted('RECETTE_EDIT', recette) %}
-                            <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="bi bi-pencil me-1"></i>Modifier
-                            </a>
-                        {% endif %}
-                        {% if is_granted('RECETTE_DELETE', recette) %}
-                            <form action="{{ path('app_recette_delete', {id: recette.id}) }}" method="POST"
-                                data-confirm="Voulez-vous vraiment supprimer cette recette ? Cette action est irréversible."
-                                data-confirm-title="Supprimer la recette">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete_recette_' ~ recette.id) }}">
-                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-trash me-1"></i>Supprimer
-                                </button>
-                            </form>
-                        {% endif %}
-                    </div>
+<main class="container mb-5">
+    <div class="row g-5">
+        <div class="col-lg-5">
+            <div class="position-relative mb-5">
+                <div class="hero-blob" style="position: absolute; top: -20px; left: -20px; width: 100%; height: 100%; background: var(--custard-light); border-radius: var(--radius-xl); z-index: -1; opacity: 0.5;"></div>
+                {% if recette.recettePhoto %}
+                    <img src="{{ recette.recettePhoto|recette_photo }}"
+                        class="w-100 shadow-lg"
+                        alt="{{ recette.recetteLibelle }}"
+                        style="height: 500px; object-fit: cover; border-radius: var(--radius-xl); transform: rotate(-1deg);">
+                {% else %}
+                    <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200"
+                        class="w-100 shadow-lg"
+                        alt="{{ recette.recetteLibelle }}"
+                        style="height: 500px; object-fit: cover; border-radius: var(--radius-xl); transform: rotate(-1deg);">
+                {% endif %}
             </div>
 
-            <div class="d-flex flex-wrap gap-2 mb-4">
-                <span class="badge bg-light text-dark border">
-                    <i class="bi bi-clock me-1"></i>Prépa : {{ recette.recetteTempsPrepa }} min
-                </span>
-                <span class="badge bg-light text-dark border">
-                    <i class="bi bi-fire me-1"></i>Cuisson : {{ recette.recetteTempsCuisson }} min
-                </span>
-                <span class="badge bg-light text-dark border">
-                    <i class="bi bi-people me-1"></i>{{ recette.recettePortion }} portions
-                </span>
-                <span class="badge bg-light text-dark border">
-                    <i class="bi bi-bar-chart me-1"></i>{{ recette.recetteDifficulte }}
-                </span>
-            </div>
-
-            {% if recette.recetteDescription %}
-                <p class="text-muted mb-4">{{ recette.recetteDescription }}</p>
-            {% endif %}
-
-            {% for contenir in recette.contenirs %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div>
-                        <i class="bi bi-check2-circle text-primary me-2"></i>
-                        {# Recettes user : ingrédient en BDD via la relation. Recettes Spoonacular : libellé brut. #}
-                        {% if contenir.ingredient %}
-                            {{ contenir.ingredient.ingredientLibelle }}
-                        {% elseif contenir.contenirLibelleBrut %}
-                            {{ contenir.contenirLibelleBrut }}
-                        {% endif %}
-                    </div>
-                    {% if contenir.contenirQuantite %}
-                        <span class="badge rounded-pill shadow-sm" style="background-color: var(--tomato-jam); color: var(--linen); border: 1.5px solid var(--tomato-dark);">
-                            {{ contenir.contenirQuantite }} {{ contenir.contenirUnite }}
-                        </span>
-                    {% endif %}
-                </li>
-            {% endfor %}
-
-            {% if recette.etapes|length > 0 %}
-                <h2 class="h5 fw-bold mb-3">Étapes</h2>
-                <ol class="list-group list-group-numbered mb-4">
-                    {% for etape in recette.etapes %}
-                        <li class="list-group-item d-flex align-items-center gap-3">
-                            <div class="d-flex flex-column" style="min-width: 160px;">
-                                <strong>{{ etape.etapeLibelle }}</strong>
-                                <p class="mb-0 text-muted small">{{ etape.etapeDescription }}</p>
+            <div class="bento-grid p-4 mb-4" style="background-color: var(--sage-light);">
+                <h3 class="h4 fw-bold mb-4" style="font-family: var(--font-display);">Ingrédients</h3>
+                <ul class="list-group list-group-flush">
+                    {% for contenir in recette.contenirs %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-bottom">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-circle-fill text-primary me-3" style="font-size: 0.5rem;"></i>
+                                <span class="fw-bold">
+                                    {% if contenir.ingredient %}
+                                        {{ contenir.ingredient.ingredientLibelle }}
+                                    {% elseif contenir.contenirLibelleBrut %}
+                                        {{ contenir.contenirLibelleBrut }}
+                                    {% endif %}
+                                </span>
                             </div>
-                            {% if etape.etapeDuree %}
-                                <span class="badge bg-light text-dark ms-auto text-nowrap">{{ etape.etapeDuree }} min</span>
+                            {% if contenir.contenirQuantite %}
+                                <span class="badge rounded-pill px-3 py-2" style="background-color: var(--vanilla-custard); color: var(--deep-sage);">
+                                    {{ contenir.contenirQuantite }} {{ contenir.contenirUnite }}
+                                </span>
                             {% endif %}
                         </li>
                     {% endfor %}
-                </ol>
-            {% endif %}
+                </ul>
+            </div>
         </div>
-    </main>
+
+        <div class="col-lg-7">
+            <div class="bento-grid p-5 h-100">
+                {% if recette.recetteDescription %}
+                    <div class="mb-5 italic text-muted" style="font-family: var(--font-display); font-size: 1.2rem; border-left: 4px solid var(--vanilla-custard); padding-left: 1.5rem;">
+                        "{{ recette.recetteDescription }}"
+                    </div>
+                {% endif %}
+
+                {% if recette.etapes|length > 0 %}
+                    <h3 class="h3 fw-bold mb-5" style="font-family: var(--font-display);">La Préparation</h3>
+                    <div class="steps-container">
+                        {% for etape in recette.etapes %}
+                            <div class="step-item d-flex gap-4 mb-5">
+                                <div class="step-number d-flex align-items-center justify-content-center" 
+                                     style="min-width: 50px; height: 50px; background: var(--vanilla-custard); color: var(--deep-sage); border-radius: 50%; font-weight: 800; font-size: 1.2rem;">
+                                    {{ loop.index }}
+                                </div>
+                                <div class="step-content">
+                                    <h4 class="h5 fw-bold mb-2">{{ etape.etapeLibelle }}</h4>
+                                    <p class="text-muted leading-relaxed" style="font-size: 1.1rem;">{{ etape.etapeDescription }}</p>
+                                    {% if etape.etapeDuree %}
+                                        <span class="text-primary small fw-bold">
+                                            <i class="bi bi-clock me-1"></i> {{ etape.etapeDuree }} min
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}

@@ -76,35 +76,41 @@ export default function MealCell({
     onDragEnter: onDragEnter,
     onDragLeave: onDragLeave,
     onDrop: onDrop
-  }, meal && meal.planningRecette ? /*#__PURE__*/React.createElement("div", {
+  }, meal && meal.planningRecette ? React.createElement("div", {
     className: "d-flex flex-column align-items-center gap-1 h-100 justify-content-center position-relative planning-drag-item",
     draggable: "true",
     onDragStart: onDragStart,
     onDragEnd: onDragEnd
-  }, /*#__PURE__*/React.createElement(Avatar, {
+  }, React.createElement(Avatar, {
     src: meal.planningRecette.recettePhoto.startsWith('http') || meal.planningRecette.recettePhoto.startsWith('//') ? meal.planningRecette.recettePhoto : '/uploads/recettes/' + meal.planningRecette.recettePhoto,
-    alt: meal.planningRecette.recetteLibelle
-  }), /*#__PURE__*/React.createElement("span", {
-    className: "small fw-bold text-dark",
+    alt: meal.planningRecette.recetteLibelle,
+    size: 50
+  }), React.createElement("span", {
+    className: "fw-bold text-dark text-center",
     style: {
-      fontSize: '0.72rem',
-      lineHeight: '1.2'
+      fontSize: '0.75rem',
+      lineHeight: '1.1',
+      maxWidth: '90px'
     }
-  }, meal.planningRecette.recetteLibelle.length > 20 ? meal.planningRecette.recetteLibelle.substring(0, 20) + '…' : meal.planningRecette.recetteLibelle), /*#__PURE__*/React.createElement("button", {
-    className: "btn btn-sm p-0 text-danger",
-    style: {
-      fontSize: '0.75rem'
-    },
+  }, meal.planningRecette.recetteLibelle.length > 25 ? meal.planningRecette.recetteLibelle.substring(0, 25) + '…' : meal.planningRecette.recetteLibelle), React.createElement("button", {
+    className: "btn btn-sm p-0 text-danger position-absolute top-0 end-0 mt-1 me-1",
     onClick: () => handleRemoveRecipe(meal.id, day, moment),
     title: "Retirer"
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "x-circle"
-  }))) : /*#__PURE__*/React.createElement("button", {
-    className: "btn-add w-100 h-100 border-0 bg-transparent",
+  }, React.createElement(Icon, {
+    name: "x-circle-fill"
+  }))) : React.createElement("button", {
+    className: "btn-add w-100 h-100 border-0 bg-transparent d-flex align-items-center justify-content-center transition-normal",
     onClick: openAddModal,
     title: "Ajouter une recette"
-  }, /*#__PURE__*/React.createElement(Icon, {
+  }, React.createElement("div", {
+    className: "rounded-circle border border-2 border-dashed d-flex align-items-center justify-content-center",
+    style: {
+      width: '40px',
+      height: '40px',
+      borderColor: 'rgba(20, 21, 14, 0.15) !important'
+    }
+  }, React.createElement(Icon, {
     name: "plus-lg",
     className: "text-muted"
-  })));
+  }))));
 }

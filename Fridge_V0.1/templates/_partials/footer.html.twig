@@ -1,62 +1,111 @@
-<footer class="bg-dark text-white mt-auto">
-    <div class="container py-5">
-        <div class="row gy-4 align-items-start">
-            <div class="col-md-4 text-center text-md-start">
-                <h5 class="fw-bold mb-3">FRIDGE</h5>
-                <p class="small mb-3 text-secondary">Cuisinez intelligemment avec ce que vous avez sous la main.</p>
-                <div class="d-flex justify-content-center justify-content-md-start gap-3">
-                    <a href="#" class="text-white-50 text-decoration-none" aria-label="Instagram">
-                        <i class="bi bi-instagram fs-5"></i>
+<footer id="contact" class="w-full relative overflow-hidden pt-15vh pb-10 mt-auto">
+    <div class="container-fluid px-0">
+        <div class="row grid-12 w-full mx-0">
+
+            <!-- LABEL HAUT — col 2 -->
+            <div class="col-start-2 col-span-3 footer-label mb-5">
+                Contact <br/> / 2026 /
+            </div>
+
+            <!-- TITRE GÉANT — col 2 à 11 -->
+            <div class="col-start-2 col-span-10 mb-20 hero-reveal">
+                <h2 class="footer-giant-title">
+                    FRIDGE
+                </h2>
+            </div>
+
+            <!-- COLONNE 1 : Navigation — col 2-4 -->
+            <div class="col-start-2 col-span-3 flex flex-column gap-4 mb-5">
+                <div>
+                    <p class="footer-sublabel">/ Navigation /</p>
+                    <ul class="list-unstyled flex flex-column gap-2">
+                        <li><a href="{{ path('app_home') }}" class="footer-link-editorial">Accueil</a></li>
+                        <li><a href="{{ path('app_search') }}" class="footer-link-editorial">Découvrir</a></li>
+                        {% if app.user %}
+                            <li><a href="{{ path('app_planning') }}" class="footer-link-editorial">Mon Planning</a></li>
+                            <li><a href="{{ path('app_stock') }}" class="footer-link-editorial">Mon Frigo</a></li>
+                            <li><a href="{{ path('app_liste_course_index') }}" class="footer-link-editorial">Liste de courses</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- COLONNE 2 : Contact — col 5-7 -->
+            <div class="col-start-5 col-span-3 flex flex-column gap-4 mb-5">
+                <div>
+                    <p class="footer-sublabel">/ email /</p>
+                    <a href="mailto:hello@fridge.app" class="footer-link-editorial">
+                        hello@fridge.app
                     </a>
-                    <a href="#" class="text-white-50 text-decoration-none" aria-label="Facebook">
-                        <i class="bi bi-facebook fs-5"></i>
-                    </a>
-                    <a href="#" class="text-white-50 text-decoration-none" aria-label="TikTok">
-                        <i class="bi bi-tiktok fs-5"></i>
-                    </a>
-                    <a href="#" class="text-white-50 text-decoration-none" aria-label="YouTube">
-                        <i class="bi bi-youtube fs-5"></i>
-                    </a>
-                    <a href="#" class="text-white-50 text-decoration-none" aria-label="Pinterest">
-                        <i class="bi bi-pinterest fs-5"></i>
+                </div>
+                <div>
+                    <p class="footer-sublabel">/ phone /</p>
+                    <a href="tel:+33600000000" class="footer-link-editorial">
+                        +33 6 00 00 00 00
                     </a>
                 </div>
             </div>
 
-            <div class="col-md-4 text-center">
-                <h6 class="text-uppercase fw-bold mb-3 small text-secondary">Navigation</h6>
-                <ul class="list-unstyled d-flex flex-column align-items-center gap-2 mb-0">
-                    <li><a href="{{ path('app_home') }}" class="text-white-50 text-decoration-none small">Accueil</a></li>
-                    <li><a href="{{ path('app_search') }}" class="text-white-50 text-decoration-none small">Recettes</a></li>
-
-                    {% if app.user %}
-                        <li><a href="{{ path('app_planning') }}" class="text-white-50 text-decoration-none small">Planning</a></li>
-                        <li><a href="{{ path('app_stock') }}" class="text-white-50 text-decoration-none small">Stock</a></li>
-                        <li><a href="{{ path('app_liste_course_index') }}" class="text-white-50 text-decoration-none small">Courses</a></li>
-                    {% endif %}
+            <!-- COLONNE 3 : Social — col 8-11 -->
+            <div class="col-start-8 col-span-4 mb-5">
+                <p class="footer-sublabel">/ follow /</p>
+                <ul class="list-unstyled flex flex-column gap-2">
+                    <li>
+                        <a href="#" class="footer-social-item group">
+                            <span class="social-line"></span>
+                            Instagram
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-social-item group">
+                            <span class="social-line"></span>
+                            Behance
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-social-item group">
+                            <span class="social-line"></span>
+                            Dribbble
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="footer-social-item group">
+                            <span class="social-line"></span>
+                            LinkedIn
+                        </a>
+                    </li>
                 </ul>
             </div>
 
-            <div class="col-md-4 text-center text-md-end">
-                <h6 class="text-uppercase fw-bold mb-3 small text-secondary">Liens utiles</h6>
-                <ul class="list-unstyled d-flex flex-column align-items-center align-items-md-end gap-2 mb-0">
-                    {% if app.user %}
-                        <li><a href="{{ path('app_user_profil') }}" class="text-white-50 text-decoration-none small">Mon Compte</a></li>
-                    {% else %}
-                        <li><a href="{{ path('app_login') }}" class="text-white-50 text-decoration-none small">Connexion / Inscription</a></li>
-                    {% endif %}
-                    <li><a href="#" class="text-white-50 text-decoration-none small">Mentions légales</a></li>
-                    <li><a href="#" class="text-white-50 text-decoration-none small">Contact</a></li>
-                </ul>
+        </div>
+
+        <!-- LIGNE DE SÉPARATION -->
+        <div class="footer-separator mt-5"></div>
+
+        <!-- BAS DU FOOTER -->
+        <div class="row grid-12 w-full mt-4 mx-0 pb-5">
+            <!-- Copyright — col 2 -->
+            <div class="col-start-2 col-span-3 footer-sublabel">
+                © 2026 — FRIDGE
+            </div>
+
+            <!-- Mention centrale -->
+            <div class="col-start-6 col-span-3 text-center footer-sublabel">
+                Designed & Coded with care
+            </div>
+
+            <!-- Back to top — col 10-11 -->
+            <div class="col-start-10 col-span-2 d-flex justify-content-end">
+                <a href="#" class="back-to-top-editorial">
+                    <span class="arrow-up">↑</span>
+                    Back to top
+                </a>
             </div>
         </div>
-    </div>
 
-    <div class="border-top border-secondary border-opacity-25">
-        <div class="container py-3">
-            <div class="text-center small text-white-50">
-                © 2026 FRIDGE. Tous droits réservés.
-            </div>
+        <!-- SIGNATURE GÉANTE EN BAS -->
+        <div class="footer-giant-signature">
+            <p>FRESH</p>
         </div>
     </div>
 </footer>

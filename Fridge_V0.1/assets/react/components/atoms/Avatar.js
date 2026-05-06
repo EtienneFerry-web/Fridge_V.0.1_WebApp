@@ -6,11 +6,11 @@ export default function Avatar({
 }) {
   return /*#__PURE__*/React.createElement("img", {
     src: src,
-    className: "rounded-circle",
     style: {
       width: `${size}px`,
       height: `${size}px`,
-      objectFit: 'cover'
+      objectFit: 'cover',
+      borderRadius: 'var(--radius-md)'
     },
     alt: alt
   });

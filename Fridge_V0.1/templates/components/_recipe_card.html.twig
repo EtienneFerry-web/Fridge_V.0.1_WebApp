@@ -1,5 +1,5 @@
 {# templates/components/_recipe_card.html.twig #}
-<div class="card h-100 shadow-sm border-0 transition hover-shadow"
+<div class="card h-100 border-0 bg-transparent group"
      {% if is_granted('ROLE_USER') and id is defined %}
          data-controller="recipe-actions"
          data-like-url="{{ path('app_like_toggle', {id: id}) }}"
@@ -8,61 +8,73 @@
          data-recipe-actions-favori-value="{{ is_favori|default(false) ? 'true' : 'false' }}"
      {% endif %}
 >
-    <div class="position-relative">
+    <div class="position-relative overflow-hidden mb-3" style="border-radius: var(--radius-lg);">
         <img src="{{ photo|default('')|recette_photo }}"
-             class="card-img-top" alt="{{ title }}"
-             style="height: 200px; object-fit: cover;">
+             class="w-100 transition-normal group-hover-scale" alt="{{ title }}"
+             style="height: 280px; object-fit: cover;">
 
-        {% if rating is defined %}
-            <span class="position-absolute top-0 end-0 m-2 badge rounded-pill bg-white text-dark shadow-sm">
-                <i class="bi bi-star-fill text-warning"></i> {{ rating }}
-            </span>
-        {% endif %}
-
+        {# Actions overlay #}
         {% if is_granted('ROLE_USER') and id is defined %}
-            <div class="position-absolute top-0 start-0 m-2 d-flex gap-1">
-
-                <button class="btn btn-sm rounded-pill px-2 py-1 shadow-sm"
-                        style="background: rgba(255,255,255,0.9); border: none;"
+            <div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2 translate-middle-x opacity-0 group-hover-opacity-100 transition-normal" style="transform: translateX(20px);">
+                <button class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                        style="width: 40px; height: 40px; border: none;"
                         data-action="recipe-actions#toggleLike">
                     <i data-recipe-actions-target="likeIcon"
                        class="bi {{ is_liked|default(false) ? 'bi-heart-fill text-danger' : 'bi-heart text-muted' }}"></i>
-                    <span data-recipe-actions-target="likeCount"
-                          class="small">{{ like_count|default(0) }}</span>
                 </button>
 
-                <button class="btn btn-sm rounded-pill px-2 py-1 shadow-sm"
-                        style="background: rgba(255,255,255,0.9); border: none; min-width: 44px; min-height: 30px;"
+                <button class="btn btn-white rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+                        style="width: 40px; height: 40px; border: none;"
                         data-action="recipe-actions#toggleFavori">
                     <i data-recipe-actions-target="favoriIcon"
                     class="bi {{ is_favori|default(false) ? 'bi-bookmark-fill text-warning' : 'bi-bookmark text-muted' }}"></i>
                 </button>
-
             </div>
         {% endif %}
-    </div>
 
-    <div class="card-body">
-        {% if category is defined %}
-            <span class="badge {{ category_color|default('bg-success') }} mb-2">{{ category }}</span>
-        {% endif %}
-        <h5 class="card-title fw-bold text-dark">{{ title }}</h5>
-        {% if description is defined %}
-            <p class="card-text text-muted small">{{ description }}</p>
-        {% endif %}
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <span class="small text-muted">
-                <i class="bi bi-clock me-1"></i> {{ time|default('15') }} min
+        <div class="position-absolute bottom-0 start-0 m-3">
+            <span class="badge rounded-pill bg-white text-dark shadow-sm px-3 py-2">
+                <i class="bi bi-clock-fill text-primary me-2"></i> {{ time|default('15') }} min
             </span>
-            {% if id is defined %}
-                <a href="{{ path('app_recette_show', {id: id}) }}" class="btn btn-sm btn-outline-dark flex-shrink-0">
-                    Voir <i class="bi bi-arrow-right ms-1"></i>
-                </a>
-            {% else %}
-                <a href="#" class="btn btn-sm btn-outline-dark flex-shrink-0">
-                    Voir <i class="bi bi-arrow-right ms-1"></i>
-                </a>
-            {% endif %}
         </div>
     </div>
+
+    <div class="card-body p-0">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <h3 class="h4 fw-bold mb-0 text-dark group-hover-text-primary transition-fast" style="font-family: var(--font-display);">
+                {% if id is defined %}
+                    <a href="{{ path('app_recette_show', {id: id}) }}" class="text-decoration-none text-inherit">
+                        {{ title }}
+                    </a>
+                {% else %}
+                    {{ title }}
+                {% endif %}
+            </h3>
+            {% if like_count|default(0) > 0 %}
+                <span class="small text-muted" data-recipe-actions-target="likeCount">
+                    {{ like_count }} <i class="bi bi-heart-fill text-danger ms-1" style="font-size: 0.7rem;"></i>
+                </span>
+            {% endif %}
+        </div>
+        
+        <p class="text-muted small mb-0 line-clamp-2">
+            {{ description|default('Une recette savoureuse et équilibrée pour égayer vos papilles.') }}
+        </p>
+    </div>
 </div>
+
+<style>
+.group:hover .group-hover-scale {
+    transform: scale(1.05);
+}
+.group-hover-opacity-100 {
+    opacity: 1 !important;
+    transform: translateX(0) !important;
+}
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+</style>

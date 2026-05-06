@@ -1,37 +1,43 @@
-{# templates/components/_hero.html.twig #}
-<header id="hero" class="bg-white border-bottom shadow-sm">
-    <div class="container py-5">
+<header class="search-hero mb-0" style="padding: 6rem 0; border-radius: 0;">
+    <div class="container">
         <div class="row align-items-center">
-            <div class="col-12 col-md-6 text-center text-md-start">
-                <h1 class="display-4 fw-bold text-primary">Bienvenue sur Fridge</h1>
-                <p class="lead py-3 text-muted">
-                    Ne demandez plus "qu'est-ce qu'on mange ce soir ?". Planifiez vos repas et découvrez des
-                    recettes basées sur vos restes !
+            <div class="col-lg-6 text-center text-lg-start">
+                <span class="badge rounded-pill px-3 py-2 mb-3" style="background-color: var(--vanilla-custard); color: var(--deep-sage); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;">
+                    L'Atelier Culinaire
+                </span>
+                <h1 class="display-2 fw-bold mb-3" style="font-family: var(--font-display);">
+                    Cultivez l'Art de <span class="text-primary">Mieux Manger</span>
+                </h1>
+                <p class="lead mb-5 text-muted" style="font-size: 1.3rem; max-width: 500px; line-height: 1.6;">
+                    Simplifiez votre quotidien. Planifiez vos repas, gérez votre inventaire et découvrez des recettes inspirées par vos produits frais.
                 </p>
-                <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                <div class="d-flex gap-3 justify-content-center justify-content-lg-start">
                     {% if app.user %}
-                        {# Si l'utilisateur est connecté, on l'envoie vers son frigo ou ses recettes #}
-                        <a href="{{ path('app_stock') }}" class="btn btn-primary btn-lg px-4 shadow-sm rounded-pill">
-                            Mon Frigo <i class="bi bi-box-seam ms-1"></i>
+                        <a href="{{ path('app_stock') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg">
+                            Mon Frigo <i class="bi bi-box-seam ms-2"></i>
                         </a>
-                        <a href="{{ path('app_search') }}" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
-                            Voir les recettes
+                        <a href="{{ path('app_recette_index') }}" class="btn btn-outline-secondary btn-lg px-5 py-3">
+                            Découvrir
                         </a>
                     {% else %}
-                        {# Si visiteur, on garde tes boutons Connexion / Inscription #}
-                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg px-4 shadow-sm rounded-pill">
-                            Se connecter
+                        <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg">
+                            Connexion
                         </a>
-                        <a href="{{ path('app_register') }}" class="btn btn-outline-primary btn-lg px-4 rounded-pill">
-                            S'inscrire
+                        <a href="{{ path('app_register') }}" class="btn btn-outline-secondary btn-lg px-5 py-3">
+                            Inscription
                         </a>
                     {% endif %}
                 </div>
             </div>
 
-            <div class="col-12 col-md-6 text-center mt-5 mt-md-0">
-                <img src="{{ asset('img/fridge_left_sharp_nobg.png') }}" alt="Fridge Hero"
-                    class="img-fluid" style="max-height: 350px;">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="position-relative ps-5">
+                    <div class="hero-blob" style="position: absolute; top: -40px; right: -40px; width: 450px; height: 450px; background: var(--custard-light); border-radius: var(--radius-xl); z-index: -1; opacity: 0.6;"></div>
+                    <img src="https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&q=80&w=1000" 
+                        alt="Fridge Gourmet" 
+                        class="img-fluid shadow-lg" 
+                        style="border-radius: var(--radius-xl); transform: rotate(2deg); max-height: 500px; object-fit: cover;">
+                </div>
             </div>
         </div>
     </div>

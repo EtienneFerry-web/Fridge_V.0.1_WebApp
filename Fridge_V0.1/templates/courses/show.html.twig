@@ -4,51 +4,47 @@
 
 {% block body %}
 
-<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+<div class="search-hero mb-4">
     <div class="container">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ path('app_home') }}"><i class="bi bi-house"></i></a></li>
-            <li class="breadcrumb-item"><a href="{{ path('app_liste_course_index') }}">Listes</a></li>
-            <li class="breadcrumb-item active">{{ liste.listeLibelle }}</li>
-        </ol>
-    </div>
-</nav>
-
-<main class="container py-4">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-        <div>
-            <h1 class="h2 fw-bold mb-1">{{ liste.listeLibelle }}</h1>
-            <p class="text-muted mb-0">Créée le {{ liste.listeDateCreation|date('d/m/Y') }}</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ path('app_liste_course_index') }}" class="btn btn-outline-secondary btn-sm">
-                <i class="bi bi-arrow-left me-1"></i>Retour
-            </a>
-            <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST"
-                data-confirm="Voulez-vous vraiment supprimer cette liste de courses ?"
-                data-confirm-title="Supprimer la liste">
-                <button type="submit" class="btn btn-outline-danger btn-sm">
-                    <i class="bi bi-trash me-1"></i>Supprimer
-                </button>
-            </form>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h1 class="display-5 fw-bold mb-1">{{ liste.listeLibelle }}</h1>
+                <p class="lead text-muted mb-0">Créée le {{ liste.listeDateCreation|date('d/m/Y') }}</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{{ path('app_liste_course_index') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Retour
+                </a>
+                <form action="{{ path('app_liste_course_delete', {id: liste.id}) }}" method="POST"
+                    data-confirm="Voulez-vous vraiment supprimer cette liste de courses ?"
+                    data-confirm-title="Supprimer la liste">
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-1"></i>Supprimer
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="row g-4">
-
-        <div class="col-lg-12">
-            <div class="card shadow-sm border-0 p-4 bg-white">
+<main class="container mb-5">
+    <div class="bento-grid">
+        <div class="row g-4">
+            <div class="col-lg-12">
                 {% if parCategorie is empty %}
-                    <p class="text-center text-muted py-4">Cette liste est vide.</p>
+                    <div class="text-center py-5">
+                        <i class="bi bi-basket2 display-1 text-muted opacity-25 mb-3"></i>
+                        <p class="text-muted">Cette liste est vide.</p>
+                    </div>
                 {% else %}
                     {% for categorie, elements in parCategorie %}
-                        <div class="mb-4">
-                            <h3 class="h6 fw-bold text-uppercase letter-spacing-05 mb-3 border-bottom pb-2">
+                        <div class="mb-5">
+                            <h3 class="h4 fw-bold mb-4" style="font-family: var(--font-display); color: var(--grey-warm);">
                                 <i class="bi bi-tag text-primary me-2"></i>{{ categorie }}
                             </h3>
-                            <ul class="list-group list-group-flush">
+                            <div class="list-group list-group-flush rounded-4 overflow-hidden border">
                                 {% for item in elements %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 border-bottom bg-transparent">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-bottom bg-transparent">
                                         <div class="d-flex align-items-center flex-grow-1">
                                             <div class="form-check me-3">
                                                 <input class="form-check-input ms-0 check-ingredient" type="checkbox" 
@@ -57,19 +53,19 @@
                                                        {{ item.contenirEstCoche ? 'checked' : '' }}
                                                        style="width: 1.5rem; height: 1.5rem; cursor: pointer;">
                                             </div>
-                                            <label class="form-check-label mb-0 {{ item.contenirEstCoche ? 'text-decoration-line-through text-muted' : 'fw-bold' }}"
-                                                   for="check-{{ item.id }}" style="cursor: pointer;">
+                                            <label class="form-check-label mb-0 {{ item.contenirEstCoche ? 'text-decoration-line-through opacity-50' : 'fw-bold' }}"
+                                                   for="check-{{ item.id }}" style="cursor: pointer; font-size: 1.1rem;">
                                                 {{ item.ingredient ? item.ingredient.ingredientLibelle : item.contenirLibelleBrut }}
                                             </label>
                                         </div>
                                         <div class="text-end">
-                                            <span class="badge rounded-pill shadow-sm" style="background-color: var(--tomato-jam); color: var(--linen);">
+                                            <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: var(--vanilla-custard); color: var(--deep-sage); font-size: 0.9rem;">
                                                 {{ item.contenirQuantite }} {{ item.contenirUnite }}
                                             </span>
                                         </div>
-                                    </li>
+                                    </div>
                                 {% endfor %}
-                            </ul>
+                            </div>
                         </div>
                     {% endfor %}
                 {% endif %}

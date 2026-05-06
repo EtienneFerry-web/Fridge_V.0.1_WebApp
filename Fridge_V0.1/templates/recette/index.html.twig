@@ -3,81 +3,91 @@
 {% block title %}Découvrir des recettes - Fridge{% endblock %}
 
 {% block body %}
-    <main class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-            <div>
-                <h1 class="h3 fw-bold mb-1">Découvrir des recettes</h1>
-                <p class="text-muted mb-0 small">
-                    <i class="bi bi-stars me-1"></i>
-                    Recettes du monde entier, propulsées par Spoonacular
-                </p>
-            </div>
-        </div>
-
-        {# --- Filtres régime --- #}
-        <div class="d-flex flex-wrap gap-2 mb-4">
+<div class="search-hero mb-5">
+    <div class="container text-center">
+        <h1 class="display-3 fw-bold mb-3" style="font-family: var(--font-display);">Découvrir des pépites</h1>
+        <p class="lead text-muted mb-4">Explorez des milliers de recettes saines et gourmandes.</p>
+        
+        <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
             {% set regimes = ['all', 'Omnivore', 'Végétarien', 'Vegan', 'Sans gluten', 'Sans lactose'] %}
             {% for regime in regimes %}
                 <a href="{{ path('app_recette_index', {regime: regime, sort: activeSort}) }}"
-                   class="btn btn-sm {{ activeRegime == regime ? 'btn-dark' : 'btn-outline-dark' }}">
-                    {{ regime == 'all' ? 'Tous' : regime }}
+                   class="btn btn-outline-dark rounded-pill px-4"
+                   style="{{ activeRegime == regime ? 'background-color: var(--vanilla-custard); border-color: var(--vanilla-custard); color: var(--deep-sage);' : '' }}">
+                    {{ regime == 'all' ? 'Tous les régimes' : regime }}
                 </a>
             {% endfor %}
         </div>
+    </div>
+</div>
 
-        {# --- Liste des recettes --- #}
-        {% if recettes is empty %}
-            <div class="text-center py-5">
-                <i class="bi bi-emoji-frown display-4 text-muted"></i>
-                <p class="text-muted mt-3">Aucune recette trouvée pour ces critères.</p>
-            </div>
-        {% else %}
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {% for recette in recettes %}
-                    <div class="col">
-                        <a href="{{ path('app_recette_spoonacular_show', {spoonacularId: recette.id}) }}"
-                           class="text-decoration-none text-dark">
-                            <div class="card h-100 shadow-sm hover-lift">
+<main class="container mb-5">
+    {% if recettes is empty %}
+        <div class="text-center py-5">
+            <i class="bi bi-emoji-frown display-1 text-muted opacity-25"></i>
+            <p class="text-muted mt-3 h4">Oups, aucune recette ne correspond.</p>
+        </div>
+    {% else %}
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            {% for recette in recettes %}
+                <div class="col">
+                    <a href="{{ path('app_recette_spoonacular_show', {spoonacularId: recette.id}) }}"
+                       class="text-decoration-none group">
+                        <div class="card border-0 bg-transparent h-100">
+                            <div class="position-relative overflow-hidden mb-3" style="border-radius: var(--radius-lg);">
                                 {% if recette.image is defined and recette.image %}
                                     <img src="{{ recette.image }}"
-                                         class="card-img-top"
+                                         class="w-100 transition-normal group-hover-scale"
                                          alt="{{ recette.title }}"
-                                         style="height: 200px; object-fit: cover;">
-                                {% endif %}
-                                <div class="card-body">
-                                    <h5 class="card-title mb-3">{{ recette.title }}</h5>
-                                    <div class="d-flex gap-2 flex-wrap">
-                                        {% if recette.readyInMinutes is defined %}
-                                            <span class="badge bg-light text-dark border">
-                                                <i class="bi bi-clock me-1"></i>{{ recette.readyInMinutes }} min
-                                            </span>
-                                        {% endif %}
-                                        {% if recette.servings is defined %}
-                                            <span class="badge bg-light text-dark border">
-                                                <i class="bi bi-people me-1"></i>{{ recette.servings }} pers.
-                                            </span>
-                                        {% endif %}
-                                        {% if recette.vegetarian is defined and recette.vegetarian %}
-                                            <span class="badge bg-success">Végé</span>
-                                        {% endif %}
-                                        {% if recette.vegan is defined and recette.vegan %}
-                                            <span class="badge bg-success">Vegan</span>
-                                        {% endif %}
-                                        {% if recette.glutenFree is defined and recette.glutenFree %}
-                                            <span class="badge bg-info">Sans gluten</span>
-                                        {% endif %}
+                                         style="height: 300px; object-fit: cover;">
+                                {% else %}
+                                    <div class="w-100 bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
+                                        <i class="bi bi-image text-muted display-4"></i>
                                     </div>
-                                </div>
-                                <div class="card-footer bg-white border-0 pt-0">
-                                    <span class="btn btn-sm btn-outline-dark w-100">
-                                        Voir la recette <i class="bi bi-arrow-right ms-1"></i>
-                                    </span>
+                                {% endif %}
+                                <div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2">
+                                    {% if recette.vegetarian is defined and recette.vegetarian %}
+                                        <span class="badge rounded-pill bg-success shadow-sm">Végé</span>
+                                    {% endif %}
+                                    {% if recette.readyInMinutes is defined %}
+                                        <span class="badge rounded-pill bg-white text-dark shadow-sm">
+                                            <i class="bi bi-clock-fill text-primary me-1"></i>{{ recette.readyInMinutes }}'
+                                        </span>
+                                    {% endif %}
                                 </div>
                             </div>
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </main>
+                            <div class="card-body p-0">
+                                <h3 class="h4 fw-bold mb-2 text-dark group-hover-text-primary transition-fast" style="font-family: var(--font-display);">
+                                    {{ recette.title }}
+                                </h3>
+                                <div class="d-flex align-items-center gap-3 text-muted small">
+                                    {% if recette.servings is defined %}
+                                        <span><i class="bi bi-people me-1"></i>{{ recette.servings }} portions</span>
+                                    {% endif %}
+                                    <span>•</span>
+                                    <span>Cuisine Saine</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</main>
+
+<style>
+.group:hover .group-hover-scale {
+    transform: scale(1.05);
+}
+.group:hover .group-hover-text-primary {
+    color: var(--vanilla-custard) !important;
+}
+.transition-normal {
+    transition: var(--transition-normal);
+}
+.transition-fast {
+    transition: var(--transition-fast);
+}
+</style>
 {% endblock %}

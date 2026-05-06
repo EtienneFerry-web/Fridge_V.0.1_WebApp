@@ -9,21 +9,85 @@
 
 {% block body %}
     <main>
-        {# 2. COMPONENT HERO #}
-        {% include 'components/_hero.html.twig' %}
+        <!-- Hero Section (Foodu Style - Transparent) -->
+        <section class="hero-section pt-4 pb-0 mb-0" style="background: transparent;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 text-center text-lg-start">
+                        <h1 class="display-1 fw-bold mb-4" style="font-family: var(--font-display); line-height: 1.1;">
+                            Good Food For <br><span class="text-primary">Good Health</span>
+                        </h1>
+                        <p class="lead mb-5 text-muted" style="max-width: 500px; font-size: 1.25rem;">
+                            Savourez des recettes saines, locales et planifiées avec amour pour votre bien-être quotidien.
+                        </p>
+                        <div class="d-flex gap-4 justify-content-center justify-content-lg-start">
+                            <a href="{{ path('app_recette_index') }}" class="btn btn-primary btn-lg px-5 py-3 shadow-lg rounded-pill fw-bold">
+                                Explorer le menu
+                            </a>
+                            <a href="{{ path('app_planning') }}" class="btn btn-outline-secondary btn-lg px-5 py-3 rounded-pill fw-bold">
+                                Mon Planning
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <div class="position-relative">
+                            <!-- Circular Image Container (Foodu style) -->
+                            <div class="food-circle-bg" style="position: absolute; top: 10%; right: 0; width: 500px; height: 500px; background: var(--vanilla-custard); border-radius: 50%; opacity: 0.1; z-index: -1;"></div>
+                            <div class="food-circle-main overflow-hidden shadow-lg mx-auto" style="width: 450px; height: 450px; border-radius: 50%; border: 15px solid white;">
+                                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800" 
+                                     class="w-100 h-100 object-fit-cover" alt="Healthy Plate">
+                            </div>
+                            <!-- Accents -->
+                            <div class="position-absolute top-0 start-0 p-3 bg-white shadow-sm rounded-4 d-flex align-items-center gap-3 animate-bounce" style="transform: rotate(-10deg);">
+                                <div class="bg-success-subtle p-2 rounded-circle"><i class="bi bi-heart-fill text-success"></i></div>
+                                <div><small class="d-block text-muted">Healthy Choice</small><span class="fw-bold">100% Organic</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        {# 3. CARROUSEL (Recettes du moment) #}
-        <section id="newRecipes" class="container py-5">
-            <div class="text-center mb-5">
-                <h2 class="fw-bold">Les Recettes du moment</h2>
-                <p class="text-muted">Les pépites de la communauté</p>
+        <!-- Trouver votre régime (Directly after Hero) -->
+        <section id="dietCategories" class="py-4" style="background-color: transparent;">
+            <div class="container text-center">
+                <div class="mb-5">
+                    <h6 class="text-primary text-uppercase fw-bold ls-2">Nos Catégories</h6>
+                    <h2 class="display-5 fw-bold" style="font-family: var(--font-display);">Trouver votre régime</h2>
+                </div>
+                <div class="d-flex justify-content-center flex-wrap gap-5">
+                    {% set categories = [
+                        {'name': 'Végétarien', 'icon': 'bi-leaf', 'color': '#e8f5e9'},
+                        {'name': 'Péscitarien', 'icon': 'bi-water', 'color': '#e3f2fd'},
+                        {'name': 'Sans Gluten', 'icon': 'bi-slash-circle', 'color': '#fff3e0'},
+                        {'name': 'Keto', 'icon': 'bi-fire', 'color': '#fce4ec'},
+                        {'name': 'Vegan', 'icon': 'bi-flower1', 'color': '#f1f8e9'}
+                    ] %}
+                    {% for cat in categories %}
+                        <a href="{{ path('app_recette_index', {regime: cat.name}) }}" class="text-decoration-none group">
+                            <div class="category-circle mb-3 d-flex align-items-center justify-content-center transition-normal shadow-sm group-hover-scale"
+                                 style="width: 120px; height: 120px; border-radius: 50%; background-color: white; border: 2px solid {{ cat.color }};">
+                                <i class="bi {{ cat.icon }} fs-1 text-dark"></i>
+                            </div>
+                            <span class="fw-bold text-dark d-block">{{ cat.name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Popular Recipes (Splide Carousel with Stimulus) -->
+        <section id="popularRecipes" class="container py-5 mt-5">
+            <div class="d-flex flex-column align-items-center mb-5 text-center">
+                <h6 class="text-primary text-uppercase fw-bold ls-2">Meilleures Ventes</h6>
+                <h2 class="display-5 fw-bold" style="font-family: var(--font-display);">Les Incontournables</h2>
             </div>
 
-            <div class="splide" id="recipe-carousel">
+            <div class="splide" id="recipe-carousel" data-controller="carousel">
                 <div class="splide__track">
                     <ul class="splide__list">
-                        {% for objRecette in arrRecettesCarousel %}
-                            <li class="splide__slide px-2">
+                        {% for objRecette in arrRecettesCarousel|slice(0, 12) %}
+                            <li class="splide__slide px-3 pb-5">
                                 {% include 'components/_recipe_card.html.twig' with {
                                     title:      objRecette.recetteLibelle,
                                     time:       objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
@@ -31,7 +95,8 @@
                                     photo:      objRecette.recettePhoto,
                                     is_liked:   arrLikedIds[objRecette.id] is defined,
                                     like_count: arrLikeCounts[objRecette.id]|default(0),
-                                    is_favori:  arrFavoriIds[objRecette.id] is defined
+                                    is_favori:  arrFavoriIds[objRecette.id] is defined,
+                                    description: objRecette.recetteDescription
                                 } %}
                             </li>
                         {% endfor %}
@@ -40,91 +105,72 @@
             </div>
         </section>
 
-        {# 4. CATALOGUE COMPLET #}
-        <section id="recipeCatalog" class="container py-5 border-top">
-
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-                <div>
-                    <h2 class="fw-bold mb-0">Catalogue de Recettes</h2>
-                    <p class="text-muted mb-0">Trouvez l'inspiration parmi toutes nos recettes</p>
-                </div>
-
-                <div class="d-flex flex-wrap gap-2">
-                    <div class="dropdown">
-                        <button class="btn btn-white border shadow-sm dropdown-toggle"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {% if activeRegime == 'all' %}Tous les régimes
-                            {% else %}{{ activeRegime }}
-                            {% endif %}
-                        </button>
-                        <ul class="dropdown-menu shadow">
-                            <li>
-                                <a class="dropdown-item {{ activeRegime == 'all' ? 'active' }}"
-                                href="{{ path('app_home', {tri: activeSort}) }}">
-                                    Tous les régimes
-                                </a>
-                            </li>
-                            {% for label in ['Vegan', 'Végétarien', 'Omnivore'] %}
-                                <li>
-                                    <a class="dropdown-item {{ activeRegime == label ? 'active' }}"
-                                    href="{{ path('app_home', {regime: label, tri: activeSort}) }}">
-                                        {{ label }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
+        <!-- Full Catalog Section -->
+        <section id="recipeCatalog" class="container py-5 mb-5">
+            <div class="bento-grid p-5">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-4">
+                    <div>
+                        <h2 class="h2 fw-bold mb-1" style="font-family: var(--font-display);">Toutes les pépites</h2>
+                        <p class="text-muted mb-0">Explorez l'intégralité de notre bibliothèque culinaire.</p>
                     </div>
 
-                    <div class="dropdown">
-                        <button class="btn btn-white border shadow-sm dropdown-toggle"
-                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ activeSort == 'popular' ? 'Plus populaires' : 'Plus récents' }}
-                        </button>
-                        <ul class="dropdown-menu shadow">
-                            <li>
-                                <a class="dropdown-item {{ activeSort == 'recent' ? 'active' }}"
-                                href="{{ path('app_home', {tri: 'recent', regime: activeRegime}) }}">
-                                    Plus récents
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item {{ activeSort == 'popular' ? 'active' }}"
-                                href="{{ path('app_home', {tri: 'popular', regime: activeRegime}) }}">
-                                    Plus populaires
-                                </a>
-                            </li>
-                        </ul>
+                    <div class="d-flex flex-wrap gap-2">
+                        <div class="dropdown">
+                            <button class="btn btn-white border shadow-sm dropdown-toggle rounded-pill px-4"
+                                    type="button" data-bs-toggle="dropdown">
+                                {{ activeRegime == 'all' ? 'Régimes' : activeRegime }}
+                            </button>
+                            <ul class="dropdown-menu shadow border-0 rounded-4">
+                                <li><a class="dropdown-item" href="{{ path('app_home', {tri: activeSort}) }}">Tous</a></li>
+                                {% for label in ['Vegan', 'Végétarien', 'Omnivore'] %}
+                                    <li><a class="dropdown-item" href="{{ path('app_home', {regime: label, tri: activeSort}) }}">{{ label }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="recipeGrid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-                {% for objRecette in arrRecettes %}
-                    <div class="col-md-4">
-                        {% include 'components/_recipe_card.html.twig' with {
-                            title:      objRecette.recetteLibelle,
-                            time:       objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
-                            id:         objRecette.id,
-                            photo:      objRecette.recettePhoto,
-                            is_liked:   arrLikedIds[objRecette.id] is defined,
-                            like_count: arrLikeCounts[objRecette.id]|default(0),
-                            is_favori:  arrFavoriIds[objRecette.id] is defined
-                        } %}
-                    </div>
-                {% endfor %}
-            </div>
+                <div id="recipeGrid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
+                    {% for objRecette in arrRecettes %}
+                        <div class="col">
+                            {% include 'components/_recipe_card.html.twig' with {
+                                title:      objRecette.recetteLibelle,
+                                time:       objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
+                                id:         objRecette.id,
+                                photo:      objRecette.recettePhoto,
+                                is_liked:   arrLikedIds[objRecette.id] is defined,
+                                like_count: arrLikeCounts[objRecette.id]|default(0),
+                                is_favori:  arrFavoriIds[objRecette.id] is defined,
+                                description: objRecette.recetteDescription
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
 
-            <div id="noResultMsg" class="text-center py-5 d-none">
-                <i class="bi bi-search display-4 text-muted mb-3 d-block"></i>
-                <h5 class="text-muted">Aucune recette ne correspond à vos critères.</h5>
+                <div class="d-flex justify-content-center mt-5">
+                    {{ knp_pagination_render(arrRecettes) }}
+                </div>
             </div>
-
-            <div class="d-flex justify-content-center mt-4">
-                {{ knp_pagination_render(arrRecettes) }}
-            </div>
-
         </section>
     </main>
+
+    <style>
+    .ls-2 { letter-spacing: 2px; }
+    .animate-bounce {
+        animation: bounce 3s infinite ease-in-out;
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0) rotate(-10deg); }
+        50% { transform: translateY(-10px) rotate(-10deg); }
+    }
+    .category-circle:hover {
+        background-color: var(--vanilla-custard) !important;
+        border-color: var(--vanilla-custard) !important;
+    }
+    .category-circle:hover i {
+        color: white !important;
+    }
+    </style>
 
 {% endblock %}
 

@@ -11,7 +11,7 @@ export default function RecipeList({
     }, emptyMessage);
   }
   return /*#__PURE__*/React.createElement("div", {
-    className: "row row-cols-2 row-cols-md-3 g-3"
+    className: "row row-cols-2 row-cols-md-4 g-3"
   }, recipes.map(recipe => /*#__PURE__*/React.createElement(RecipeCard, {
     key: recipe.id,
     recipe: recipe,

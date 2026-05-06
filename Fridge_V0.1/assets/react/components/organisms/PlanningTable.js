@@ -16,6 +16,8 @@ export default function PlanningTable() {
     'dessert': 'Dessert'
   };
   return /*#__PURE__*/React.createElement("div", {
+    className: "bento-grid p-4 mb-5"
+  }, /*#__PURE__*/React.createElement("div", {
     className: "table-responsive"
   }, /*#__PURE__*/React.createElement("table", {
     className: "table table-bordered align-middle text-center table-planning"
@@ -36,5 +38,5 @@ export default function PlanningTable() {
     moment: momentKey,
     label: momentLabel,
     meal: state.grid[day]?.[momentKey]
-  })))))));
+  }))))))));
 }
