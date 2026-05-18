@@ -53,7 +53,8 @@
 
   /* --- Typographie --- */
   --font-display: 'Playfair Display', Georgia, serif;
-  --font-body:    'Manrope', 'Segoe UI', sans-serif;
+  --font-body:    'Nunito', 'Segoe UI', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
 
   /* --- Rayons (Inspirés par les images - très arrondis) --- */
   --radius-sm:  12px;
@@ -78,9 +79,9 @@
   --bs-success-rgb:       0, 153, 145;
   --bs-info:              var(--baltic-blue);
   --bs-info-rgb:          6, 188, 249;
-  --bs-warning:           var(--vanilla-custard);
-  --bs-warning-rgb:       243, 223, 162;
-  --bs-danger:            var(--vanilla-custard);
+  --bs-warning:           #f59e0b;
+  --bs-warning-rgb:       245, 158, 11;
+  --bs-danger:            #bb4430;
   --bs-danger-rgb:        187, 68, 48;
   --bs-light:             var(--cream-mid);
   --bs-light-rgb:         249, 250, 234;

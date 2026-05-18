@@ -17,6 +17,12 @@
                     {{ regime == 'all' ? 'Tous les régimes' : regime }}
                 </a>
             {% endfor %}
+            
+            <a href="{{ path('app_recette_index', {regime: activeRegime, sort: 'random'}) }}"
+               class="btn btn-primary rounded-pill px-4 shadow-sm"
+               style="{{ activeSort == 'random' ? 'background-color: var(--vanilla-custard); border-color: var(--vanilla-custard); color: var(--deep-sage);' : '' }}">
+                <i class="bi bi-shuffle me-2"></i> {{ activeSort == 'random' ? 'Mélanger à nouveau' : 'Surprends-moi !' }}
+            </a>
         </div>
     </div>
 </div>

@@ -50,7 +50,8 @@ final class RecetteController extends AbstractController
         // Mapping du tri interne vers le tri Spoonacular
         $strApiSort = match ($strSort) {
             'popular' => 'popularity',
-            'recent'  => 'popularity', // pas d'équivalent natif côté API
+            'recent'  => 'popularity',
+            'random'  => 'random',
             default   => 'popularity',
         };
 
@@ -62,9 +63,11 @@ final class RecetteController extends AbstractController
         $arrRecettes = [];
 
         try {
+            $intOffset = ($strSort === 'random') ? rand(0, 900) : 0;
+            
             $arrResponse = $objClient->complexSearch(
                 intNumber:  24,
-                intOffset:  0,
+                intOffset:  $intOffset,
                 strSort:    $strApiSort,
                 arrFilters: $arrFilters
             );
