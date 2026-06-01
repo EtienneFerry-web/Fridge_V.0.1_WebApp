@@ -36,6 +36,9 @@
                         <a href="{{ path('app_edit_user_profil') }}" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-gear me-1"></i> Paramètres
                         </a>
+                        <a href="{{ path('app_user_profil_by_id', {user_id: app.user.id}) }}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-person-lines-fill me-1"></i> Voir mon profil public
+                        </a>
                     </div>
                 </div>
 
@@ -67,37 +70,66 @@
             </div>
         </section>
 
-        {# 5. MES FAVORIS #}
+        {# 5. MES LISTES #}
         <section class="bg-white shadow-sm rounded-3 p-4 mb-4">
-            <h2 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
-                <i class="bi bi-bookmark-star-fill text-warning"></i> Mes Favoris
-            </h2>
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <h2 class="h5 fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-collection-fill text-primary"></i> Mes Listes
+                </h2>
+                {% if arrListes|length > 3 %}
+                    <a href="{{ path('app_liste_index') }}" class="btn btn-sm btn-outline-secondary">
+                        Voir toutes les listes <span class="badge bg-secondary ms-1">{{ arrListes|length }}</span>
+                    </a>
+                {% endif %}
+            </div>
 
-            
-            <ul class="list-group list-group-flush">
-                {% for objFavori in arrFavoris %}
-                    <li class="list-group-item px-0 d-flex align-items-center gap-3 bg-transparent">
-                        {% if objFavori.favoriRecette.recettePhoto %}
-                            <img src="{{ objFavori.favoriRecette.recettePhoto|recette_photo }}"
-                        {% else %}
-                            <div class="rounded bg-secondary-subtle" style="width:48px; height:48px;"></div>
-                        {% endif %}
-                        <div class="flex-grow-1 min-w-0">
-                            <p class="mb-0 fw-medium small text-truncate">
-                                {{ objFavori.favoriRecette.recetteLibelle }}
-                            </p>
-                            <span class="text-muted small">
-                                {{ objFavori.favoriRecette.recetteDifficulte|capitalize }}
-                                · {{ objFavori.favoriRecette.recetteTempsPrepa + objFavori.favoriRecette.recetteTempsCuisson }} min
-                            </span>
+            {% if arrListes is empty %}
+                <p class="text-muted small">Vous n'avez pas encore créé de liste.<br>
+                    Ouvrez une recette et cliquez sur <i class="bi bi-bookmark"></i> pour en créer une.
+                </p>
+            {% else %}
+                <div class="row g-3">
+                    {% for liste in arrListes|slice(0, 3) %}
+                        <div class="col-md-4">
+                            <div class="border rounded-3 p-3 h-100">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <span class="fw-semibold small">
+                                        <i class="bi bi-collection-fill text-primary me-1"></i>{{ liste.nom }}
+                                    </span>
+                                    <span class="badge rounded-pill bg-light text-dark border small">
+                                        {{ liste.recettes|length }}
+                                    </span>
+                                </div>
+                                {% if liste.recettes is not empty %}
+                                    <ul class="list-unstyled mb-0">
+                                        {% for recette in liste.recettes|slice(0, 3) %}
+                                            <li class="small text-muted text-truncate py-1 border-bottom">
+                                                <a href="{{ path('app_recette_show', {id: recette.id}) }}"
+                                                   class="text-decoration-none text-muted">
+                                                    {{ recette.recetteLibelle }}
+                                                </a>
+                                            </li>
+                                        {% endfor %}
+                                        {% if liste.recettes|length > 3 %}
+                                            <li class="small text-muted pt-1">+ {{ liste.recettes|length - 3 }} autre{{ liste.recettes|length - 3 > 1 ? 's' : '' }}…</li>
+                                        {% endif %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-muted small mb-0">Liste vide</p>
+                                {% endif %}
+                            </div>
                         </div>
-                            <a href="{{ path('app_recette_show', {id: objFavori.favoriRecette.id}) }}"
-                            class="btn btn-sm btn-outline-dark flex-shrink-0">Voir</a>                    
-                    </li>
-                {% else %}
-                    <p class="text-muted small mt-2">Vous n'avez pas encore ajouté de favoris.</p>
-                {% endfor %}
-            </ul>
+                    {% endfor %}
+                </div>
+
+                {% if arrListes|length > 3 %}
+                    <div class="text-center mt-3">
+                        <a href="{{ path('app_liste_index') }}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-collection me-1"></i>Voir toutes mes listes ({{ arrListes|length }})
+                        </a>
+                    </div>
+                {% endif %}
+            {% endif %}
         </section>
 
     </main>

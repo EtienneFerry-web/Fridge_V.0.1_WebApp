@@ -2,11 +2,12 @@
 
 namespace App\Controller;
 
-use App\Entity\Favori;
 use App\Entity\LikeRecette;
+use App\Entity\User;
 use App\Repository\LikeRecetteRepository;
-use App\Repository\FavoriRepository;
+use App\Repository\ListeRepository;
 use App\Repository\RecetteRepository;
+use App\Repository\UserRepository;
 use App\Form\UserProfileType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -26,24 +27,21 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class UserProfilController extends AbstractController
 {
     /**
-     * Affiche le profil de l'utilisateur connecté avec ses recettes likées et ses favoris.
-     *
-     * @param RecetteRepository $objRecetteRepo Repository des recettes
-     * @param FavoriRepository  $objFavoriRepo  Repository des favoris
+     * Affiche le profil de l'utilisateur connecté avec ses recettes likées et ses listes.
      */
     #[Route('/user/profil', name: 'app_user_profil')]
     public function index(
-        RecetteRepository       $objRecetteRepo,
-        FavoriRepository        $objFavoriRepo
+        RecetteRepository $objRecetteRepo,
+        ListeRepository   $listeRepository
     ): Response {
         $objUser = $this->getUser();
 
-        $arrLikes   = $objRecetteRepo->findLikedByUserWithCount($objUser);
-        $arrFavoris = $objFavoriRepo->findBy(['favoriUser' => $objUser]);
+        $arrLikes  = $objRecetteRepo->findLikedByUserWithCount($objUser);
+        $arrListes = $listeRepository->findBy(['user' => $objUser], ['id' => 'DESC']);
 
         return $this->render('user/profil.html.twig', [
-            'arrLikes' => $arrLikes,
-            'arrFavoris' => $arrFavoris
+            'arrLikes'  => $arrLikes,
+            'arrListes' => $arrListes,
         ]);
     }
 
@@ -110,13 +108,35 @@ final class UserProfilController extends AbstractController
     }
 
     /**
-     * Affiche le profil public d'un utilisateur identifié par son id (fonctionnalité à venir).
+     * Affiche le profil public d'un utilisateur identifié par son id.
+     *
+     * Accessible sans être connecté. Seules les recettes publiées sont visibles.
      *
      * @param int $user_id Identifiant de l'utilisateur à afficher
      */
     #[Route('/user/profil/{user_id}', name: 'app_user_profil_by_id')]
-    public function show(int $user_id): Response
-    {
-        return $this->render('user/profil.html.twig');
+    #[IsGranted('PUBLIC_ACCESS')]
+    public function show(
+        int               $user_id,
+        UserRepository    $userRepository,
+        RecetteRepository $recetteRepository
+    ): Response {
+        /** @var User|null $profileUser */
+        $profileUser = $userRepository->find($user_id);
+
+        if (!$profileUser || $profileUser->getDateSuppression() !== null) {
+            throw $this->createNotFoundException('Utilisateur introuvable.');
+        }
+
+        $arrRecettes   = $recetteRepository->findPublishedByUser($profileUser);
+        $intLikes      = $recetteRepository->countLikesReceivedByUser($profileUser);
+        $isOwnProfile  = $this->getUser() === $profileUser;
+
+        return $this->render('user/profil_public.html.twig', [
+            'profileUser'  => $profileUser,
+            'arrRecettes'  => $arrRecettes,
+            'intLikes'     => $intLikes,
+            'isOwnProfile' => $isOwnProfile,
+        ]);
     }
 }

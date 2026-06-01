@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['likeIcon', 'likeCount', 'favoriIcon'];
+    static targets = ['likeIcon', 'likeCount', 'favoriIcon', 'favoriLabel'];
     static values  = { liked: Boolean, favori: Boolean };
 
     async toggleLike(event) {
@@ -43,9 +43,13 @@ export default class extends Controller {
 
         const objData = await objResponse.json();
 
-        this.favoriValue                    = objData.favori;
-        this.favoriIconTarget.className     = objData.favori
+        this.favoriValue                = objData.favori;
+        this.favoriIconTarget.className = objData.favori
             ? 'bi bi-bookmark-fill text-warning'
             : 'bi bi-bookmark text-muted';
+
+        if (this.hasFavoriLabelTarget) {
+            this.favoriLabelTarget.textContent = objData.favori ? 'Sauvegardé' : 'Sauvegarder';
+        }
     }
 }

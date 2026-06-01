@@ -10,7 +10,7 @@ use Twig\TwigFilter;
  * Filtre Twig pour résoudre l'URL d'une photo de recette de manière transparente.
  *
  * Comportement :
- * - URL externe (Spoonacular, Unsplash, etc.) : retournée telle quelle
+ * - URL externe : retournée telle quelle
  * - Nom de fichier local : préfixée avec asset('uploads/recettes/...')
  * - null/vide : image par défaut
  *

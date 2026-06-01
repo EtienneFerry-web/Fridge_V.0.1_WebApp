@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Planning;
 use App\Repository\FavoriRepository;
 use App\Repository\LikeRecetteRepository;
+use App\Repository\ListeCourseRepository;
 use App\Repository\PlanningRepository;
 use App\Repository\RecetteRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -43,7 +44,8 @@ final class PlanningController extends AbstractController
     public function index(
         PlanningRepository    $objPlanningRepository,
         LikeRecetteRepository $objLikeRepository,
-        FavoriRepository      $objFavoriRepository
+        FavoriRepository      $objFavoriRepository,
+        ListeCourseRepository $listeCourseRepository
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_USER');
         $objUser = $this->getUser();
@@ -89,10 +91,20 @@ final class PlanningController extends AbstractController
         $arrLikesFormat = array_map($formatRecette, $arrLikedRecettes);
         $arrFavorisFormat = array_map($formatRecette, $arrFavoriRecettes);
 
+        $hasPlanning = count($arrPlannings) > 0;
+
+        $activeListe = $listeCourseRepository->findOneBy(
+            ['user' => $objUser, 'listeStatut' => 'active'],
+            ['listeDateCreation' => 'DESC']
+        );
+
         return $this->render('planning/index.html.twig', [
             'arrGrilleJson'     => json_encode($arrGrilleFormat),
             'arrLikesJson'      => json_encode($arrLikesFormat),
             'arrFavorisJson'    => json_encode($arrFavorisFormat),
+            'hasPlanning'       => $hasPlanning,
+            'hasActiveListe'    => $activeListe !== null,
+            'activeListeId'     => $activeListe?->getId(),
         ]);
     }
 
@@ -186,6 +198,63 @@ final class PlanningController extends AbstractController
      * @param PlanningRepository     $objPlanningRepository Repository du planning
      * @param EntityManagerInterface $objEntityManager      Gestionnaire d'entités Doctrine
      */
+    /**
+     * Importe un planning généré en mode invité (stocké côté client).
+     *
+     * Reçoit un JSON [{jour, moment, recetteId}], crée les entrées Planning correspondantes.
+     * Les créneaux déjà occupés sont remplacés.
+     */
+    #[Route('/importer-invite', name: 'app_planning_import_guest', methods: ['POST'])]
+    public function importGuest(
+        Request                $request,
+        RecetteRepository      $objRecetteRepository,
+        PlanningRepository     $objPlanningRepository,
+        EntityManagerInterface $objEntityManager
+    ): JsonResponse {
+        $this->denyAccessUnlessGranted('ROLE_USER');
+        $objUser = $this->getUser();
+
+        $arrData = json_decode($request->getContent(), true);
+        if (!isset($arrData['entries']) || !is_array($arrData['entries'])) {
+            return new JsonResponse(['error' => 'Données invalides.'], 400);
+        }
+
+        $intImported = 0;
+        foreach ($arrData['entries'] as $arrEntry) {
+            $strJour    = $arrEntry['jour']      ?? '';
+            $strMoment  = $arrEntry['moment']    ?? '';
+            $intRecId   = (int) ($arrEntry['recetteId'] ?? 0);
+
+            if (!in_array($strJour, self::JOURS) || !in_array($strMoment, self::MOMENTS)) continue;
+
+            $objRecette = $objRecetteRepository->find($intRecId);
+            if (!$objRecette) continue;
+
+            // Remplacer si le créneau est déjà occupé
+            $objExistant = $objPlanningRepository->findOneBy([
+                'planningUser'   => $objUser,
+                'planningJour'   => $strJour,
+                'planningMoment' => $strMoment,
+            ]);
+            if ($objExistant) {
+                $objEntityManager->remove($objExistant);
+            }
+
+            $objPlanning = (new Planning())
+                ->setPlanningUser($objUser)
+                ->setPlanningJour($strJour)
+                ->setPlanningMoment($strMoment)
+                ->setPlanningRecette($objRecette);
+
+            $objEntityManager->persist($objPlanning);
+            $intImported++;
+        }
+
+        $objEntityManager->flush();
+
+        return new JsonResponse(['success' => true, 'imported' => $intImported]);
+    }
+
     #[Route('/vider', name: 'app_planning_clear', methods: ['POST'])]
     public function clear(
         PlanningRepository     $objPlanningRepository,

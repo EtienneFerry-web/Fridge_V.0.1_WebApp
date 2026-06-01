@@ -1,0 +1,60 @@
+{% set maxPages    = 4 %}
+{% set showDiscover = pageCount > maxPages or current >= maxPages or current >= pageCount %}
+
+{% if pageCount > 1 %}
+<div class="d-flex flex-column align-items-center gap-4 mt-5">
+
+    <nav aria-label="Pagination des recettes">
+        <ul class="pagination fridge-pagination justify-content-center gap-1 flex-wrap mb-0">
+
+            {# Précédent #}
+            {% if current > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): current - 1})) }}#recipeCatalog" aria-label="Précédent">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+                </li>
+            {% endif %}
+
+            {# Numéros de page (1 → min(maxPages, pageCount)) #}
+            {% for p in 1..min(maxPages, pageCount) %}
+                <li class="page-item {{ p == current ? 'active' : '' }}">
+                    {% if p == current %}
+                        <span class="page-link" aria-current="page">{{ p }}</span>
+                    {% else %}
+                        <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): p})) }}#recipeCatalog">{{ p }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+
+            {# Suivant — seulement si on est avant la page max ET avant la dernière page #}
+            {% if current < maxPages and current < pageCount %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path(route, query|merge({(pageParameterName): current + 1})) }}#recipeCatalog" aria-label="Suivant">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            {% else %}
+                <li class="page-item disabled">
+                    <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+                </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+    {# CTA Découvrir — affiché quand il y a des recettes au-delà de la page 4 #}
+    {% if showDiscover %}
+        <a href="{{ path('app_recette_index') }}"
+           class="btn btn-outline-primary rounded-pill px-5 fw-bold d-inline-flex align-items-center gap-2">
+            Découvrir toutes nos recettes
+            <i class="bi bi-arrow-right"></i>
+        </a>
+    {% endif %}
+
+</div>
+{% endif %}

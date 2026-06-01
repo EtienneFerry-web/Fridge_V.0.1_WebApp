@@ -22,7 +22,7 @@
         {% for regime in regimes %}
             <a href="{{ path('app_recette_mine', {regime: regime, sort: activeSort}) }}"
                class="btn btn-outline-dark rounded-pill px-4"
-               style="{{ activeRegime == regime ? 'background-color: var(--vanilla-custard); border-color: var(--vanilla-custard); color: var(--deep-sage);' : '' }}">
+               style="{{ activeRegime == regime ? 'background-color: var(--primary); border-color: var(--primary); color: var(--text);' : '' }}">
                 {{ regime == 'all' ? 'Toutes mes recettes' : regime }}
             </a>
         {% endfor %}

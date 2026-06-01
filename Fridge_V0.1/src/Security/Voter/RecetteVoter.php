@@ -12,15 +12,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * Gère les droits d'accès pour l'entité Recette.
  *
- * Logique de visibilité :
- * - Recettes Spoonacular (source 'spoonacular') :
- *     VIEW   : tout le monde (publiques)
- *     EDIT   : personne (contenu externe non modifiable)
- *     DELETE : admin uniquement
- * - Recettes utilisateur (source 'user', statut 'prive') :
- *     VIEW   : créateur uniquement (+ admin)
- *     EDIT   : créateur uniquement (+ admin)
- *     DELETE : créateur uniquement (+ admin)
+ * - Recettes publiées (statut 'publie') : VIEW pour tous
+ * - Recettes privées (statut 'prive')   : CRUD pour le créateur et l'admin
  */
 final class RecetteVoter extends Voter
 {
@@ -30,49 +23,32 @@ final class RecetteVoter extends Voter
 
     public function __construct(
         private readonly Security $security,
-    ) {
-    }
+    ) {}
 
-    /**
-     * Détermine si le voter supporte l'attribut et l'objet fournis.
-     */
     protected function supports(string $attribute, mixed $subject): bool
     {
         return in_array($attribute, [self::EDIT, self::DELETE, self::VIEW])
             && $subject instanceof Recette;
     }
 
-    /**
-     * Vote sur la permission accordée ou non.
-     */
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         /** @var Recette $objRecette */
         $objRecette = $subject;
         $objUser    = $token->getUser();
 
-        // === Recettes Spoonacular ===
-        if ($objRecette->getRecetteSource() === 'spoonacular') {
-            return match ($attribute) {
-                // Visibles par tous, même les visiteurs anonymes
-                self::VIEW   => true,
-                // Pas d'édition possible pour les contenus externes
-                self::EDIT   => false,
-                // Suppression réservée à l'admin (modération de contenu inapproprié par exemple)
-                self::DELETE => $this->security->isGranted('ROLE_ADMIN'),
-                default      => false,
-            };
+        // Recettes publiées : visibles par tous
+        if ($attribute === self::VIEW && $objRecette->getRecetteStatut() === 'publie') {
+            return true;
         }
-
-        // === Recettes utilisateur (source 'user') ===
 
         // Tout le reste exige une authentification
         if (!$objUser instanceof UserInterface) {
-            $vote?->addReason('L\'utilisateur doit être connecté pour accéder à cette recette privée.');
+            $vote?->addReason('Authentification requise.');
             return false;
         }
 
-        // Admin a tous les droits sur les recettes utilisateur
+        // Admin a tous les droits
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

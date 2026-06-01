@@ -62,7 +62,7 @@ class DashboardController extends AbstractController
         // serait réactivée plus tard.
         $arrPending = [];
 
-        // --- Dernières recettes publiées (Spoonacular uniquement) ---
+        // --- Dernières recettes publiées ---
         $arrLatest = $objRecetteRepository->findBy(
             ['recetteStatut' => 'publie'],
             ['recetteCreatedAt' => 'DESC'],

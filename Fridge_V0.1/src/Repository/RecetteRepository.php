@@ -15,7 +15,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * les filtres de la page liste et les stats du dashboard.
  *
  * IMPORTANT — Logique de visibilité :
- * - Recettes 'spoonacular' : publiques, visibles par tous
+ * - Recettes 'publie' : publiques, visibles par tous
  * - Recettes 'user' : privées (statut 'prive'), visibles uniquement par leur créateur
  * - Recettes 'en_attente' / 'refuse' : statuts historiques (modération désactivée)
  *
@@ -84,9 +84,7 @@ class RecetteRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.regimes', 'reg')
             ->where('r.createdBy = :user')
-            ->andWhere('r.recetteSource = :source')
-            ->setParameter('user', $objUser)
-            ->setParameter('source', 'user');
+            ->setParameter('user', $objUser);
 
         if ($strRegime !== 'all') {
             $qb->andWhere('reg.regimeLibelle = :regime')
@@ -107,9 +105,8 @@ class RecetteRepository extends ServiceEntityRepository
     /**
      * Recherche multicritères dans les recettes accessibles à l'utilisateur.
      *
-     * Retourne uniquement les recettes auxquelles l'user a légitimement accès :
-     * ses propres recettes (peu importe le statut) ainsi que les recettes Spoonacular
-     * importées en BDD (statut 'publie' & source 'spoonacular').
+     * Retourne les recettes publiées (visibles par tous) et les recettes
+     * privées de l'utilisateur connecté.
      *
      * @param User|null $objUser       L'utilisateur connecté (null = recherche publique uniquement)
      * @param string    $strQuery      Terme de recherche sur le libellé
@@ -132,16 +129,13 @@ class RecetteRepository extends ServiceEntityRepository
     ): array {
         $qb = $this->createQueryBuilder('r');
 
-        // Visibilité : recettes Spoonacular publiques OU recettes de l'user connecté
+        // Visibilité : recettes publiées OU recettes privées de l'user connecté
         if ($objUser !== null) {
-            $qb->where('(r.recetteSource = :spoonacular AND r.recetteStatut = :publie) OR r.createdBy = :user')
-               ->setParameter('spoonacular', 'spoonacular')
+            $qb->where('r.recetteStatut = :publie OR r.createdBy = :user')
                ->setParameter('publie', 'publie')
                ->setParameter('user', $objUser);
         } else {
-            // Visiteur non connecté : uniquement les recettes Spoonacular publiques
-            $qb->where('r.recetteSource = :spoonacular AND r.recetteStatut = :publie')
-               ->setParameter('spoonacular', 'spoonacular')
+            $qb->where('r.recetteStatut = :publie')
                ->setParameter('publie', 'publie');
         }
 
@@ -166,8 +160,7 @@ class RecetteRepository extends ServiceEntityRepository
                ->setParameter('origine', $strOrigine);
         }
 
-        // Filtre temps max — uniquement si les champs sont renseignés
-        // (les recettes Spoonacular pourraient avoir des temps null)
+        // Filtre temps max
         $qb->andWhere('(COALESCE(r.recetteTempsPrepa, 0) + COALESCE(r.recetteTempsCuisson, 0)) <= :tempsMax')
            ->setParameter('tempsMax', $intTempsMax);
 
@@ -181,11 +174,7 @@ class RecetteRepository extends ServiceEntityRepository
     }
 
     /**
-     * Retourne les recettes Spoonacular publiées en BDD pour la page liste publique.
-     *
-     * Note : la vraie page "Découvrir" appelle Spoonacular en direct (pas la BDD).
-     * Cette méthode sert pour les recettes Spoonacular sauvegardées par les users
-     * (visibles publiquement) ou pour des cas comme une page "tendances".
+     * Retourne les recettes publiées en BDD.
      *
      * @return Recette[]
      */
@@ -193,9 +182,7 @@ class RecetteRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.regimes', 'reg')
-            ->where('r.recetteSource = :source')
-            ->andWhere('r.recetteStatut = :statut')
-            ->setParameter('source', 'spoonacular')
+            ->where('r.recetteStatut = :statut')
             ->setParameter('statut', 'publie');
 
         if ($strRegime !== 'all') {
@@ -215,15 +202,71 @@ class RecetteRepository extends ServiceEntityRepository
     }
 
     /**
+     * Retourne les recettes (publiées ou privées) dont au moins un ingrédient
+     * figure dans la liste d'IDs fournie.
+     *
+     * @param int[] $ingredientIds
+     * @return Recette[]
+     */
+    public function findByIngredients(array $ingredientIds): array
+    {
+        if (empty($ingredientIds)) {
+            return [];
+        }
+
+        return $this->createQueryBuilder('r')
+            ->innerJoin('r.contenirs', 'c')
+            ->innerJoin('c.ingredient', 'i')
+            ->where('r.recetteStatut IN (:statuts)')
+            ->andWhere('i.id IN (:ingredientIds)')
+            ->setParameter('statuts', ['prive', 'publie'])
+            ->setParameter('ingredientIds', $ingredientIds)
+            ->distinct()
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Retourne les recettes publiées d'un utilisateur donné.
+     *
+     * @return Recette[]
+     */
+    public function findPublishedByUser(User $user): array
+    {
+        return $this->createQueryBuilder('r')
+            ->where('r.createdBy = :user')
+            ->andWhere('r.recetteStatut = :statut')
+            ->setParameter('user', $user)
+            ->setParameter('statut', 'publie')
+            ->orderBy('r.recetteCreatedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Compte le nombre total de likes reçus sur toutes les recettes d'un utilisateur.
+     */
+    public function countLikesReceivedByUser(User $user): int
+    {
+        $result = $this->createQueryBuilder('r')
+            ->select('COUNT(l.id)')
+            ->innerJoin(LikeRecette::class, 'l', 'WITH', 'l.likeRecette = r')
+            ->where('r.createdBy = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (int) $result;
+    }
+
+    /**
      * Variante de findWithFilters retournant un Query Doctrine pour pagination KnpPaginator.
      */
     public function createQueryBuilderWithFilters(string $strRegime = 'all', string $strSort = 'recent'): \Doctrine\ORM\Query
     {
         $qb = $this->createQueryBuilder('r')
             ->leftJoin('r.regimes', 'reg')
-            ->where('r.recetteSource = :source')
-            ->andWhere('r.recetteStatut = :statut')
-            ->setParameter('source', 'spoonacular')
+            ->where('r.recetteStatut = :statut')
             ->setParameter('statut', 'publie');
 
         if ($strRegime !== 'all') {

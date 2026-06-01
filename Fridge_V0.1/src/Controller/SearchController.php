@@ -17,8 +17,8 @@ use Symfony\Component\Routing\Attribute\Route;
  * Permet de filtrer les recettes par mots-clés, difficulté, régime alimentaire, origine et temps de préparation.
  *
  * Visibilité :
- * - Visiteurs non connectés : uniquement les recettes Spoonacular publiées en BDD
- * - Utilisateurs connectés : leurs propres recettes + les recettes Spoonacular publiées
+ * - Visiteurs non connectés : recettes publiées uniquement
+ * - Utilisateurs connectés : leurs propres recettes + les recettes publiées
  */
 final class SearchController extends AbstractController
 {

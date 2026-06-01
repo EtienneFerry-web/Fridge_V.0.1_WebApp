@@ -4,11 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Recette;
 use App\Form\RecetteType;
+use App\Repository\CommentaireRepository;
+use App\Repository\FavoriRepository;
+use App\Repository\LikeRecetteRepository;
+use App\Repository\NoteRecetteRepository;
 use App\Repository\RecetteRepository;
 use App\Security\Voter\RecetteVoter;
-use App\Service\RecetteImporter;
-use App\Service\SpoonacularClient;
-use App\Service\SpoonacularMapper;
+use App\Service\TheMealDbClient;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -22,65 +24,47 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 /**
  * Contrôleur des recettes.
  *
- * Gère deux mondes :
- * - Recettes utilisateur (BDD, source='user', statut='prive') : CRUD complet, visibles uniquement par leur créateur
- * - Recettes Spoonacular (API directe, ou BDD si sauvegardées) : consultation publique, import au clic "Sauvegarder"
+ * Gère les recettes utilisateur (BDD, statut='prive'/'publie') : CRUD complet.
+ * La découverte publique est assurée par TheMealDB (cf. mealDbShow).
  */
 final class RecetteController extends AbstractController
 {
     /**
-     * Liste de découverte : recettes Spoonacular en API directe avec filtres et tri.
-     *
-     * Aucune lecture BDD ici — la liste publique est entièrement servie par Spoonacular.
-     * Les recettes ne sont importées en BDD qu'au clic "Sauvegarder" (cf. spoonacularSave).
-     *
-     * @param Request           $objRequest Requête HTTP (paramètres ?regime= et ?sort=)
-     * @param SpoonacularClient $objClient  Client API Spoonacular
-     * @param SpoonacularMapper $objMapper  Mapper de régimes vers paramètres API
+     * Page Découvrir — filtres par catégorie, origine et tri.
      */
     #[Route('/recette', name: 'app_recette_index')]
     public function index(
-        Request           $objRequest,
-        SpoonacularClient $objClient,
-        SpoonacularMapper $objMapper
+        Request         $objRequest,
+        TheMealDbClient $mealDbClient
     ): Response {
-        $strRegime = $objRequest->query->get('regime', 'all');
-        $strSort   = $objRequest->query->get('sort', 'recent');
-
-        // Mapping du tri interne vers le tri Spoonacular
-        $strApiSort = match ($strSort) {
-            'popular' => 'popularity',
-            'recent'  => 'popularity',
-            'random'  => 'random',
-            default   => 'popularity',
-        };
-
-        // Mapping du régime interne vers les paramètres API (diet ou intolerances)
-        $arrFilters = $strRegime !== 'all'
-            ? $objMapper->mapRegimeToApiParams($strRegime)
-            : [];
+        $category = $objRequest->query->get('category', 'all');
+        $area     = $objRequest->query->get('area', 'all');
+        $sort     = $objRequest->query->get('sort', 'default');
 
         $arrRecettes = [];
-
         try {
-            $intOffset = ($strSort === 'random') ? rand(0, 900) : 0;
-            
-            $arrResponse = $objClient->complexSearch(
-                intNumber:  24,
-                intOffset:  $intOffset,
-                strSort:    $strApiSort,
-                arrFilters: $arrFilters
-            );
-            $arrRecettes = $arrResponse['results'] ?? [];
-        } catch (\Throwable $e) {
-            $this->addFlash('error', 'Impossible de charger les recettes pour le moment. Réessaie dans un instant.');
+            $arrRecettes = $mealDbClient->getFilteredMeals(0, $category, $area);
+
+            if ($sort === 'random') {
+                shuffle($arrRecettes);
+            } elseif ($sort === 'alpha') {
+                usort($arrRecettes, fn($a, $b) => strcmp($a['title'], $b['title']));
+            }
+        } catch (\Throwable) {
+            $this->addFlash('error', 'Impossible de charger les recettes pour le moment.');
         }
 
+        $availableCategories = $mealDbClient->getAvailableCategories();
+        $availableAreas      = $mealDbClient->getAvailableAreas();
+
         return $this->render('recette/index.html.twig', [
-            'recettes'     => $arrRecettes,
-            'activeRegime' => $strRegime,
-            'activeSort'   => $strSort,
-            'isApiList'    => true, // flag pour le template : on est en mode Spoonacular brut
+            'recettes'            => $arrRecettes,
+            'activeCategory'      => $category,
+            'activeArea'          => $area,
+            'activeSort'          => $sort,
+            'availableCategories' => $availableCategories,
+            'availableAreas'      => $availableAreas,
+            'totalCount'          => count($arrRecettes),
         ]);
     }
 
@@ -113,90 +97,69 @@ final class RecetteController extends AbstractController
     }
 
     /**
-     * Affiche le détail d'une recette Spoonacular SANS l'importer en BDD.
-     *
-     * Utilise l'API Spoonacular en lecture seule. Si l'utilisateur veut conserver
-     * la recette pour la mettre en favoris/listes, il clique sur "Sauvegarder"
-     * et la route spoonacularSave déclenche l'import.
-     *
-     * IMPORTANT : cette route doit être déclarée AVANT show() pour éviter tout
-     * conflit de matching avec /recette/{id}.
-     *
-     * @param int               $spoonacularId ID Spoonacular de la recette
-     * @param SpoonacularClient $objClient     Client API Spoonacular
+     * Affiche le détail d'une recette TheMealDB.
      */
-    #[Route(
-        '/recette/spoonacular/{spoonacularId}',
-        name: 'app_recette_spoonacular_show',
-        requirements: ['spoonacularId' => '\d+']
-    )]
-    public function spoonacularShow(
-        int               $spoonacularId,
-        SpoonacularClient $objClient
-    ): Response {
+    #[Route('/recette/mealdb/{mealId}', name: 'app_recette_mealdb_show', requirements: ['mealId' => '\d+'])]
+    public function mealDbShow(int $mealId, TheMealDbClient $mealDbClient): Response
+    {
         try {
-            $arrData = $objClient->getRecipeInformation($spoonacularId);
-        } catch (\Throwable $e) {
-            $this->addFlash('error', 'Impossible de charger cette recette pour le moment.');
+            $meal = $mealDbClient->getMealById($mealId);
+        } catch (\Throwable) {
+            $meal = null;
+        }
+
+        if (!$meal) {
+            $this->addFlash('error', 'Recette introuvable.');
             return $this->redirectToRoute('app_recette_index');
         }
 
-        return $this->render('recette/spoonacular_show.html.twig', [
-            'data' => $arrData,
-        ]);
+        return $this->render('recette/mealdb_show.html.twig', ['meal' => $meal]);
     }
 
     /**
-     * Importe une recette Spoonacular en BDD au clic "Sauvegarder", puis redirige
-     * vers la page détail classique.
-     *
-     * Si la recette est déjà importée (anti-doublon via spoonacularId), on récupère
-     * simplement l'existante au lieu de dupliquer.
-     *
-     * @param int             $spoonacularId ID Spoonacular de la recette
-     * @param Request         $objRequest    Requête HTTP (token CSRF)
-     * @param RecetteImporter $objImporter   Service d'import
-     */
-    #[Route(
-        '/recette/spoonacular/{spoonacularId}/save',
-        name: 'app_recette_spoonacular_save',
-        methods: ['POST'],
-        requirements: ['spoonacularId' => '\d+']
-    )]
-    #[IsGranted('ROLE_USER')]
-    public function spoonacularSave(
-        int             $spoonacularId,
-        Request         $objRequest,
-        RecetteImporter $objImporter
-    ): Response {
-        if (!$this->isCsrfTokenValid('save_spoonacular_' . $spoonacularId, $objRequest->request->get('_token'))) {
-            $this->addFlash('error', 'Token invalide.');
-            return $this->redirectToRoute('app_recette_spoonacular_show', ['spoonacularId' => $spoonacularId]);
-        }
-
-        try {
-            $objRecette = $objImporter->importFromSpoonacular($spoonacularId);
-        } catch (\Throwable $e) {
-            $this->addFlash('error', 'Impossible d\'importer cette recette : ' . $e->getMessage());
-            return $this->redirectToRoute('app_recette_spoonacular_show', ['spoonacularId' => $spoonacularId]);
-        }
-
-        $this->addFlash('success', 'Recette sauvegardée dans votre bibliothèque !');
-        return $this->redirectToRoute('app_recette_show', ['id' => $objRecette->getId()]);
-    }
-
-    /**
-     * Affiche le détail d'une recette en BDD (user ou Spoonacular sauvegardée).
+     * Affiche le détail d'une recette en BDD (user ou importée).
      *
      * @param Recette $objRecette La recette à afficher (résolue automatiquement)
      */
     #[Route('/recette/{id}', name: 'app_recette_show', requirements: ['id' => '\d+'])]
-    public function show(Recette $objRecette): Response
-    {
+    public function show(
+        Recette                $objRecette,
+        LikeRecetteRepository  $likeRepository,
+        NoteRecetteRepository  $noteRepository,
+        CommentaireRepository  $commentaireRepository
+    ): Response {
         $this->denyAccessUnlessGranted(RecetteVoter::VIEW, $objRecette);
 
+        $objUser    = $this->getUser();
+        $boolLiked  = false;
+        $boolInList = false;
+        $userNote   = null;
+
+        if ($objUser) {
+            $boolLiked  = (bool) $likeRepository->findOneBy(['likeUser' => $objUser, 'likeRecette' => $objRecette]);
+            $boolInList = $objRecette->getListes()->exists(
+                fn($k, $liste) => $liste->getUser() === $objUser
+            );
+            $noteEntity = $noteRepository->findOneBy(['user' => $objUser, 'recette' => $objRecette]);
+            $userNote   = $noteEntity ? $noteEntity->getValeur() : null;
+        }
+
+        $commentaires = $commentaireRepository->findBy(
+            ['recette' => $objRecette, 'isVisible' => true],
+            ['createdAt' => 'DESC']
+        );
+
         return $this->render('recette/show.html.twig', [
-            'recette' => $objRecette,
+            'recette'      => $objRecette,
+            'is_liked'     => $boolLiked,
+            'is_in_list'   => $boolInList,
+            'like_count'   => $likeRepository->count(['likeRecette' => $objRecette]),
+            'user_note'    => $userNote,
+            'avg_note'     => $noteRepository->getAverageForRecette($objRecette),
+            'note_count'   => $noteRepository->count(['recette' => $objRecette]),
+            'commentaires' => $commentaires,
+            'comment_url'  => $this->generateUrl('app_commentaire_add', ['id' => $objRecette->getId()]),
+            'note_url'     => $this->generateUrl('app_note_add', ['id' => $objRecette->getId()]),
         ]);
     }
 

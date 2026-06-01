@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Repository\FavoriRepository;
 use App\Repository\LikeRecetteRepository;
 use App\Repository\RecetteRepository;
+use App\Service\TheMealDbClient;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,60 +15,57 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * Contrôleur de la page d'accueil.
  *
- * Affiche le carrousel des dernières recettes et la liste paginée de toutes les recettes publiées.
+ * Carrousel : recettes BDD (publiées par les utilisateurs).
+ * Catalogue "Toutes les pépites" : 24 recettes TheMealDB, paginées 8 par 8.
  */
 final class HomeController extends AbstractController
 {
-    /**
-     * Affiche la page d'accueil avec un carrousel et une liste paginée de recettes.
-     *
-     * @param RecetteRepository     $objRecetteRepository     Repository des recettes
-     * @param LikeRecetteRepository $objLikeRecetteRepository Repository des likes
-     * @param FavoriRepository      $objFavoriRepository      Repository des favoris
-     * @param PaginatorInterface    $paginator                Service de pagination KnpPaginator
-     * @param Request               $request                  Requête HTTP (paramètre ?page=)
-     */
     #[Route('/', name: 'app_home')]
     public function index(
         RecetteRepository     $objRecetteRepository,
         LikeRecetteRepository $objLikeRecetteRepository,
         FavoriRepository      $objFavoriRepository,
+        TheMealDbClient       $mealDbClient,
         PaginatorInterface    $paginator,
         Request               $request
     ): Response {
-        $arrRecettesCarousel = $objRecetteRepository->findBy(['recetteStatut' => 'publie'], ['id' => 'DESC'], 6);
-
-        $strRegime = $request->query->get('regime', 'all');
-        $strSort   = $request->query->get('tri', 'recent');
-
-        $queryRecettes = $objRecetteRepository->createQueryBuilderWithFilters($strRegime, $strSort);
-
-        $arrRecettes = $paginator->paginate(
-            $queryRecettes,
-            $request->query->getInt('page', 1),
-            8
+        // Carrousel : 6 dernières recettes BDD publiées
+        $arrRecettesCarousel = $objRecetteRepository->findBy(
+            ['recetteStatut' => 'publie'],
+            ['id' => 'DESC'],
+            6
         );
 
+        // Likes / favoris pour le carrousel
         $arrLikedIds   = [];
+        $arrFavoriIds  = [];
         $arrLikeCounts = [];
-        $arrFavoriIds = [];
-        $objUser       = $this->getUser();
+        $objUser = $this->getUser();
 
         if ($objUser) {
-            $arrLikedIds = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
+            $arrLikedIds  = $objLikeRecetteRepository->findLikedIdsByUser($objUser);
             $arrFavoriIds = $objFavoriRepository->findFavoriIdsByUser($objUser);
         }
 
-        $arrAllRecettes = array_merge(
-            iterator_to_array($arrRecettes),
-            $arrRecettesCarousel
-        );
-
-        foreach ($arrAllRecettes as $objRecette) {
+        foreach ($arrRecettesCarousel as $objRecette) {
             $arrLikeCounts[$objRecette->getId()] = $objLikeRecetteRepository->count([
-                'likeRecette' => $objRecette
+                'likeRecette' => $objRecette,
             ]);
         }
+
+        // Catalogue : 24 recettes TheMealDB paginées 8 par 8
+        $arrAllMeals = [];
+        try {
+            $arrAllMeals = $mealDbClient->getDiscoveryMeals(24);
+        } catch (\Throwable) {
+            // Silencieux si l'API est indisponible
+        }
+
+        $arrRecettes = $paginator->paginate(
+            $arrAllMeals,
+            $request->query->getInt('page', 1),
+            8
+        );
 
         return $this->render('home/index.html.twig', [
             'arrRecettesCarousel' => $arrRecettesCarousel,
@@ -75,8 +73,8 @@ final class HomeController extends AbstractController
             'arrLikedIds'         => $arrLikedIds,
             'arrLikeCounts'       => $arrLikeCounts,
             'arrFavoriIds'        => $arrFavoriIds,
-            'activeRegime'        => $strRegime,
-            'activeSort'          => $strSort,
+            'activeRegime'        => 'all',
+            'activeSort'          => 'recent',
         ]);
     }
 }

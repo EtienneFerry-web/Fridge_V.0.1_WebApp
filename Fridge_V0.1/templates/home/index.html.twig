@@ -9,6 +9,31 @@
 
 {% block body %}
     <main>
+        {% if app.user %}
+        <!-- Bannière import planning invité (masquée par défaut, révélée par JS si localStorage) -->
+        <div id="guest-planning-banner" class="container mt-3" style="display:none;">
+            <div class="d-flex align-items-center justify-content-between gap-3 p-3 rounded-4 flex-wrap"
+                 style="background:var(--primary-light);border:1.5px solid var(--primary);">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-calendar2-check fs-4" style="color:var(--primary);"></i>
+                    <div>
+                        <p class="mb-0 fw-bold" style="color:var(--text);">Vous avez un planning à importer !</p>
+                        <p class="mb-0 small" style="color:var(--text-secondary);">Vous avez généré un planning avant de vous connecter. Voulez-vous l'enregistrer ?</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button id="btn-banner-import" class="btn btn-primary rounded-pill px-4 fw-bold">
+                        <i class="bi bi-cloud-upload me-2"></i>Importer mon planning
+                    </button>
+                    <button class="btn btn-outline-secondary rounded-pill px-3"
+                            onclick="localStorage.removeItem('fridge_guest_planning');this.closest('#guest-planning-banner').style.display='none';">
+                        Ignorer
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Hero Section (Foodu Style - Transparent) -->
         <section class="hero-section pt-4 pb-0 mb-0" style="background: transparent;">
             <div class="container">
@@ -32,7 +57,7 @@
                     <div class="col-lg-6 d-none d-lg-block">
                         <div class="position-relative">
                             <!-- Circular Image Container (Foodu style) -->
-                            <div class="food-circle-bg" style="position: absolute; top: 10%; right: 0; width: 500px; height: 500px; background: var(--vanilla-custard); border-radius: 50%; opacity: 0.1; z-index: -1;"></div>
+                            <div class="food-circle-bg" style="position: absolute; top: 10%; right: 0; width: 500px; height: 500px; background: var(--primary); border-radius: 50%; opacity: 0.1; z-index: -1;"></div>
                             <div class="food-circle-main overflow-hidden shadow-lg mx-auto" style="width: 450px; height: 450px; border-radius: 50%; border: 15px solid white;">
                                 <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800" 
                                      class="w-100 h-100 object-fit-cover" alt="Healthy Plate">
@@ -57,17 +82,17 @@
                 </div>
                 <div class="d-flex justify-content-center flex-wrap gap-5">
                     {% set categories = [
-                        {'name': 'Végétarien', 'icon': 'bi-leaf', 'color': '#e8f5e9'},
-                        {'name': 'Péscitarien', 'icon': 'bi-water', 'color': '#e3f2fd'},
-                        {'name': 'Sans Gluten', 'icon': 'bi-slash-circle', 'color': '#fff3e0'},
-                        {'name': 'Keto', 'icon': 'bi-fire', 'color': '#fce4ec'},
-                        {'name': 'Vegan', 'icon': 'bi-flower1', 'color': '#f1f8e9'}
+                        {'name': 'Végétarien', 'icon': 'fa-leaf',                        'color': '#e8f5e9'},
+                        {'name': 'Péscitarien', 'icon': 'fa-fish',                        'color': '#e3f2fd'},
+                        {'name': 'Sans Gluten', 'icon': 'fa-wheat-awn-circle-exclamation','color': '#fff3e0'},
+                        {'name': 'Keto',        'icon': 'fa-fire-flame-curved',           'color': '#fce4ec'},
+                        {'name': 'Vegan',       'icon': 'fa-seedling',                    'color': '#f1f8e9'}
                     ] %}
                     {% for cat in categories %}
                         <a href="{{ path('app_recette_index', {regime: cat.name}) }}" class="text-decoration-none group">
                             <div class="category-circle mb-3 d-flex align-items-center justify-content-center transition-normal shadow-sm group-hover-scale"
                                  style="width: 120px; height: 120px; border-radius: 50%; background-color: white; border: 2px solid {{ cat.color }};">
-                                <i class="bi {{ cat.icon }} fs-1 text-dark"></i>
+                                <i class="fa-solid {{ cat.icon }}" style="font-size: 2rem;"></i>
                             </div>
                             <span class="fw-bold text-dark d-block">{{ cat.name }}</span>
                         </a>
@@ -105,6 +130,124 @@
             </div>
         </section>
 
+        <!-- =============================================
+             SECTION ÉDITORIALE 1 — Comment ça marche
+             ============================================= -->
+        <section class="py-5 my-4" style="background:var(--surface-muted);border-radius:var(--radius-xl);">
+            <div class="container">
+
+                <div class="text-center mb-5">
+                    <span class="badge rounded-pill mb-3 px-3 py-2" style="background:var(--primary-light);color:var(--primary);font-size:0.8rem;font-weight:700;letter-spacing:0.05em;">COMMENT ÇA MARCHE</span>
+                    <h2 class="fw-bold mb-2" style="font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);">Simple comme bonjour</h2>
+                    <p class="lead mx-auto" style="max-width:520px;color:var(--text-secondary);">
+                        De la recette à l'assiette en trois étapes. Fridge s'occupe du reste.
+                    </p>
+                </div>
+
+                <div class="row g-4 justify-content-center">
+                    {% set steps = [
+                        {
+                            num: '01',
+                            icon: 'bi-search-heart',
+                            title: 'Explorez des recettes',
+                            body: 'Parcourez des centaines de recettes saines, filtrées selon votre régime alimentaire, vos envies du moment ou ce que vous avez déjà dans le frigo.'
+                        },
+                        {
+                            num: '02',
+                            icon: 'bi-calendar2-week',
+                            title: 'Planifiez votre semaine',
+                            body: 'Glissez vos recettes préférées dans votre planning hebdomadaire. Fridge génère automatiquement votre liste de courses — sans effort.'
+                        },
+                        {
+                            num: '03',
+                            icon: 'bi-basket2',
+                            title: 'Faites vos courses sereinement',
+                            body: 'Votre liste de courses est prête, triée par rayon. Cochez les articles au fur et à mesure. Rien d\'oublié, rien de gaspillé.'
+                        }
+                    ] %}
+
+                    {% for step in steps %}
+                        <div class="col-12 col-md-4">
+                            <div class="h-100 p-4 rounded-4 bg-white" style="box-shadow:var(--shadow-card);">
+                                <div class="d-flex align-items-center gap-3 mb-3">
+                                    <div style="width:48px;height:48px;border-radius:14px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                        <i class="bi {{ step.icon }}" style="font-size:1.3rem;color:var(--primary);"></i>
+                                    </div>
+                                    <span style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--border);letter-spacing:-0.04em;line-height:1;">{{ step.num }}</span>
+                                </div>
+                                <h3 class="fw-bold mb-2" style="font-size:1.05rem;font-family:var(--font-display);">{{ step.title }}</h3>
+                                <p class="mb-0 small" style="color:var(--text-secondary);line-height:1.7;">{{ step.body }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </section>
+
+        <!-- =============================================
+             SECTION ÉDITORIALE 2 — Pourquoi Fridge
+             ============================================= -->
+        <section class="py-5 my-4">
+            <div class="container">
+                <div class="row align-items-center g-5">
+
+                    <!-- Texte -->
+                    <div class="col-12 col-lg-6 order-2 order-lg-1">
+                        <span class="badge rounded-pill mb-3 px-3 py-2" style="background:var(--primary-light);color:var(--primary);font-size:0.8rem;font-weight:700;letter-spacing:0.05em;">NOTRE MISSION</span>
+                        <h2 class="fw-bold mb-4" style="font-family:var(--font-display);font-size:clamp(1.6rem,3vw,2.2rem);line-height:1.2;">
+                            Manger mieux,<br>sans y passer des heures.
+                        </h2>
+                        <p style="color:var(--text-secondary);line-height:1.8;max-width:480px;">
+                            On sait que cuisiner au quotidien peut vite devenir une corvée. Le manque d'inspiration, les placards à moitié vides, les fins de semaine où on ne sait plus quoi manger…
+                        </p>
+                        <p style="color:var(--text-secondary);line-height:1.8;max-width:480px;" class="mb-4">
+                            <strong style="color:var(--text);">Fridge a été pensé pour ça.</strong> Un espace où chaque repas est anticipé, chaque course optimisée et chaque recette choisie avec plaisir — pas par défaut.
+                        </p>
+
+                        <div class="d-flex flex-column gap-3">
+                            {% for point in [
+                                {icon: 'bi-check-circle-fill', text: 'Des recettes testées et approuvées par notre communauté'},
+                                {icon: 'bi-check-circle-fill', text: 'Un planning flexible qui s\'adapte à votre rythme de vie'},
+                                {icon: 'bi-check-circle-fill', text: 'Zéro gaspillage grâce à la gestion de votre stock'}
+                            ] %}
+                                <div class="d-flex align-items-start gap-3">
+                                    <i class="bi {{ point.icon }} mt-1 flex-shrink-0" style="color:var(--primary);font-size:1rem;"></i>
+                                    <span class="small" style="color:var(--text-secondary);line-height:1.6;">{{ point.text }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <a href="{{ path('app_recette_index') }}" class="btn btn-primary rounded-pill px-5 mt-4">
+                            Découvrir les recettes
+                        </a>
+                    </div>
+
+                    <!-- Visuel -->
+                    <div class="col-12 col-lg-6 order-1 order-lg-2">
+                        <div class="position-relative" style="padding:1rem;">
+                            <div style="border-radius:var(--radius-xl);overflow:hidden;aspect-ratio:4/3;box-shadow:var(--shadow-lg);">
+                                <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&q=80&w=900"
+                                     alt="Cuisiner avec plaisir"
+                                     style="width:100%;height:100%;object-fit:cover;">
+                            </div>
+                            <!-- Stat flottante -->
+                            <div class="position-absolute bottom-0 start-0 ms-4 mb-0 bg-white rounded-4 px-4 py-3 shadow-sm d-flex align-items-center gap-3">
+                                <div style="width:40px;height:40px;border-radius:12px;background:var(--primary-light);display:flex;align-items:center;justify-content:center;">
+                                    <i class="bi bi-people-fill" style="color:var(--primary);"></i>
+                                </div>
+                                <div>
+                                    <p class="mb-0 fw-bold" style="font-family:var(--font-display);font-size:1.1rem;color:var(--text);">+2 400</p>
+                                    <p class="mb-0" style="font-size:0.75rem;color:var(--text-secondary);">recettes disponibles</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
         <!-- Full Catalog Section -->
         <section id="recipeCatalog" class="container py-5 mb-5">
             <div class="bento-grid p-5">
@@ -131,46 +274,282 @@
                 </div>
 
                 <div id="recipeGrid" class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-4">
-                    {% for objRecette in arrRecettes %}
+                    {% for recette in arrRecettes %}
                         <div class="col">
-                            {% include 'components/_recipe_card.html.twig' with {
-                                title:      objRecette.recetteLibelle,
-                                time:       objRecette.recetteTempsPrepa + objRecette.recetteTempsCuisson,
-                                id:         objRecette.id,
-                                photo:      objRecette.recettePhoto,
-                                is_liked:   arrLikedIds[objRecette.id] is defined,
-                                like_count: arrLikeCounts[objRecette.id]|default(0),
-                                is_favori:  arrFavoriIds[objRecette.id] is defined,
-                                description: objRecette.recetteDescription
-                            } %}
+                            <a href="{{ path('app_recette_mealdb_show', {mealId: recette.id}) }}"
+                               class="text-decoration-none group">
+                                <div class="card border-0 bg-transparent h-100">
+                                    <div class="position-relative overflow-hidden mb-3" style="border-radius:var(--radius-lg);">
+                                        {% if recette.image is defined and recette.image %}
+                                            <img src="{{ recette.image }}"
+                                                 class="w-100 transition-normal group-hover-scale"
+                                                 alt="{{ recette.title }}"
+                                                 style="height:240px;object-fit:cover;">
+                                        {% else %}
+                                            <div class="w-100 d-flex align-items-center justify-content-center"
+                                                 style="height:240px;background:var(--surface-muted);">
+                                                <i class="bi bi-image text-muted display-4"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div class="position-absolute top-0 start-0 m-2">
+                                            <span class="badge bg-dark opacity-75 px-2 py-1" style="font-size: 0.65rem;">🌍 EN</span>
+                                        </div>
+
+                                        {% if recette.readyInMinutes is defined %}
+                                            <div class="position-absolute bottom-0 start-0 m-3">
+                                                <span class="badge rounded-pill bg-white shadow-sm px-3 py-2"
+                                                      style="color:var(--text);">
+                                                    <i class="bi bi-clock-fill me-1" style="color:var(--primary);"></i>
+                                                    {{ recette.readyInMinutes }} min
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <h3 class="h5 fw-bold mb-1 text-dark group-hover-text-primary transition-fast"
+                                            style="font-family:var(--font-display);">
+                                            {{ recette.title }}
+                                        </h3>
+                                        {% if recette.servings is defined %}
+                                            <p class="small mb-0" style="color:var(--text-secondary);">
+                                                <i class="bi bi-people me-1"></i>{{ recette.servings }} portions
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="col-12 text-center py-5">
+                            <i class="bi bi-wifi-off display-4" style="color:var(--text-muted);"></i>
+                            <p class="mt-3" style="color:var(--text-secondary);">Les recettes sont temporairement indisponibles.</p>
                         </div>
                     {% endfor %}
                 </div>
 
-                <div class="d-flex justify-content-center mt-5">
-                    {{ knp_pagination_render(arrRecettes) }}
+                {{ knp_pagination_render(arrRecettes, 'pagination/home_pagination.html.twig') }}
+            </div>
+        </section>
+
+        <!-- =============================================
+             SECTION SIMULATEUR
+             ============================================= -->
+        <section class="py-5 mb-5" id="simulateur">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-10">
+                        <div class="rounded-4 p-4 p-md-5" style="background:var(--surface);box-shadow:var(--shadow-lg);border:1.5px solid var(--border-light);">
+
+                            <div class="text-center mb-5">
+                                <span class="badge rounded-pill mb-3 px-3 py-2" style="background:var(--primary-light);color:var(--primary);font-size:0.8rem;font-weight:700;letter-spacing:0.05em;">SIMULATEUR</span>
+                                <h2 class="fw-bold mb-2" style="font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2rem);">Créez votre planning personnalisé</h2>
+                                <p class="text-muted" style="max-width:500px;margin:0 auto;">Dites-nous combien vous êtes, vos préférences et vos objectifs. Fridge génère un planning sur mesure.</p>
+                            </div>
+
+                            <!-- Étape 1 — Foyer -->
+                            <div class="mb-5">
+                                <p class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-family:var(--font-display);font-size:1rem;color:var(--text);">
+                                    <span class="d-flex align-items-center justify-content-center rounded-circle fw-bold" style="width:28px;height:28px;background:var(--primary);color:#fff;font-size:0.8rem;flex-shrink:0;">1</span>
+                                    Mon foyer
+                                </p>
+                                <div class="row g-3">
+                                    <div class="col-12 col-sm-6 col-md-4">
+                                        <div class="text-center p-4 rounded-4" style="background:var(--surface-muted);">
+                                            <p class="fw-bold mb-3 small" style="color:var(--text-secondary);">Personnes</p>
+                                            <div class="d-flex align-items-center justify-content-center gap-3">
+                                                <button class="btn rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5" id="btn-persons-minus"
+                                                        style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);border:none;">−</button>
+                                                <span id="val-persons" style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--text);min-width:2.5rem;text-align:center;">4</span>
+                                                <button class="btn rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5" id="btn-persons-plus"
+                                                        style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);border:none;">+</button>
+                                            </div>
+                                            <p class="mt-1 mb-0 small text-muted">personnes</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-4">
+                                        <div class="text-center p-4 rounded-4" style="background:var(--surface-muted);">
+                                            <p class="fw-bold mb-3 small" style="color:var(--text-secondary);">Repas / semaine</p>
+                                            <div class="d-flex align-items-center justify-content-center gap-3">
+                                                <button class="btn rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5" id="btn-meals-minus"
+                                                        style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);border:none;">−</button>
+                                                <span id="val-meals" style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--text);min-width:2.5rem;text-align:center;">7</span>
+                                                <button class="btn rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5" id="btn-meals-plus"
+                                                        style="width:40px;height:40px;background:var(--primary-light);color:var(--primary);border:none;">+</button>
+                                            </div>
+                                            <p class="mt-1 mb-0 small text-muted">repas planifiés</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Étape 2 — Régime alimentaire -->
+                            <div class="mb-5">
+                                <p class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-family:var(--font-display);font-size:1rem;color:var(--text);">
+                                    <span class="d-flex align-items-center justify-content-center rounded-circle fw-bold" style="width:28px;height:28px;background:var(--primary);color:#fff;font-size:0.8rem;flex-shrink:0;">2</span>
+                                    Mon régime alimentaire
+                                    <span class="small fw-normal text-muted">(un seul choix)</span>
+                                </p>
+                                <div class="d-flex flex-wrap gap-2" id="filter-regime">
+                                    {% set regimes = [
+                                        {val: 'all',          label: 'Tous',          icon: 'fa-solid fa-border-all'},
+                                        {val: 'Omnivore',     label: 'Omnivore',      icon: 'fa-solid fa-utensils'},
+                                        {val: 'Végétarien',   label: 'Végétarien',    icon: 'fa-solid fa-leaf'},
+                                        {val: 'Vegan',        label: 'Vegan',         icon: 'fa-solid fa-seedling'},
+                                        {val: 'Péscitarien',  label: 'Péscitarien',   icon: 'fa-solid fa-fish'},
+                                        {val: 'Keto',         label: 'Keto',          icon: 'fa-solid fa-fire-flame-curved'}
+                                    ] %}
+                                    {% for r in regimes %}
+                                        <button type="button"
+                                                class="btn sim-chip{{ r.val == 'all' ? ' sim-chip--active' : '' }}"
+                                                data-filter="regime"
+                                                data-value="{{ r.val }}">
+                                            <i class="{{ r.icon }} me-1"></i>{{ r.label }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Étape 3 — Intolérances -->
+                            <div class="mb-5">
+                                <p class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-family:var(--font-display);font-size:1rem;color:var(--text);">
+                                    <span class="d-flex align-items-center justify-content-center rounded-circle fw-bold" style="width:28px;height:28px;background:var(--primary);color:#fff;font-size:0.8rem;flex-shrink:0;">3</span>
+                                    Mes intolérances
+                                    <span class="small fw-normal text-muted">(plusieurs choix possibles)</span>
+                                </p>
+                                <div class="d-flex flex-wrap gap-2" id="filter-intol">
+                                    {% set intols = [
+                                        {val: 'gluten',   label: 'Sans Gluten',   icon: 'fa-solid fa-wheat-awn-circle-exclamation'},
+                                        {val: 'lactose',  label: 'Sans Lactose',  icon: 'fa-solid fa-cow'},
+                                        {val: 'noix',     label: 'Sans Noix',     icon: 'fa-solid fa-circle-exclamation'},
+                                        {val: 'oeuf',     label: 'Sans Œufs',     icon: 'fa-solid fa-egg'},
+                                        {val: 'soja',     label: 'Sans Soja',     icon: 'fa-solid fa-ban'}
+                                    ] %}
+                                    {% for i in intols %}
+                                        <button type="button"
+                                                class="btn sim-chip"
+                                                data-filter="intol"
+                                                data-value="{{ i.val }}">
+                                            <i class="{{ i.icon }} me-1"></i>{{ i.label }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Étape 4 — Objectif -->
+                            <div class="mb-5">
+                                <p class="fw-bold mb-3 d-flex align-items-center gap-2" style="font-family:var(--font-display);font-size:1rem;color:var(--text);">
+                                    <span class="d-flex align-items-center justify-content-center rounded-circle fw-bold" style="width:28px;height:28px;background:var(--primary);color:#fff;font-size:0.8rem;flex-shrink:0;">4</span>
+                                    Mon objectif
+                                    <span class="small fw-normal text-muted">(un seul choix)</span>
+                                </p>
+                                <div class="d-flex flex-wrap gap-2" id="filter-objectif">
+                                    {% set objectifs = [
+                                        {val: 'all',       label: 'Aucun objectif',      icon: 'bi-dash-circle',      desc: ''},
+                                        {val: 'equilibre', label: 'Manger équilibré',    icon: 'bi-balance',           desc: 'Repas variés et nutritifs'},
+                                        {val: 'sain',      label: 'Mieux manger',        icon: 'bi-heart-pulse',       desc: 'Aliments frais et peu transformés'},
+                                        {val: 'leger',     label: 'Repas légers',        icon: 'bi-feather',           desc: 'Moins de calories, plus de légumes'},
+                                        {val: 'rapide',    label: 'Cuisiner vite',       icon: 'bi-lightning-charge',  desc: 'Recettes en moins de 30 min'}
+                                    ] %}
+                                    {% for o in objectifs %}
+                                        <button type="button"
+                                                class="btn sim-chip{{ o.val == 'all' ? ' sim-chip--active' : '' }}"
+                                                data-filter="objectif"
+                                                data-value="{{ o.val }}"
+                                                {% if o.desc %}title="{{ o.desc }}"{% endif %}>
+                                            <i class="bi {{ o.icon }} me-1"></i>{{ o.label }}
+                                        </button>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Stats dynamiques -->
+                            <p class="text-center fw-bold mb-3" style="color:var(--text-secondary);font-size:0.8rem;letter-spacing:0.05em;text-transform:uppercase;">Grâce à Fridge, vous économisez :</p>
+                            <div class="row g-3 justify-content-center mb-5">
+                                <div class="col-12 col-sm-4 text-center">
+                                    <div class="p-3 rounded-4" style="background:var(--primary-light);">
+                                        <p class="fw-bold mb-0" id="stat-money" style="font-family:var(--font-display);font-size:1.8rem;color:var(--primary);">712 €</p>
+                                        <p class="mb-0 small" style="color:var(--primary);">/ an</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4 text-center">
+                                    <div class="p-3 rounded-4" style="background:var(--accent-light);">
+                                        <p class="fw-bold mb-0" id="stat-time" style="font-family:var(--font-display);font-size:1.8rem;color:var(--accent);">4,3 jours</p>
+                                        <p class="mb-0 small" style="color:var(--accent);">/ an</p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-4 text-center">
+                                    <div class="p-3 rounded-4" style="background:var(--success-light);">
+                                        <p class="fw-bold mb-0" id="stat-waste" style="font-family:var(--font-display);font-size:1.8rem;color:var(--success);">39,9 kg</p>
+                                        <p class="mb-0 small" style="color:var(--success);">de nourriture / an</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow" id="btn-generate-planning"
+                                        data-bs-toggle="modal" data-bs-target="#planningModal">
+                                    <i class="bi bi-calendar2-week me-2"></i>Voir mon planning
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
+
+        <!-- =============================================
+             MODALE PLANNING
+             ============================================= -->
+        <div class="modal fade" id="planningModal" tabindex="-1" aria-labelledby="planningModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content rounded-4 border-0" style="background:var(--background);">
+                    <div class="modal-header border-0 px-4 pt-4 pb-2">
+                        <div>
+                            <h5 class="modal-title fw-bold" id="planningModalLabel" style="font-family:var(--font-display);font-size:1.4rem;">
+                                <i class="bi bi-calendar2-week me-2" style="color:var(--primary);"></i>Mon planning de la semaine
+                            </h5>
+                            <p class="text-muted small mb-0" id="planning-subtitle">4 personnes · 7 repas</p>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body px-4 pb-4">
+                        <!-- Résumé des filtres actifs -->
+                        <div id="planning-filters-summary" class="d-flex flex-wrap gap-2 mb-4"></div>
+                        <div id="planning-grid" class="row g-3">
+                            <!-- Généré par JS -->
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 px-4 pb-4 pt-0 gap-3 flex-wrap">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Fermer</button>
+
+                        {% if app.user %}
+                            {# Utilisateur connecté : import direct #}
+                            <button type="button" id="btn-import-planning" class="btn btn-primary rounded-pill px-5 fw-bold">
+                                <i class="bi bi-cloud-upload me-2"></i>Enregistrer dans mon planning
+                            </button>
+                        {% else %}
+                            {# Visiteur : invitation à se connecter #}
+                            <div class="d-flex align-items-center gap-3 ms-auto flex-wrap">
+                                <div class="d-flex align-items-center gap-2 px-3 py-2 rounded-3" style="background:var(--warning-light);">
+                                    <i class="bi bi-lock-fill" style="color:var(--warning);"></i>
+                                    <span class="small fw-bold" style="color:var(--text);">Connectez-vous pour sauvegarder ce planning</span>
+                                </div>
+                                <a href="{{ path('app_login') }}" class="btn btn-primary rounded-pill px-4 fw-bold">
+                                    <i class="bi bi-person-check me-2"></i>Se connecter
+                                </a>
+                                <a href="{{ path('app_register') }}" class="btn btn-outline-primary rounded-pill px-4 fw-bold">
+                                    Créer un compte
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <style>
-    .ls-2 { letter-spacing: 2px; }
-    .animate-bounce {
-        animation: bounce 3s infinite ease-in-out;
-    }
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0) rotate(-10deg); }
-        50% { transform: translateY(-10px) rotate(-10deg); }
-    }
-    .category-circle:hover {
-        background-color: var(--vanilla-custard) !important;
-        border-color: var(--vanilla-custard) !important;
-    }
-    .category-circle:hover i {
-        color: white !important;
-    }
-    </style>
 
 {% endblock %}
 
@@ -178,4 +557,333 @@
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
     <script src="{{ asset('js/home/index.js') }}"></script>
+    <script>
+    (function () {
+        // --- Données recettes depuis Twig ---
+        const maxLikeCount = Math.max(1, {% set maxLikes = 0 %}{% for r in arrRecettesCarousel %}{% set c = arrLikeCounts[r.id]|default(0) %}{% if c > maxLikes %}{% set maxLikes = c %}{% endif %}{% endfor %}{{ maxLikes }});
+
+        const recipes = [
+            {% for r in arrRecettesCarousel %}
+            {
+                id:        {{ r.id }},
+                title:     {{ r.recetteLibelle|json_encode|raw }},
+                photo:     {{ (r.recettePhoto ?? '')|json_encode|raw }},
+                time:      {{ (r.recetteTempsPrepa + r.recetteTempsCuisson) }},
+                regimes:   [{% for reg in r.regimes %}"{{ reg.regimeLibelle }}"{% if not loop.last %},{% endif %}{% endfor %}],
+                likeCount: {{ arrLikeCounts[r.id]|default(0) }},
+                isLiked:   {{ arrLikedIds[r.id] is defined ? 'true' : 'false' }},
+                isFavori:  {{ arrFavoriIds[r.id] is defined ? 'true' : 'false' }}
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ];
+
+        // --- Config scoring ---
+        const OBJECTIF_TIME = { rapide: 30, leger: 45, equilibre: 999, sain: 999, all: 999 };
+
+        // Mots-clés favorables par intolérance (dans le titre de la recette)
+        const INTOL_SAFE_KW = {
+            gluten:  ['riz', 'quinoa', 'lentille', 'patate', 'polenta', 'maïs', 'millet'],
+            lactose: ['salade', 'poulet', 'poisson', 'tofu', 'légume', 'soupe', 'viande'],
+            noix:    ['poisson', 'viande', 'légume', 'riz', 'pâte', 'soupe'],
+            oeuf:    ['viande', 'poisson', 'légume', 'soupe', 'riz', 'salade'],
+            soja:    ['viande', 'poisson', 'légume', 'fromage', 'riz']
+        };
+        // Mots-clés suspects (score pénalisé si intolérance active)
+        const INTOL_BAD_KW = {
+            gluten:  ['pain', 'pâte', 'farine', 'semoule', 'blé', 'crêpe', 'pizza', 'tarte', 'gâteau', 'cookie', 'biscuit', 'brioche'],
+            lactose: ['fromage', 'crème', 'beurre', 'lait', 'gratin', 'quiche', 'yaourt'],
+            noix:    ['noisette', 'amande', 'cacahuète', 'noix', 'pistache'],
+            oeuf:    ['omelette', 'quiche', 'meringue', 'soufflé', 'œuf', 'oeuf', 'mayonnaise'],
+            soja:    ['tofu', 'edamame', 'miso', 'tempeh', 'soja']
+        };
+
+        // --- État ---
+        let persons  = 4;
+        let meals    = 7;
+        let regime   = 'all';
+        let objectif = 'all';
+        let intols   = new Set();
+
+        const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+
+        // --- Scoring ---
+        function scoreRecipe(r) {
+            let score = 0;
+            const titleLow = r.title.toLowerCase();
+
+            // Préférences utilisateur (fort signal)
+            if (r.isLiked)   score += 50;
+            if (r.isFavori)  score += 30;
+
+            // Popularité communautaire (0–20 pts, normalisé)
+            score += Math.round((r.likeCount / maxLikeCount) * 20);
+
+            // Régime alimentaire
+            if (regime === 'all') {
+                score += 10; // neutre
+            } else if (r.regimes.includes(regime)) {
+                score += 40; // match exact
+            } else if (r.regimes.length === 0) {
+                score += 5;  // pas de tag → recette générique, on tolère
+            } else {
+                score -= 20; // mauvais régime
+            }
+
+            // Objectif (via temps de préparation)
+            const maxTime = OBJECTIF_TIME[objectif] || 999;
+            if (r.time > 0) {
+                if (r.time <= maxTime) {
+                    // Plus c'est rapide par rapport au seuil, mieux c'est
+                    score += Math.round(25 * (1 - r.time / (maxTime + 1)));
+                } else {
+                    score -= 15;
+                }
+            }
+
+            // Intolérances : bonus si mots sûrs, malus si mots suspects
+            intols.forEach(function (intol) {
+                const safe = INTOL_SAFE_KW[intol] || [];
+                const bad  = INTOL_BAD_KW[intol]  || [];
+                if (bad.some(function (kw) { return titleLow.includes(kw); }))  score -= 30;
+                if (safe.some(function (kw) { return titleLow.includes(kw); })) score += 10;
+            });
+
+            return score;
+        }
+
+        // --- Pool trié par score ---
+        function scoredPool() {
+            return recipes
+                .map(function (r) { return { recipe: r, score: scoreRecipe(r) }; })
+                .sort(function (a, b) { return b.score - a.score; })
+                .map(function (item) { return item.recipe; });
+        }
+
+        // --- Stats ---
+        function calcStats(p, m) {
+            const mf = m / 7;
+            return {
+                money: Math.round(178 * p * mf),
+                time:  (1.075 * p * mf).toFixed(1).replace('.', ','),
+                waste: (9.975 * p * mf).toFixed(1).replace('.', ',')
+            };
+        }
+
+        function updateStats() {
+            const s = calcStats(persons, meals);
+            document.getElementById('stat-money').textContent = s.money + ' €';
+            document.getElementById('stat-time').textContent  = s.time  + ' jours';
+            document.getElementById('stat-waste').textContent = s.waste + ' kg';
+        }
+
+        // --- Résumé filtres dans la modale ---
+        function buildFiltersSummary() {
+            const el = document.getElementById('planning-filters-summary');
+            el.innerHTML = '';
+            const add = function (label, color) {
+                el.insertAdjacentHTML('beforeend',
+                    '<span class="badge rounded-pill px-3 py-2" style="background:' + color + ';font-size:0.78rem;">' + label + '</span>');
+            };
+            add(persons + ' personne' + (persons > 1 ? 's' : ''), 'var(--primary-light)');
+            add(meals + ' repas/sem', 'var(--primary-light)');
+            if (regime !== 'all') add(regime, 'var(--surface-muted)');
+            if (objectif !== 'all') {
+                const labels = { equilibre: 'Équilibré', sain: 'Mieux manger', leger: 'Léger', rapide: 'Rapide' };
+                add(labels[objectif] || objectif, 'var(--accent-light)');
+            }
+            intols.forEach(function (i) {
+                const labels = { gluten: 'Sans Gluten', lactose: 'Sans Lactose', noix: 'Sans Noix', oeuf: 'Sans Œufs', soja: 'Sans Soja' };
+                add(labels[i] || i, 'var(--warning-light)');
+            });
+        }
+
+        // Ordre des moments selon nb de repas/jour
+        const MOMENTS_BY_COUNT = {
+            1: ['dejeuner'],
+            2: ['dejeuner', 'diner']
+        };
+        const DAYS_KEY = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+
+        // --- Planning ---
+        function buildPlanning() {
+            document.getElementById('planning-subtitle').textContent =
+                persons + ' personne' + (persons > 1 ? 's' : '') + ' · ' + meals + ' repas';
+
+            buildFiltersSummary();
+
+            // Pool trié par score — les meilleures recettes en premier
+            const sorted = scoredPool();
+
+            const grid = document.getElementById('planning-grid');
+            grid.innerHTML = '';
+
+            // Répartition sur 7 jours (max 2/jour, priorité lun→dim)
+            const mpd = Array(7).fill(0);
+            let rem = meals;
+            for (let pass = 0; pass < 2 && rem > 0; pass++) {
+                for (let d = 0; d < 7 && rem > 0; d++) {
+                    if (mpd[d] <= pass) { mpd[d]++; rem--; }
+                }
+            }
+
+            // Structure pour l'export localStorage : [{jour, moment, recetteId}]
+            const guestEntries = [];
+
+            let ri = 0;
+            DAYS.forEach(function (day, idx) {
+                if (mpd[idx] === 0) return;
+
+                const moments = MOMENTS_BY_COUNT[mpd[idx]] || ['dejeuner'];
+
+                let cardsHtml = '';
+                for (let k = 0; k < mpd[idx]; k++) {
+                    const rec = sorted[ri % sorted.length];
+                    guestEntries.push({ jour: DAYS_KEY[idx], moment: moments[k] || 'diner', recetteId: rec.id });
+                    ri++;
+
+                    const img = rec.photo ||
+                        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=400';
+                    const recScore = scoreRecipe(rec);
+                    const likeIcon = rec.isLiked  ? '<i class="bi bi-heart-fill" style="color:var(--primary);"></i>'
+                                   : rec.isFavori ? '<i class="bi bi-bookmark-fill" style="color:var(--accent);"></i>'
+                                   : rec.likeCount > 0 ? '<i class="bi bi-heart" style="color:var(--text-muted);"></i>' : '';
+                    cardsHtml += `
+                        <div class="d-flex align-items-center gap-2 p-2 rounded-3 mb-2"
+                             style="background:var(--surface);border:1px solid var(--border-light);">
+                            <img src="${img}" alt="${rec.title}"
+                                 style="width:48px;height:48px;border-radius:10px;object-fit:cover;flex-shrink:0;">
+                            <div style="overflow:hidden;flex:1;min-width:0;">
+                                <p class="mb-0 fw-bold small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);">${rec.title}</p>
+                                <div class="d-flex align-items-center gap-2" style="font-size:0.7rem;color:var(--text-muted);">
+                                    <span><i class="bi bi-clock me-1"></i>${rec.time > 0 ? rec.time + ' min' : '—'}</span>
+                                    ${likeIcon ? '<span class="d-flex align-items-center gap-1">' + likeIcon + (rec.likeCount > 0 ? rec.likeCount : '') + '</span>' : ''}
+                                    <span class="ms-auto fw-bold" style="color:var(--primary);white-space:nowrap;">${recScore > 0 ? '+' + recScore : recScore} pts</span>
+                                </div>
+                            </div>
+                        </div>`;
+                }
+
+                const col = document.createElement('div');
+                col.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+                col.innerHTML = `
+                    <div class="h-100 p-3 rounded-4" style="background:var(--surface-muted);">
+                        <p class="fw-bold mb-3" style="font-family:var(--font-display);font-size:0.9rem;color:var(--text);">
+                            <span class="me-1" style="color:var(--primary);">●</span>${day}
+                        </p>${cardsHtml}
+                    </div>`;
+                grid.appendChild(col);
+            });
+
+            // Sauvegarde dans localStorage pour import après connexion
+            localStorage.setItem('fridge_guest_planning', JSON.stringify(guestEntries));
+        }
+
+        // --- Steppers ---
+        function bindStepper(minusId, plusId, valId, get, set, min, max) {
+            document.getElementById(minusId).addEventListener('click', function () {
+                if (get() > min) { set(get() - 1); document.getElementById(valId).textContent = get(); updateStats(); }
+            });
+            document.getElementById(plusId).addEventListener('click', function () {
+                if (get() < max) { set(get() + 1); document.getElementById(valId).textContent = get(); updateStats(); }
+            });
+        }
+        bindStepper('btn-persons-minus', 'btn-persons-plus', 'val-persons',
+            function () { return persons; }, function (v) { persons = v; }, 1, 12);
+        bindStepper('btn-meals-minus',   'btn-meals-plus',   'val-meals',
+            function () { return meals; },   function (v) { meals = v; },   1, 14);
+
+        // --- Chips filtres ---
+        document.querySelectorAll('.sim-chip[data-filter="regime"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.sim-chip[data-filter="regime"]').forEach(function (b) { b.classList.remove('sim-chip--active'); });
+                btn.classList.add('sim-chip--active');
+                regime = btn.dataset.value;
+            });
+        });
+
+        document.querySelectorAll('.sim-chip[data-filter="objectif"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.sim-chip[data-filter="objectif"]').forEach(function (b) { b.classList.remove('sim-chip--active'); });
+                btn.classList.add('sim-chip--active');
+                objectif = btn.dataset.value;
+            });
+        });
+
+        document.querySelectorAll('.sim-chip[data-filter="intol"]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const v = btn.dataset.value;
+                if (intols.has(v)) { intols.delete(v); btn.classList.remove('sim-chip--active'); }
+                else               { intols.add(v);    btn.classList.add('sim-chip--active'); }
+            });
+        });
+
+        // --- Modale ---
+        document.getElementById('planningModal').addEventListener('show.bs.modal', buildPlanning);
+
+        {% if app.user %}
+        // --- Import planning invité (si l'utilisateur vient de se connecter) ---
+        (function checkGuestPlanning() {
+            const stored = localStorage.getItem('fridge_guest_planning');
+            if (!stored) return;
+
+            let entries;
+            try { entries = JSON.parse(stored); } catch (e) { return; }
+            if (!Array.isArray(entries) || entries.length === 0) return;
+
+            // Afficher la bannière d'import
+            const banner = document.getElementById('guest-planning-banner');
+            if (banner) banner.style.display = 'flex';
+        })();
+
+        // Bouton import dans la modale
+        const btnImport = document.getElementById('btn-import-planning');
+        if (btnImport) {
+            btnImport.addEventListener('click', function () {
+                importGuestPlanning(btnImport);
+            });
+        }
+
+        // Bouton import dans la bannière
+        const btnBannerImport = document.getElementById('btn-banner-import');
+        if (btnBannerImport) {
+            btnBannerImport.addEventListener('click', function () {
+                importGuestPlanning(btnBannerImport);
+            });
+        }
+
+        function importGuestPlanning(btn) {
+            const stored = localStorage.getItem('fridge_guest_planning');
+            if (!stored) return;
+
+            let entries;
+            try { entries = JSON.parse(stored); } catch (e) { return; }
+            if (!entries || entries.length === 0) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Import en cours…';
+
+            fetch('{{ path('app_planning_import_guest') }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                body: JSON.stringify({ entries: entries })
+            })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (data.success) {
+                    localStorage.removeItem('fridge_guest_planning');
+                    window.location.href = '{{ path('app_planning') }}';
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = 'Erreur — Réessayer';
+                }
+            })
+            .catch(function () {
+                btn.disabled = false;
+                btn.textContent = 'Erreur réseau — Réessayer';
+            });
+        }
+        {% endif %}
+
+    })();
+    </script>
 {% endblock %}

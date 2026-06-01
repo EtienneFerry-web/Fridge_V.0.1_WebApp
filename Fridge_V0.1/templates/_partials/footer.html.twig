@@ -1,111 +1,81 @@
-<footer id="contact" class="w-full relative overflow-hidden pt-15vh pb-10 mt-auto">
-    <div class="container-fluid px-0">
-        <div class="row grid-12 w-full mx-0">
+<footer class="mt-auto" style="background:var(--surface-muted);border-top:1px solid var(--border-light);">
+    <div class="container py-5">
 
-            <!-- LABEL HAUT — col 2 -->
-            <div class="col-start-2 col-span-3 footer-label mb-5">
-                Contact <br/> / 2026 /
+        <div class="row gy-4 gx-5">
+
+            <!-- Branding -->
+            <div class="col-12 col-md-4">
+                <a href="{{ path('app_home') }}" class="d-inline-flex align-items-center gap-2 text-decoration-none mb-3">
+                    <div style="width:34px;height:34px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                        <img src="{{ asset('img/fridge_favicon_nobg.png') }}" width="22" height="22" alt="Logo" style="filter:brightness(10);">
+                    </div>
+                    <span style="font-family:var(--font-display);font-weight:800;font-size:1.15rem;color:var(--text);letter-spacing:-0.03em;">Fridge</span>
+                </a>
+                <p class="small mb-0" style="color:var(--text-secondary);max-width:260px;line-height:1.6;">
+                    Planifiez vos repas, cuisinez avec plaisir et réduisez le gaspillage.
+                </p>
             </div>
 
-            <!-- TITRE GÉANT — col 2 à 11 -->
-            <div class="col-start-2 col-span-10 mb-20 hero-reveal">
-                <h2 class="footer-giant-title">
-                    FRIDGE
-                </h2>
-            </div>
-
-            <!-- COLONNE 1 : Navigation — col 2-4 -->
-            <div class="col-start-2 col-span-3 flex flex-column gap-4 mb-5">
-                <div>
-                    <p class="footer-sublabel">/ Navigation /</p>
-                    <ul class="list-unstyled flex flex-column gap-2">
-                        <li><a href="{{ path('app_home') }}" class="footer-link-editorial">Accueil</a></li>
-                        <li><a href="{{ path('app_search') }}" class="footer-link-editorial">Découvrir</a></li>
-                        {% if app.user %}
-                            <li><a href="{{ path('app_planning') }}" class="footer-link-editorial">Mon Planning</a></li>
-                            <li><a href="{{ path('app_stock') }}" class="footer-link-editorial">Mon Frigo</a></li>
-                            <li><a href="{{ path('app_liste_course_index') }}" class="footer-link-editorial">Liste de courses</a></li>
-                        {% endif %}
-                    </ul>
-                </div>
-            </div>
-
-            <!-- COLONNE 2 : Contact — col 5-7 -->
-            <div class="col-start-5 col-span-3 flex flex-column gap-4 mb-5">
-                <div>
-                    <p class="footer-sublabel">/ email /</p>
-                    <a href="mailto:hello@fridge.app" class="footer-link-editorial">
-                        hello@fridge.app
-                    </a>
-                </div>
-                <div>
-                    <p class="footer-sublabel">/ phone /</p>
-                    <a href="tel:+33600000000" class="footer-link-editorial">
-                        +33 6 00 00 00 00
-                    </a>
-                </div>
-            </div>
-
-            <!-- COLONNE 3 : Social — col 8-11 -->
-            <div class="col-start-8 col-span-4 mb-5">
-                <p class="footer-sublabel">/ follow /</p>
-                <ul class="list-unstyled flex flex-column gap-2">
-                    <li>
-                        <a href="#" class="footer-social-item group">
-                            <span class="social-line"></span>
-                            Instagram
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="footer-social-item group">
-                            <span class="social-line"></span>
-                            Behance
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="footer-social-item group">
-                            <span class="social-line"></span>
-                            Dribbble
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#" class="footer-social-item group">
-                            <span class="social-line"></span>
-                            LinkedIn
-                        </a>
-                    </li>
+            <!-- Navigation -->
+            <div class="col-6 col-md-2">
+                <p class="fw-700 mb-3" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text);">Explorer</p>
+                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                    <li><a href="{{ path('app_home') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Accueil</a></li>
+                    <li><a href="{{ path('app_recette_index') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Découvrir</a></li>
+                    {% if app.user %}
+                        <li><a href="{{ path('app_planning') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Mon Planning</a></li>
+                        <li><a href="{{ path('app_stock') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Mon Frigo</a></li>
+                        <li><a href="{{ path('app_liste_course_index') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Mes Courses</a></li>
+                    {% endif %}
                 </ul>
             </div>
 
-        </div>
-
-        <!-- LIGNE DE SÉPARATION -->
-        <div class="footer-separator mt-5"></div>
-
-        <!-- BAS DU FOOTER -->
-        <div class="row grid-12 w-full mt-4 mx-0 pb-5">
-            <!-- Copyright — col 2 -->
-            <div class="col-start-2 col-span-3 footer-sublabel">
-                © 2026 — FRIDGE
+            <!-- Compte -->
+            <div class="col-6 col-md-2">
+                <p class="fw-700 mb-3" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text);">Compte</p>
+                <ul class="list-unstyled d-flex flex-column gap-2 mb-0">
+                    {% if app.user %}
+                        <li><a href="{{ path('app_user_profil') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Mon profil</a></li>
+                        <li><a href="{{ path('app_logout') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Déconnexion</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_login') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Connexion</a></li>
+                        <li><a href="{{ path('app_register') }}" class="small text-decoration-none" style="color:var(--text-secondary);">Créer un compte</a></li>
+                    {% endif %}
+                </ul>
             </div>
 
-            <!-- Mention centrale -->
-            <div class="col-start-6 col-span-3 text-center footer-sublabel">
-                Designed & Coded with care
+            <!-- Suivre -->
+            <div class="col-12 col-md-4">
+                <p class="fw-700 mb-3" style="font-size:0.8rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--text);">Nous suivre</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% for social in [
+                        {name: 'Instagram', icon: 'bi-instagram'},
+                        {name: 'TikTok',    icon: 'bi-tiktok'},
+                        {name: 'LinkedIn',  icon: 'bi-linkedin'}
+                    ] %}
+                        <a href="#"
+                           aria-label="{{ social.name }}"
+                           class="d-inline-flex align-items-center justify-content-center text-decoration-none transition"
+                           style="width:38px;height:38px;border-radius:10px;background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);">
+                            <i class="bi {{ social.icon }}" style="font-size:1rem;"></i>
+                        </a>
+                    {% endfor %}
+                </div>
             </div>
 
-            <!-- Back to top — col 10-11 -->
-            <div class="col-start-10 col-span-2 d-flex justify-content-end">
-                <a href="#" class="back-to-top-editorial">
-                    <span class="arrow-up">↑</span>
-                    Back to top
-                </a>
-            </div>
         </div>
 
-        <!-- SIGNATURE GÉANTE EN BAS -->
-        <div class="footer-giant-signature">
-            <p>FRESH</p>
+        <!-- Séparateur -->
+        <hr class="my-4" style="border-color:var(--border);">
+
+        <!-- Bas -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+            <p class="mb-0 small" style="color:var(--text-muted);">© 2026 Fridge — Tous droits réservés</p>
+            <a href="#mainNav" class="small text-decoration-none d-flex align-items-center gap-1 transition"
+               style="color:var(--text-muted);">
+                Haut de page <i class="bi bi-arrow-up"></i>
+            </a>
         </div>
+
     </div>
 </footer>

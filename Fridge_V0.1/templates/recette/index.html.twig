@@ -3,97 +3,365 @@
 {% block title %}Découvrir des recettes - Fridge{% endblock %}
 
 {% block body %}
-<div class="search-hero mb-5">
-    <div class="container text-center">
-        <h1 class="display-3 fw-bold mb-3" style="font-family: var(--font-display);">Découvrir des pépites</h1>
-        <p class="lead text-muted mb-4">Explorez des milliers de recettes saines et gourmandes.</p>
-        
-        <div class="d-flex justify-content-center flex-wrap gap-2 mb-4">
-            {% set regimes = ['all', 'Omnivore', 'Végétarien', 'Vegan', 'Sans gluten', 'Sans lactose'] %}
-            {% for regime in regimes %}
-                <a href="{{ path('app_recette_index', {regime: regime, sort: activeSort}) }}"
-                   class="btn btn-outline-dark rounded-pill px-4"
-                   style="{{ activeRegime == regime ? 'background-color: var(--vanilla-custard); border-color: var(--vanilla-custard); color: var(--deep-sage);' : '' }}">
-                    {{ regime == 'all' ? 'Tous les régimes' : regime }}
+
+{% set categoryIcons = {
+    'Beef':         '🥩',
+    'Chicken':      '🍗',
+    'Seafood':      '🐟',
+    'Vegetarian':   '🥦',
+    'Vegan':        '🌿',
+    'Dessert':      '🍰',
+    'Pasta':        '🍝',
+    'Lamb':         '🐑',
+    'Pork':         '🥓',
+    'Breakfast':    '🍳',
+    'Starter':      '🥗',
+    'Side':         '🍲',
+    'Miscellaneous':'🍴',
+    'Goat':         '🐐'
+} %}
+
+{# ── Hero compact ────────────────────────────────────────────── #}
+<div style="background:var(--gradient-hero);border-bottom:1px solid var(--border-light);padding:2rem 0 0;">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3 pb-0">
+            <div>
+                <h1 class="fw-bold mb-1" style="font-family:var(--font-display);font-size:clamp(1.5rem,3vw,2rem);">
+                    Découvrir des recettes
+                </h1>
+                <p class="mb-0 small" style="color:var(--text-secondary);">
+                    <strong style="color:var(--primary);">{{ totalCount }}</strong> recette{{ totalCount > 1 ? 's' : '' }}
+                    {% if activeCategory != 'all' %}&nbsp;·&nbsp;<span>{{ categoryIcons[activeCategory] ?? '' }} {{ activeCategory }}</span>{% endif %}
+                    {% if activeArea != 'all' %}&nbsp;·&nbsp;<span>🌍 {{ activeArea }}</span>{% endif %}
+                    {% if activeSort == 'alpha' %}&nbsp;·&nbsp;A→Z{% endif %}
+                    {% if activeSort == 'random' %}&nbsp;·&nbsp;Aléatoire{% endif %}
+                </p>
+            </div>
+
+            {# Actions rapides desktop #}
+            <div class="d-none d-md-flex align-items-center gap-2 pb-3">
+                <a href="{{ path('app_recette_index', {category: activeCategory, area: activeArea, sort: activeSort == 'alpha' ? 'default' : 'alpha'}) }}"
+                   class="btn btn-sm rounded-pill {{ activeSort == 'alpha' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                    <i class="bi bi-sort-alpha-down me-1"></i>A → Z
                 </a>
-            {% endfor %}
-            
-            <a href="{{ path('app_recette_index', {regime: activeRegime, sort: 'random'}) }}"
-               class="btn btn-primary rounded-pill px-4 shadow-sm"
-               style="{{ activeSort == 'random' ? 'background-color: var(--vanilla-custard); border-color: var(--vanilla-custard); color: var(--deep-sage);' : '' }}">
-                <i class="bi bi-shuffle me-2"></i> {{ activeSort == 'random' ? 'Mélanger à nouveau' : 'Surprends-moi !' }}
-            </a>
+                <a href="{{ path('app_recette_index', {category: 'all', area: 'all', sort: 'random'}) }}"
+                   class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="bi bi-shuffle me-1"></i>{{ activeSort == 'random' ? 'Remélanger' : 'Surprends-moi' }}
+                </a>
+                {% if activeCategory != 'all' or activeArea != 'all' or activeSort not in ['default', 'random'] %}
+                    <a href="{{ path('app_recette_index') }}"
+                       class="btn btn-sm btn-link text-decoration-none px-1"
+                       style="color:var(--text-muted);font-size:0.8rem;">
+                        <i class="bi bi-x-circle me-1"></i>Réinitialiser
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        {# ── Scrollable category tabs (style Jow) ── #}
+        <div class="filter-tabs-wrap">
+            <nav class="filter-tabs" aria-label="Filtres par catégorie">
+                <a href="{{ path('app_recette_index', {category: 'all', area: activeArea, sort: activeSort}) }}"
+                   class="filter-tab {{ activeCategory == 'all' ? 'filter-tab--active' : '' }}">
+                    🍴 Toutes
+                </a>
+                {% for cat in availableCategories %}
+                    <a href="{{ path('app_recette_index', {category: cat.category, area: activeArea, sort: activeSort}) }}"
+                       class="filter-tab {{ activeCategory == cat.category ? 'filter-tab--active' : '' }}"
+                       title="{{ cat.count }} recettes">
+                        {{ categoryIcons[cat.category] ?? '🍴' }}&nbsp;{{ cat.category }}
+                    </a>
+                {% endfor %}
+            </nav>
         </div>
     </div>
 </div>
 
-<main class="container mb-5">
-    {% if recettes is empty %}
-        <div class="text-center py-5">
-            <i class="bi bi-emoji-frown display-1 text-muted opacity-25"></i>
-            <p class="text-muted mt-3 h4">Oups, aucune recette ne correspond.</p>
-        </div>
-    {% else %}
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            {% for recette in recettes %}
-                <div class="col">
-                    <a href="{{ path('app_recette_spoonacular_show', {spoonacularId: recette.id}) }}"
-                       class="text-decoration-none group">
-                        <div class="card border-0 bg-transparent h-100">
-                            <div class="position-relative overflow-hidden mb-3" style="border-radius: var(--radius-lg);">
-                                {% if recette.image is defined and recette.image %}
-                                    <img src="{{ recette.image }}"
-                                         class="w-100 transition-normal group-hover-scale"
-                                         alt="{{ recette.title }}"
-                                         style="height: 300px; object-fit: cover;">
-                                {% else %}
-                                    <div class="w-100 bg-light d-flex align-items-center justify-content-center" style="height: 300px;">
-                                        <i class="bi bi-image text-muted display-4"></i>
-                                    </div>
-                                {% endif %}
-                                <div class="position-absolute top-0 end-0 m-3 d-flex flex-column gap-2">
-                                    {% if recette.vegetarian is defined and recette.vegetarian %}
-                                        <span class="badge rounded-pill bg-success shadow-sm">Végé</span>
-                                    {% endif %}
-                                    {% if recette.readyInMinutes is defined %}
-                                        <span class="badge rounded-pill bg-white text-dark shadow-sm">
-                                            <i class="bi bi-clock-fill text-primary me-1"></i>{{ recette.readyInMinutes }}'
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="card-body p-0">
-                                <h3 class="h4 fw-bold mb-2 text-dark group-hover-text-primary transition-fast" style="font-family: var(--font-display);">
-                                    {{ recette.title }}
-                                </h3>
-                                <div class="d-flex align-items-center gap-3 text-muted small">
-                                    {% if recette.servings is defined %}
-                                        <span><i class="bi bi-people me-1"></i>{{ recette.servings }} portions</span>
-                                    {% endif %}
-                                    <span>•</span>
-                                    <span>Cuisine Saine</span>
-                                </div>
-                            </div>
+{# ── Corps : sidebar + grille ─────────────────────────────────── #}
+<div class="container py-4">
+    <div class="row g-4">
+
+        {# ── Sidebar filtres ── #}
+        <aside class="col-12 col-lg-3">
+
+            {# Mobile : bouton toggle filtres #}
+            <button class="btn w-100 btn-outline-secondary rounded-pill mb-3 d-lg-none"
+                    type="button" data-bs-toggle="collapse" data-bs-target="#sidebarFilters">
+                <i class="bi bi-sliders me-2"></i>Filtres avancés
+                {% if activeArea != 'all' or activeSort == 'alpha' %}
+                    <span class="badge rounded-pill ms-1" style="background:var(--primary);color:#fff;">
+                        {{ (activeArea != 'all' ? 1 : 0) + (activeSort == 'alpha' ? 1 : 0) }}
+                    </span>
+                {% endif %}
+            </button>
+
+            <div class="collapse d-lg-block" id="sidebarFilters">
+                <div class="d-flex flex-column gap-3">
+
+                    {# ── Origine / Cuisine ── #}
+                    <div class="p-4 rounded-4" style="background:var(--surface);box-shadow:var(--shadow-card);">
+                        <h3 class="mb-3" style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);">
+                            <i class="bi bi-geo-alt me-1" style="color:var(--primary);"></i>Origine
+                        </h3>
+
+                        {# Barre de recherche dans le filtre #}
+                        <input type="text" id="areaSearch" placeholder="Rechercher un pays…"
+                               class="form-control mb-2"
+                               style="font-size:0.82rem;height:36px;border-radius:var(--radius-sm);">
+
+                        <div id="areaList" style="max-height:260px;overflow-y:auto;">
+                            <a href="{{ path('app_recette_index', {category: activeCategory, area: 'all', sort: activeSort}) }}"
+                               class="area-item {{ activeArea == 'all' ? 'area-item--active' : '' }}">
+                                <span>🌍 Toutes les origines</span>
+                            </a>
+                            {% for areaItem in availableAreas %}
+                                <a href="{{ path('app_recette_index', {category: activeCategory, area: areaItem.area, sort: activeSort}) }}"
+                                   class="area-item {{ activeArea == areaItem.area ? 'area-item--active' : '' }}"
+                                   data-area="{{ areaItem.area|lower }}">
+                                    <span>{{ areaItem.area }}</span>
+                                    <span class="area-count">{{ areaItem.count }}</span>
+                                </a>
+                            {% endfor %}
                         </div>
+                    </div>
+
+                    {# ── Tri ── #}
+                    <div class="p-4 rounded-4" style="background:var(--surface);box-shadow:var(--shadow-card);">
+                        <h3 class="mb-3" style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-secondary);">
+                            <i class="bi bi-arrow-down-up me-1" style="color:var(--primary);"></i>Trier par
+                        </h3>
+                        <div class="d-flex flex-column gap-1">
+                            {% for sortOpt in [
+                                {key: 'default', label: 'Par défaut',    icon: 'bi-star'},
+                                {key: 'alpha',   label: 'Alphabétique', icon: 'bi-sort-alpha-down'},
+                                {key: 'random',  label: 'Aléatoire',    icon: 'bi-shuffle'}
+                            ] %}
+                                <a href="{{ path('app_recette_index', {category: activeCategory, area: activeArea, sort: sortOpt.key}) }}"
+                                   class="sort-option {{ activeSort == sortOpt.key ? 'sort-option--active' : '' }}">
+                                    <i class="bi {{ sortOpt.icon }} me-2"></i>{{ sortOpt.label }}
+                                    {% if activeSort == sortOpt.key %}
+                                        <i class="bi bi-check2 ms-auto"></i>
+                                    {% endif %}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# ── Réinitialiser ── #}
+                    {% if activeCategory != 'all' or activeArea != 'all' or activeSort not in ['default', 'random'] %}
+                        <a href="{{ path('app_recette_index') }}"
+                           class="btn btn-outline-secondary rounded-pill w-100"
+                           style="font-size:0.85rem;">
+                            <i class="bi bi-x-circle me-1"></i>Réinitialiser les filtres
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </aside>
+
+        {# ── Grille de recettes ── #}
+        <main class="col-12 col-lg-9">
+
+            {# Actions mobiles #}
+            <div class="d-flex d-md-none gap-2 mb-3 flex-wrap">
+                <a href="{{ path('app_recette_index', {category: activeCategory, area: activeArea, sort: activeSort == 'alpha' ? 'default' : 'alpha'}) }}"
+                   class="btn btn-sm rounded-pill {{ activeSort == 'alpha' ? 'btn-primary' : 'btn-outline-secondary' }}">
+                    <i class="bi bi-sort-alpha-down me-1"></i>A → Z
+                </a>
+                <a href="{{ path('app_recette_index', {category: 'all', area: 'all', sort: 'random'}) }}"
+                   class="btn btn-sm btn-outline-primary rounded-pill">
+                    <i class="bi bi-shuffle me-1"></i>Surprends-moi
+                </a>
+            </div>
+
+            {% if recettes is empty %}
+                <div class="text-center py-5">
+                    <i class="bi bi-search display-1 opacity-25" style="color:var(--text-muted);"></i>
+                    <p class="mt-3 h5" style="color:var(--text-secondary);">Aucune recette pour ces filtres.</p>
+                    <a href="{{ path('app_recette_index') }}" class="btn btn-primary rounded-pill px-4 mt-2">
+                        Voir toutes les recettes
                     </a>
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-</main>
+            {% else %}
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                    {% for recette in recettes %}
+                        <div class="col">
+                            <a href="{{ path('app_recette_mealdb_show', {mealId: recette.id}) }}"
+                               class="text-decoration-none group d-block h-100">
+                                <div class="card border-0 bg-transparent h-100">
 
+                                    <div class="position-relative overflow-hidden mb-3"
+                                         style="border-radius:var(--radius-lg);">
+                                        {% if recette.image %}
+                                            <img src="{{ recette.image }}"
+                                                 class="w-100 transition-normal group-hover-scale"
+                                                 alt="{{ recette.title }}"
+                                                 loading="lazy"
+                                                 style="height:200px;object-fit:cover;">
+                                        {% else %}
+                                            <div class="w-100 d-flex align-items-center justify-content-center"
+                                                 style="height:200px;background:var(--surface-muted);">
+                                                <i class="bi bi-image text-muted display-4"></i>
+                                            </div>
+                                        {% endif %}
+
+                                        {# Badge EN — toutes les recettes ici viennent de TheMealDB #}
+                                        <div class="position-absolute top-0 start-0 m-2 d-flex flex-column gap-1">
+                                            <span class="badge bg-dark opacity-75 px-2 py-1" style="font-size: 0.65rem;">🌍 EN</span>
+                                            {% if recette.category %}
+                                                <span class="badge rounded-pill px-3 py-1 shadow-sm"
+                                                      style="background:rgba(255,255,255,0.92);color:var(--text);font-size:0.68rem;backdrop-filter:blur(4px);">
+                                                    {{ categoryIcons[recette.category] ?? '' }} {{ recette.category }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if recette.tags|length > 0 %}
+                                            <div class="position-absolute top-0 end-0 m-2">
+                                                <span class="badge rounded-pill px-2 py-1"
+                                                      style="background:var(--primary);color:#fff;font-size:0.65rem;">
+                                                    {{ recette.tags[0] }}
+                                                </span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="card-body p-0 d-flex flex-column gap-1">
+                                        <h3 class="h6 fw-bold mb-0 text-dark group-hover-text-primary transition-fast"
+                                            style="font-family:var(--font-display);line-height:1.3;">
+                                            {{ recette.title }}
+                                        </h3>
+                                        {% if recette.area %}
+                                            <p class="mb-0" style="font-size:0.75rem;color:var(--text-secondary);">
+                                                <i class="bi bi-geo-alt me-1"></i>{{ recette.area }}
+                                            </p>
+                                        {% endif %}
+                                        {% if recette.tags|length > 1 %}
+                                            <div class="d-flex flex-wrap gap-1 mt-1">
+                                                {% for tag in recette.tags|slice(1, 2) %}
+                                                    <span style="font-size:0.65rem;background:var(--surface-muted);color:var(--text-secondary);border-radius:20px;padding:2px 8px;">{{ tag }}</span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </main>
+
+    </div>
+</div>
+
+{# ── Styles spécifiques à cette page ── #}
 <style>
-.group:hover .group-hover-scale {
-    transform: scale(1.05);
+/* Scrollable category tabs */
+.filter-tabs-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 calc(var(--bs-gutter-x) * -.5);
+    padding: 0 calc(var(--bs-gutter-x) * .5);
 }
-.group:hover .group-hover-text-primary {
-    color: var(--vanilla-custard) !important;
+.filter-tabs-wrap::-webkit-scrollbar { display: none; }
+
+.filter-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border-light);
+    white-space: nowrap;
+    padding-bottom: 0;
 }
-.transition-normal {
-    transition: var(--transition-normal);
+
+.filter-tab {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition-fast);
+    white-space: nowrap;
 }
-.transition-fast {
+.filter-tab:hover {
+    color: var(--primary);
+    background: var(--primary-muted);
+}
+.filter-tab--active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+    background: transparent;
+}
+
+/* Area list items */
+.area-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
     transition: var(--transition-fast);
 }
+.area-item:hover {
+    background: var(--primary-muted);
+    color: var(--primary);
+}
+.area-item--active {
+    background: var(--primary-muted);
+    color: var(--primary);
+    font-weight: 700;
+}
+.area-count {
+    font-size: 0.72rem;
+    background: var(--surface-muted);
+    color: var(--text-muted);
+    border-radius: 20px;
+    padding: 1px 7px;
+    flex-shrink: 0;
+}
+.area-item--active .area-count {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+/* Sort options */
+.sort-option {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: var(--transition-fast);
+}
+.sort-option:hover {
+    background: var(--primary-muted);
+    color: var(--primary);
+}
+.sort-option--active {
+    background: var(--primary-muted);
+    color: var(--primary);
+    font-weight: 700;
+}
 </style>
+
+{# ── Script recherche dans les origines ── #}
+<script>
+document.getElementById('areaSearch')?.addEventListener('input', function () {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#areaList .area-item[data-area]').forEach(el => {
+        el.style.display = el.dataset.area.includes(q) ? '' : 'none';
+    });
+});
+</script>
+
 {% endblock %}

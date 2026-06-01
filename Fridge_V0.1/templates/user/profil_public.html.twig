@@ -1,0 +1,114 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ profileUser.strFirstname }} {{ profileUser.strName }} - Fridge{% endblock %}
+
+{% block body %}
+    <main class="container py-4">
+
+        {# FIL D'ARIANE #}
+        <nav aria-label="Fil d'ariane">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    Profil de {{ profileUser.strFirstname }}
+                </li>
+            </ol>
+        </nav>
+
+        {# CARTE UTILISATEUR #}
+        <section id="user" class="bg-white shadow-sm rounded-3 p-4 mb-4">
+            <div class="row align-items-center text-center text-md-start">
+
+                {# Avatar avec initiales #}
+                <div class="col-8 col-md-3 col-lg-2 mx-auto mb-3 mb-md-0 d-flex justify-content-center">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center border border-4 border-light shadow-sm bg-primary text-white fw-bold"
+                         style="width: 120px; height: 120px; font-size: 2.5rem; flex-shrink: 0;">
+                        {{ profileUser.strFirstname|first|upper }}{{ profileUser.strName|first|upper }}
+                    </div>
+                </div>
+
+                <div class="col-12 col-md-9 col-lg-10">
+                    <div class="d-flex flex-wrap align-items-center gap-2 justify-content-center justify-content-md-start mb-1">
+                        <h1 class="h2 fw-bold mb-0">
+                            {{ profileUser.strFirstname }} {{ profileUser.strName }}
+                        </h1>
+                        {% if isOwnProfile %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-person-check-fill me-1"></i>C'est vous
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-muted mb-2 small">@{{ profileUser.strUsername }}</p>
+
+                    <p class="text-muted mb-3 small">
+                        <i class="bi bi-calendar3 me-1"></i>
+                        Membre depuis le {{ profileUser.dateInscription|date('d/m/Y') }}
+                    </p>
+
+                    {# Badges stats #}
+                    <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start mb-3">
+                        <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                            <i class="bi bi-journal-richtext text-primary me-1"></i>
+                            {{ arrRecettes|length }} recette{{ arrRecettes|length != 1 ? 's' : '' }} publiée{{ arrRecettes|length != 1 ? 's' : '' }}
+                        </span>
+                        <span class="badge rounded-pill bg-light text-dark border px-3 py-2">
+                            <i class="bi bi-heart-fill text-danger me-1"></i>
+                            {{ intLikes }} like{{ intLikes != 1 ? 's' : '' }} reçu{{ intLikes != 1 ? 's' : '' }}
+                        </span>
+                    </div>
+
+                    {% if isOwnProfile %}
+                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+                            <a href="{{ path('app_edit_user_profil') }}" class="btn btn-sm btn-outline-dark">
+                                <i class="bi bi-gear me-1"></i>Modifier mon profil
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </section>
+
+        {# RECETTES PUBLIQUES #}
+        <section class="bg-white shadow-sm rounded-3 p-4 mb-4">
+            <h2 class="h5 fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="bi bi-journal-richtext text-primary"></i>
+                {{ isOwnProfile ? 'Mes recettes' : 'Ses recettes' }}
+                <span class="badge bg-secondary rounded-pill">{{ arrRecettes|length }}</span>
+            </h2>
+
+            {% if arrRecettes is empty %}
+                <p class="text-muted small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    {{ isOwnProfile ? "Vous n'avez pas encore partagé de recettes." : "Cet utilisateur n'a pas encore partagé de recettes." }}
+                </p>
+            {% else %}
+                <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                    {% for recette in arrRecettes %}
+                        <div class="col">
+                            {% include 'components/_recipe_card.html.twig' with {
+                                title:       recette.recetteLibelle,
+                                time:        (recette.recetteTempsPrepa ?? 0) + (recette.recetteTempsCuisson ?? 0),
+                                id:          recette.id,
+                                photo:       recette.recettePhoto,
+                                like_count:  recette.likeRecettes|length,
+                                is_mealdb:   false
+                            } %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </section>
+
+        {# BOUTON RETOUR #}
+        <div class="mb-4">
+            <a href="{{ app.request.headers.get('referer') ?: path('app_home') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Retour
+            </a>
+        </div>
+
+    </main>
+{% endblock %}

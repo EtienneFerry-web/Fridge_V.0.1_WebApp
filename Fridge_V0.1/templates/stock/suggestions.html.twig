@@ -1,0 +1,159 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Que puis-je cuisiner ? - Fridge{% endblock %}
+
+{% block body %}
+
+<nav class="breadcrumb-nav" aria-label="Fil d'ariane">
+    <div class="container">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_home') }}"><i class="bi bi-house me-1"></i>Accueil</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{{ path('app_stock') }}">Mon Stock</a>
+            </li>
+            <li class="breadcrumb-item active">Suggestions</li>
+        </ol>
+    </div>
+</nav>
+
+<div class="search-hero mb-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-4">
+            <div>
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="bi bi-magic me-2"></i>Que puis-je cuisiner ?
+                </h1>
+                <p class="lead mb-0 opacity-75">Basé sur votre stock actuel</p>
+            </div>
+            <a href="{{ path('app_stock') }}" class="btn btn-outline-light rounded-pill px-4">
+                <i class="bi bi-basket3 me-2"></i>Retour au stock
+            </a>
+        </div>
+    </div>
+</div>
+
+<main class="container pb-5">
+
+    {% if stockIsEmpty %}
+        <div class="text-center py-5">
+            <i class="bi bi-basket display-3 text-muted d-block mb-3"></i>
+            <h3 class="h5 text-muted">Votre stock est vide</h3>
+            <p class="text-muted">Ajoutez des ingrédients à votre stock pour obtenir des suggestions de recettes.</p>
+            <a href="{{ path('app_stock') }}" class="btn btn-primary rounded-pill px-4 mt-2">
+                <i class="bi bi-plus-circle me-2"></i>Gérer mon stock
+            </a>
+        </div>
+
+    {% elseif arrSuggestions is empty %}
+        <div class="text-center py-5">
+            <i class="bi bi-journal-x display-3 text-muted d-block mb-3"></i>
+            <h3 class="h5 text-muted">Aucune recette ne correspond à votre stock</h3>
+            <p class="text-muted">
+                Continuez à enrichir votre stock ou explorez les recettes disponibles pour trouver l'inspiration !
+            </p>
+            <a href="{{ path('app_recette') }}" class="btn btn-primary rounded-pill px-4 mt-2">
+                <i class="bi bi-journal-richtext me-2"></i>Toutes les recettes
+            </a>
+        </div>
+
+    {% else %}
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <p class="text-muted mb-0">
+                <strong>{{ arrSuggestions|length }}</strong> recette{{ arrSuggestions|length > 1 ? 's' : '' }} trouvée{{ arrSuggestions|length > 1 ? 's' : '' }}, triées par compatibilité
+            </p>
+        </div>
+
+        <div class="row g-4">
+            {% for suggestion in arrSuggestions %}
+                {% set recette = suggestion.recette %}
+                {% set pct = suggestion.matchPercent %}
+
+                {% if pct >= 80 %}
+                    {% set barColor = 'bg-success' %}
+                    {% set pctClass = 'text-success' %}
+                {% elseif pct >= 50 %}
+                    {% set barColor = 'bg-warning' %}
+                    {% set pctClass = 'text-warning' %}
+                {% else %}
+                    {% set barColor = 'bg-danger' %}
+                    {% set pctClass = 'text-danger' %}
+                {% endif %}
+
+                <div class="col-12 col-md-6 col-xl-4">
+                    <div class="card border-0 shadow-sm h-100">
+
+                        {% if recette.recettePhoto %}
+                            <img src="{{ recette.recettePhoto|recette_photo }}"
+                                 class="card-img-top"
+                                 alt="{{ recette.recetteLibelle }}"
+                                 style="height: 180px; object-fit: cover;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-light"
+                                 style="height: 180px;">
+                                <i class="bi bi-journal-richtext display-4 text-muted"></i>
+                            </div>
+                        {% endif %}
+
+                        <div class="card-body d-flex flex-column">
+                            <h2 class="h6 fw-bold mb-3">
+                                <a href="{{ path('app_recette_show', {id: recette.id}) }}"
+                                   class="text-decoration-none text-dark stretched-link">
+                                    {{ recette.recetteLibelle }}
+                                </a>
+                            </h2>
+
+                            <div class="mb-2">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="text-muted">
+                                        <i class="bi bi-check2-circle me-1"></i>
+                                        {{ suggestion.matchCount }}/{{ suggestion.totalIngredients }} ingrédients disponibles
+                                    </small>
+                                    <span class="fw-bold small {{ pctClass }}">{{ pct }}%</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar {{ barColor }}"
+                                         role="progressbar"
+                                         style="width: {{ pct }}%"
+                                         aria-valuenow="{{ pct }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if suggestion.missingIngredients is not empty %}
+                                <div class="mt-auto pt-3 border-top">
+                                    <p class="small text-muted mb-1 fw-semibold">Ingrédients manquants :</p>
+                                    <ul class="list-unstyled mb-0">
+                                        {% for missing in suggestion.missingIngredients %}
+                                            <li class="small text-danger d-flex align-items-center gap-1">
+                                                <i class="bi bi-x-circle flex-shrink-0"></i>
+                                                <span>
+                                                    {{ missing.nom }}
+                                                    {% if missing.quantite %}
+                                                        <span class="text-muted">({{ missing.quantite }}{% if missing.unite %} {{ missing.unite }}{% endif %})</span>
+                                                    {% endif %}
+                                                </span>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% else %}
+                                <div class="mt-auto pt-3 border-top">
+                                    <span class="badge bg-success-subtle text-success rounded-pill">
+                                        <i class="bi bi-check-circle me-1"></i>Tous les ingrédients sont disponibles !
+                                    </span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</main>
+
+{% endblock %}

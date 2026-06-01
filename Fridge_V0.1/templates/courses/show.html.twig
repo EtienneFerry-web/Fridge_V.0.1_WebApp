@@ -39,7 +39,7 @@
                 {% else %}
                     {% for categorie, elements in parCategorie %}
                         <div class="mb-5">
-                            <h3 class="h4 fw-bold mb-4" style="font-family: var(--font-display); color: var(--grey-warm);">
+                            <h3 class="h4 fw-bold mb-4" style="font-family: var(--font-display); color: var(--text-secondary);">
                                 <i class="bi bi-tag text-primary me-2"></i>{{ categorie }}
                             </h3>
                             <div class="list-group list-group-flush rounded-4 overflow-hidden border">
@@ -59,7 +59,7 @@
                                             </label>
                                         </div>
                                         <div class="text-end">
-                                            <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: var(--vanilla-custard); color: var(--deep-sage); font-size: 0.9rem;">
+                                            <span class="badge rounded-pill px-3 py-2 shadow-sm" style="background-color: var(--primary); color: var(--text); font-size: 0.9rem;">
                                                 {{ item.contenirQuantite }} {{ item.contenirUnite }}
                                             </span>
                                         </div>
@@ -72,11 +72,52 @@
             </div>
         </div>
     </div>
+    <div class="container mb-5">
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3" style="font-family: var(--font-display);">
+                    <i class="bi bi-plus-circle text-primary me-2"></i>Ajouter un article manuellement
+                </h5>
+                <form id="form-ajout-manuel" class="row g-2 align-items-end">
+                    <div class="col-12 col-md-5">
+                        <label class="form-label small fw-semibold" for="manuel-libelle">Article</label>
+                        <input type="text" id="manuel-libelle" class="form-control" placeholder="Ex : huile d'olive, sel…" required>
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label small fw-semibold" for="manuel-quantite">Quantité</label>
+                        <input type="number" id="manuel-quantite" class="form-control" placeholder="Ex : 2" min="0" step="any">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label small fw-semibold" for="manuel-unite">Unité</label>
+                        <select id="manuel-unite" class="form-select">
+                            <option value="">—</option>
+                            <option value="pièce">pièce</option>
+                            <option value="g">g</option>
+                            <option value="kg">kg</option>
+                            <option value="mL">mL</option>
+                            <option value="L">L</option>
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-plus-lg me-1"></i>Ajouter
+                        </button>
+                    </div>
+                    <div id="ajout-erreur" class="col-12 text-danger small d-none"></div>
+                </form>
+            </div>
+        </div>
+    </div>
 </main>
 
 {% endblock %}
 
 {% block javascripts %}
 {{ parent() }}
+<script>
+    window.LISTE_COURSE_ID = {{ liste.id }};
+    window.URL_AJOUTER_MANUEL = '{{ path('app_liste_course_ajouter_manuel', {id: liste.id}) }}';
+    window.URL_CHECK = '/liste-courses/check/';
+</script>
 <script src="{{ asset('js/courses/show.js') }}"></script>
 {% endblock %}

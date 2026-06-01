@@ -7,21 +7,81 @@
             <div>
                 <h1 class="display-4 fw-bold mb-2">{{ recette.recetteLibelle }}</h1>
                 <div class="d-flex flex-wrap gap-3 mt-3">
-                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--primary-light); color: var(--text);">
                         <i class="bi bi-clock me-2 text-primary"></i>{{ recette.recetteTempsPrepa }} min prépa
                     </span>
-                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--primary-light); color: var(--text);">
                         <i class="bi bi-fire me-2 text-primary"></i>{{ recette.recetteTempsCuisson }} min cuisson
                     </span>
-                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--primary-light); color: var(--text);">
                         <i class="bi bi-people me-2 text-primary"></i>{{ recette.recettePortion }} portions
                     </span>
-                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--custard-light); color: var(--deep-sage);">
+                    <span class="badge rounded-pill px-3 py-2" style="background-color: var(--primary-light); color: var(--text);">
                         <i class="bi bi-bar-chart me-2 text-primary"></i>{{ recette.recetteDifficulte }}
                     </span>
                 </div>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center flex-wrap"
+                 {% if is_granted('ROLE_USER') %}
+                     data-controller="recipe-actions liste"
+                     data-like-url="{{ path('app_like_toggle', {id: recette.id}) }}"
+                     data-recipe-actions-liked-value="{{ is_liked ? 'true' : 'false' }}"
+                     data-liste-fetch-url="{{ path('app_liste_for_recette', {recetteId: recette.id}) }}"
+                     data-liste-create-url="{{ path('app_liste_create') }}"
+                     data-liste-toggle-base="/liste/__ID__/toggle/__REC__"
+                     data-liste-recette-id="{{ recette.id }}"
+                 {% endif %}>
+
+                {% if is_granted('ROLE_USER') %}
+                    {# Bouton Like #}
+                    <button class="btn btn-white border rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-sm"
+                            data-action="recipe-actions#toggleLike">
+                        <i data-recipe-actions-target="likeIcon"
+                           class="bi {{ is_liked ? 'bi-heart-fill text-danger' : 'bi-heart text-muted' }}"></i>
+                        <span data-recipe-actions-target="likeCount" class="small fw-semibold text-muted">{{ like_count }}</span>
+                    </button>
+
+                    {# Bouton Ajouter à une liste #}
+                    <button class="btn btn-white border rounded-pill px-3 py-2 d-flex align-items-center gap-2 shadow-sm"
+                            data-action="liste#openModal">
+                        <i data-liste-target="triggerIcon"
+                           class="bi {{ is_in_list ? 'bi-bookmark-fill text-warning' : 'bi-bookmark text-muted' }}"></i>
+                        <span class="small fw-semibold text-muted">Mes listes</span>
+                    </button>
+
+                    {# Modal liste #}
+                    <div data-liste-target="modal"
+                         class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+                         style="background:rgba(0,0,0,.45); z-index:1055;">
+                        <div class="bg-white rounded-3 shadow-lg p-4" style="width:100%;max-width:400px;" onclick="event.stopPropagation()">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0" style="font-family:var(--font-display);">
+                                    <i class="bi bi-collection-fill text-primary me-2"></i>Mes listes
+                                </h5>
+                                <button class="btn-close" data-action="liste#closeModal"></button>
+                            </div>
+
+                            <div data-liste-target="listesContainer"></div>
+
+                            {# Formulaire création nouvelle liste #}
+                            <div data-liste-target="createForm" class="d-none border-top pt-3 mt-2">
+                                <p class="small fw-semibold mb-2">Nouvelle liste</p>
+                                <div class="input-group input-group-sm">
+                                    <input type="text"
+                                           data-liste-target="nomInput"
+                                           class="form-control"
+                                           placeholder="Nom de la liste…"
+                                           maxlength="60">
+                                    <button class="btn btn-primary" data-action="liste#createListe">
+                                        Créer
+                                    </button>
+                                </div>
+                                <p data-liste-target="createError" class="text-danger small mt-1 mb-0"></p>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
                 {% if is_granted('RECETTE_EDIT', recette) %}
                     <a href="{{ path('app_recette_edit', {id: recette.id}) }}" class="btn btn-outline-secondary">
                         <i class="bi bi-pencil me-1"></i>Modifier
@@ -46,7 +106,7 @@
     <div class="row g-5">
         <div class="col-lg-5">
             <div class="position-relative mb-5">
-                <div class="hero-blob" style="position: absolute; top: -20px; left: -20px; width: 100%; height: 100%; background: var(--custard-light); border-radius: var(--radius-xl); z-index: -1; opacity: 0.5;"></div>
+                <div class="hero-blob" style="position: absolute; top: -20px; left: -20px; width: 100%; height: 100%; background: var(--primary-light); border-radius: var(--radius-xl); z-index: -1; opacity: 0.5;"></div>
                 {% if recette.recettePhoto %}
                     <img src="{{ recette.recettePhoto|recette_photo }}"
                         class="w-100 shadow-lg"
@@ -60,8 +120,26 @@
                 {% endif %}
             </div>
 
-            <div class="bento-grid p-4 mb-4" style="background-color: var(--sage-light);">
-                <h3 class="h4 fw-bold mb-4" style="font-family: var(--font-display);">Ingrédients</h3>
+            <div class="bento-grid p-4 mb-4" style="background-color: var(--sage-light);"
+                 data-controller="portions"
+                 data-portions-base-value="{{ recette.recettePortion ?: 1 }}">
+
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h3 class="h4 fw-bold mb-0" style="font-family: var(--font-display);">Ingrédients</h3>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                style="width:32px;height:32px;background:var(--primary-light);color:var(--primary);border:1px solid var(--primary);font-size:1.1rem;line-height:1;"
+                                data-action="portions#decrement">−</button>
+                        <span class="fw-bold" style="min-width:2rem;text-align:center;">
+                            <span data-portions-target="display">{{ recette.recettePortion ?: 1 }}</span>
+                        </span>
+                        <button class="btn btn-sm rounded-circle d-flex align-items-center justify-content-center"
+                                style="width:32px;height:32px;background:var(--primary);color:white;border:none;font-size:1.1rem;line-height:1;"
+                                data-action="portions#increment">+</button>
+                        <span class="small text-muted ms-1">portions</span>
+                    </div>
+                </div>
+
                 <ul class="list-group list-group-flush">
                     {% for contenir in recette.contenirs %}
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-3 bg-transparent border-bottom">
@@ -76,8 +154,9 @@
                                 </span>
                             </div>
                             {% if contenir.contenirQuantite %}
-                                <span class="badge rounded-pill px-3 py-2" style="background-color: var(--vanilla-custard); color: var(--deep-sage);">
-                                    {{ contenir.contenirQuantite }} {{ contenir.contenirUnite }}
+                                <span class="badge rounded-pill px-3 py-2" style="background-color: var(--primary); color: var(--text);">
+                                    <span data-portions-target="quantity" data-base="{{ contenir.contenirQuantite }}">{{ contenir.contenirQuantite }}</span>
+                                    {{ contenir.contenirUnite }}
                                 </span>
                             {% endif %}
                         </li>
@@ -89,18 +168,106 @@
         <div class="col-lg-7">
             <div class="bento-grid p-5 h-100">
                 {% if recette.recetteDescription %}
-                    <div class="mb-5 italic text-muted" style="font-family: var(--font-display); font-size: 1.2rem; border-left: 4px solid var(--vanilla-custard); padding-left: 1.5rem;">
+                    <div class="mb-5 italic text-muted" style="font-family: var(--font-display); font-size: 1.2rem; border-left: 4px solid var(--primary); padding-left: 1.5rem;">
                         "{{ recette.recetteDescription }}"
                     </div>
                 {% endif %}
 
                 {% if recette.etapes|length > 0 %}
-                    <h3 class="h3 fw-bold mb-5" style="font-family: var(--font-display);">La Préparation</h3>
+                    {% set etapes_json = [] %}
+                    {% for etape in recette.etapes %}
+                        {% set etapes_json = etapes_json|merge([{
+                            libelle:     etape.etapeLibelle,
+                            description: etape.etapeDescription,
+                            duree:       etape.etapeDuree
+                        }]) %}
+                    {% endfor %}
+
+                    <div class="d-flex align-items-center justify-content-between mb-5"
+                         data-controller="cooking"
+                         data-cooking-steps-value="{{ etapes_json|json_encode }}">
+
+                        <h3 class="h3 fw-bold mb-0" style="font-family: var(--font-display);">La Préparation</h3>
+
+                        <button class="btn rounded-pill px-4 py-2 fw-semibold d-flex align-items-center gap-2"
+                                style="background: var(--gradient-primary); color: white; box-shadow: var(--shadow-md);"
+                                data-action="cooking#open">
+                            <i class="bi bi-play-circle-fill"></i>
+                            Commencer à cuisiner
+                        </button>
+
+                        {# Overlay mode cuisine #}
+                        <div data-cooking-target="overlay"
+                             class="position-fixed top-0 start-0 w-100 h-100"
+                             style="display:none; background: rgba(0,0,0,0.85); z-index: 2000; align-items: center; justify-content: center;">
+                            <div class="position-relative bg-white rounded-4 shadow-lg p-5"
+                                 style="width: 100%; max-width: 620px; margin: 1rem;"
+                                 onclick="event.stopPropagation()">
+
+                                <button class="btn-close position-absolute top-0 end-0 m-3"
+                                        data-action="cooking#close"></button>
+
+                                <div class="mb-4">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <span class="small fw-semibold text-muted" data-cooking-target="progressText">Étape 1 / 1</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 99px; background: var(--primary-light);">
+                                        <div class="progress-bar"
+                                             data-cooking-target="progressBar"
+                                             style="background: var(--primary); width: 0%; transition: width .3s ease; border-radius: 99px;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-3 mb-4">
+                                    <div class="d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 56px; height: 56px; background: var(--primary); border-radius: 50%; font-weight: 800; font-size: 1.5rem; color: white;">
+                                        <span data-cooking-target="stepNumber">1</span>
+                                    </div>
+                                    <h4 class="h4 fw-bold mb-0" style="font-family: var(--font-display);"
+                                        data-cooking-target="stepTitle"></h4>
+                                </div>
+
+                                <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.7;"
+                                   data-cooking-target="stepDescription"></p>
+
+                                <span class="text-primary small fw-bold mb-3"
+                                      data-cooking-target="stepDuration"
+                                      style="display:none;"></span>
+
+                                <div class="align-items-center gap-3 mb-4 p-3 rounded-3"
+                                     data-cooking-target="timerBlock"
+                                     style="display:none; background: var(--primary-light);">
+                                    <span class="fw-bold fs-4 text-primary" data-cooking-target="timerDisplay">00:00</span>
+                                    <button class="btn btn-sm rounded-pill px-3 fw-semibold"
+                                            style="background: var(--primary); color: white;"
+                                            data-action="cooking#toggleTimer"
+                                            data-cooking-target="timerBtn">
+                                        <i class="bi bi-play-fill me-1"></i>Démarrer
+                                    </button>
+                                </div>
+
+                                <div class="d-flex justify-content-between gap-3 pt-3 border-top">
+                                    <button class="btn btn-outline-secondary rounded-pill px-4"
+                                            data-action="cooking#prev"
+                                            data-cooking-target="prevBtn">
+                                        <i class="bi bi-chevron-left me-1"></i>Précédent
+                                    </button>
+                                    <button class="btn rounded-pill px-4 fw-semibold"
+                                            style="background: var(--primary); color: white;"
+                                            data-action="cooking#next"
+                                            data-cooking-target="nextBtn">
+                                        Suivant<i class="bi bi-chevron-right ms-1"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="steps-container">
                         {% for etape in recette.etapes %}
                             <div class="step-item d-flex gap-4 mb-5">
-                                <div class="step-number d-flex align-items-center justify-content-center" 
-                                     style="min-width: 50px; height: 50px; background: var(--vanilla-custard); color: var(--deep-sage); border-radius: 50%; font-weight: 800; font-size: 1.2rem;">
+                                <div class="step-number d-flex align-items-center justify-content-center"
+                                     style="min-width: 50px; height: 50px; background: var(--primary); color: var(--text); border-radius: 50%; font-weight: 800; font-size: 1.2rem;">
                                     {{ loop.index }}
                                 </div>
                                 <div class="step-content">
@@ -120,4 +287,139 @@
         </div>
     </div>
 </main>
+
+<section class="container mb-5"
+         data-controller="commentaires"
+         data-commentaires-add-url="{{ path('app_commentaire_add', {id: recette.id}) }}"
+         data-commentaires-note-url="{{ path('app_note_add', {id: recette.id}) }}"
+         data-commentaires-delete-base="/commentaire/__ID__/supprimer">
+
+    <div class="row g-5">
+
+        {# ── NOTES ── #}
+        <div class="col-12">
+            <div class="bento-grid p-4">
+                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-4">
+
+                    {# Affichage note moyenne #}
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="d-flex gap-1" id="avg-stars">
+                            {% for i in 1..5 %}
+                                <i class="bi {{ avg_note >= i ? 'bi-star-fill' : (avg_note >= i - 0.5 ? 'bi-star-half' : 'bi-star') }} fs-4"
+                                   style="color: var(--warning);"></i>
+                            {% endfor %}
+                        </div>
+                        <div>
+                            <span class="fw-bold fs-5" data-commentaires-target="avgDisplay">{{ avg_note > 0 ? avg_note : '–' }}</span>
+                            <span class="text-muted small ms-1">(<span data-commentaires-target="countDisplay">{{ note_count }}</span> avis)</span>
+                        </div>
+                    </div>
+
+                    {# Formulaire notation si connecté #}
+                    {% if is_granted('ROLE_USER') %}
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="small fw-semibold text-muted me-1">Votre note :</span>
+                            <div class="d-flex gap-1" data-commentaires-target="starsList">
+                                {% for i in 1..5 %}
+                                    <button type="button"
+                                            class="btn p-0 border-0 bg-transparent star-btn"
+                                            data-value="{{ i }}"
+                                            data-action="click->commentaires#rateRecette mouseenter->commentaires#hoverStar mouseleave->commentaires#resetHover"
+                                            style="font-size: 1.6rem; color: {{ user_note and user_note >= i ? 'var(--warning)' : 'var(--text-muted)' }}; transition: color .15s;">
+                                        <i class="bi {{ user_note and user_note >= i ? 'bi-star-fill' : 'bi-star' }}"></i>
+                                    </button>
+                                {% endfor %}
+                            </div>
+                            <input type="hidden" data-commentaires-target="starsInput" value="{{ user_note ?? 0 }}">
+                        </div>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-secondary btn-sm rounded-pill">
+                            <i class="bi bi-star me-1"></i>Connectez-vous pour noter
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        {# ── COMMENTAIRES ── #}
+        <div class="col-12">
+            <div class="bento-grid p-4">
+                <h3 class="h4 fw-bold mb-4" style="font-family: var(--font-display);">
+                    <i class="bi bi-chat-dots me-2 text-primary"></i>Commentaires
+                </h3>
+
+                {# Formulaire ajout commentaire #}
+                {% if is_granted('ROLE_USER') %}
+                    <div class="mb-4" data-commentaires-target="commentForm">
+                        <div class="d-flex gap-3 align-items-start">
+                            <div class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
+                                 style="width:40px;height:40px;background:var(--primary);font-size:.9rem;">
+                                {{ app.user.strUsername|first|upper }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <textarea class="form-control rounded-3"
+                                          data-commentaires-target="commentInput"
+                                          rows="2"
+                                          maxlength="1000"
+                                          placeholder="Partagez votre avis sur cette recette…"
+                                          style="resize:none; border-color: var(--border);"></textarea>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button class="btn rounded-pill px-4 fw-semibold"
+                                            style="background: var(--gradient-primary); color: white;"
+                                            data-action="click->commentaires#submitComment"
+                                            data-commentaires-target="submitBtn">
+                                        <i class="bi bi-send me-1"></i>Publier
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="mb-4 p-3 rounded-3" style="background: var(--primary-light);">
+                        <a href="{{ path('app_login') }}" class="text-primary fw-semibold text-decoration-none">
+                            <i class="bi bi-person-circle me-1"></i>Connectez-vous pour laisser un commentaire
+                        </a>
+                    </div>
+                {% endif %}
+
+                {# Liste des commentaires #}
+                <div data-commentaires-target="commentsList">
+                    {% for commentaire in commentaires %}
+                        <div class="d-flex gap-3 mb-4 pb-4 border-bottom" data-comment-id="{{ commentaire.id }}">
+                            <div class="flex-shrink-0 d-flex align-items-center justify-content-center rounded-circle fw-bold text-white"
+                                 style="width:40px;height:40px;background:var(--primary);font-size:.9rem;">
+                                {{ commentaire.user.strUsername|first|upper }}
+                            </div>
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <span class="fw-semibold">{{ commentaire.user.strUsername }}</span>
+                                        <span class="text-muted small ms-2">{{ commentaire.createdAt|date('d/m/Y') }}</span>
+                                    </div>
+                                    {% if is_granted('ROLE_USER') and (app.user == commentaire.user or is_granted('ROLE_MODERATOR')) %}
+                                        <button class="btn btn-sm btn-link text-danger p-0"
+                                                data-action="click->commentaires#deleteComment"
+                                                data-id="{{ commentaire.id }}"
+                                                title="Supprimer">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    {% endif %}
+                                </div>
+                                <p class="mt-1 mb-0" style="line-height:1.6;">{{ commentaire.contenu }}</p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-3" id="no-comments-msg">
+                            <i class="bi bi-chat-slash me-1"></i>Aucun commentaire pour le moment. Soyez le premier !
+                        </p>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</section>
+
 {% endblock %}

@@ -3,11 +3,48 @@
 {% block title %}Mon Planning - Fridge{% endblock %}
 
 {% block body %}
-    <div {{ react_component('PlanningPage', {
-        'initialGrid': arrGrilleJson,
-        'initialLikes': arrLikesJson,
-        'initialFavoris': arrFavorisJson
-    }) }}></div>
+<div class="search-hero mb-4">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h1 class="display-5 fw-bold mb-1">Mon Planning</h1>
+                <p class="lead text-muted mb-0">Organisez vos repas de la semaine</p>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                {% if hasActiveListe %}
+                    <a href="{{ path('app_liste_course_show', {id: activeListeId}) }}"
+                       class="btn btn-success d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill"></i>
+                        Liste générée ✓
+                    </a>
+                {% else %}
+                    {% if hasPlanning %}
+                        <form action="{{ path('app_liste_course_generer') }}" method="POST">
+                            <button type="submit" class="btn btn-primary d-flex align-items-center gap-2">
+                                <i class="bi bi-cart-plus"></i>
+                                Générer ma liste de courses
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-primary d-flex align-items-center gap-2" disabled>
+                                <i class="bi bi-cart-plus"></i>
+                                Générer ma liste de courses
+                            </button>
+                            <small class="text-muted fst-italic">Ajoutez des recettes à votre planning d'abord</small>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div {{ react_component('PlanningPage', {
+    'initialGrid': arrGrilleJson,
+    'initialLikes': arrLikesJson,
+    'initialFavoris': arrFavorisJson
+}) }}></div>
 {% endblock %}
 
 {% block javascripts %}

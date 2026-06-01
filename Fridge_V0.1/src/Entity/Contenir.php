@@ -39,7 +39,7 @@ class Contenir
     private bool $contenirEstCoche = false;
 
     /**
-     * Libellé brut de l'ingrédient (utilisé pour les ingrédients importés depuis Spoonacular).
+     * Libellé brut de l'ingrédient (texte libre).
      * Permet de stocker un ingrédient sans créer d'entité Ingredient (mapping FR/EN à venir au point 5).
      */
     #[ORM\Column(length: 255, nullable: true)]

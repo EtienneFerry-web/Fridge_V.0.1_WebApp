@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\Contenir;
 use App\Entity\ListeCourse;
 use App\Repository\ContenirRepository;
 use App\Repository\ListeCourseRepository;
 use App\Service\ListeCourseService;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -72,6 +74,42 @@ class ListeCourseController extends AbstractController
      * @param ContenirRepository     $contenirRepository Repository des lignes de liste
      * @param EntityManagerInterface $em                Gestionnaire d'entités Doctrine
      */
+    #[Route('/{id}/ajouter-manuel', name: 'app_liste_course_ajouter_manuel', methods: ['POST'])]
+    public function ajouterManuel(int $id, Request $request, ListeCourseRepository $listeCourseRepository, EntityManagerInterface $em): JsonResponse
+    {
+        $user  = $this->getUser();
+        $liste = $listeCourseRepository->find($id);
+
+        if (!$liste || $liste->getUser() !== $user) {
+            return new JsonResponse(['success' => false], 403);
+        }
+
+        $libelle  = trim((string) $request->request->get('libelle', ''));
+        if ($libelle === '') {
+            return new JsonResponse(['success' => false, 'error' => 'Libellé requis.'], 400);
+        }
+
+        $quantite = $request->request->get('quantite');
+        $unite    = $request->request->get('unite');
+
+        $contenir = new Contenir();
+        $contenir->setContenirLibelleBrut($libelle);
+        $contenir->setContenirQuantite($quantite !== null && $quantite !== '' ? (float) $quantite : null);
+        $contenir->setContenirUnite($unite ?: null);
+        $contenir->setListeCourse($liste);
+
+        $em->persist($contenir);
+        $em->flush();
+
+        return new JsonResponse([
+            'success'  => true,
+            'id'       => $contenir->getId(),
+            'libelle'  => $libelle,
+            'quantite' => $contenir->getContenirQuantite(),
+            'unite'    => $contenir->getContenirUnite(),
+        ]);
+    }
+
     #[Route('/check/{id}', name: 'app_liste_course_check', methods: ['POST'])]
     public function toggleCheck(int $id, ContenirRepository $contenirRepository, EntityManagerInterface $em): JsonResponse
     {
@@ -135,8 +173,8 @@ class ListeCourseController extends AbstractController
             if ($ingredient !== null) {
                 $categorie = $ingredient->getIngredientType() ?? 'Autre';
             } else {
-                // Ingrédients Spoonacular : pas de catégorie connue
-                $categorie = 'Spoonacular';
+                // Ingrédient sans catégorie connue
+                $categorie = 'Autre';
             }
             $parCategorie[$categorie][] = $contenir;
         }

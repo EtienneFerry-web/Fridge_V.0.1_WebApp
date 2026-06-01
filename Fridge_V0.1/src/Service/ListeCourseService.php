@@ -70,7 +70,7 @@ class ListeCourseService
 
                     $agregat[$cleAgg]['quantite'] += $contenir->getContenirQuantite() ?? 0;
 
-                // Recette Spoonacular : ingrédient stocké comme libellé brut
+                // Ingrédient stocké comme libellé brut
                 } elseif ($libelleBrut !== null && $libelleBrut !== '') {
                     $unite  = $contenir->getContenirUnite() ?? '';
                     $cleAgg = 'brut_' . mb_strtolower($libelleBrut) . '|' . $unite;

@@ -11,9 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Entité représentant une recette de cuisine.
  *
- * Une recette créée par un utilisateur a la source 'user' et le statut 'prive' :
- * elle n'est visible que par son créateur. Les recettes importées depuis Spoonacular
- * ont la source 'spoonacular' et le statut 'publie' : elles sont visibles publiquement.
+ * Une recette créée par un utilisateur a le statut 'prive' : elle n'est visible que
+ * par son créateur. Une recette publiée a le statut 'publie' : visible par tous.
  * Elle peut contenir des étapes, des ingrédients (via Contenir), des régimes alimentaires,
  * et peut être likée ou mise en favori par les utilisateurs.
  */
@@ -24,12 +23,6 @@ class Recette
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
-
-    #[ORM\Column(length: 20)]
-    private string $recetteSource = 'user'; // 'user' | 'spoonacular'
-
-    #[ORM\Column(nullable: true)]
-    private ?int $spoonacularId = null;
 
     #[ORM\Column(length: 500, nullable: true)]
     private ?string $sourceUrl = null;
@@ -110,6 +103,18 @@ class Recette
     private Collection $listes;
 
     /**
+     * @var Collection<int, Commentaire>
+     */
+    #[ORM\OneToMany(targetEntity: Commentaire::class, mappedBy: 'recette', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $commentaires;
+
+    /**
+     * @var Collection<int, NoteRecette>
+     */
+    #[ORM\OneToMany(targetEntity: NoteRecette::class, mappedBy: 'recette', cascade: ['remove'], orphanRemoval: true)]
+    private Collection $notes;
+
+    /**
      * Initialise les collections Doctrine et applique les valeurs par défaut :
      * statut 'prive' (visible uniquement par le créateur) et date de création à maintenant.
      */
@@ -124,6 +129,8 @@ class Recette
         $this->plannings = new ArrayCollection();
         $this->contenirs = new ArrayCollection();
         $this->listes = new ArrayCollection();
+        $this->commentaires = new ArrayCollection();
+        $this->notes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -427,28 +434,6 @@ class Recette
         return $this;
     }
 
-    public function getRecetteSource(): string
-    {
-        return $this->recetteSource;
-    }
-
-    public function setRecetteSource(string $recetteSource): static
-    {
-        $this->recetteSource = $recetteSource;
-        return $this;
-    }
-
-    public function getSpoonacularId(): ?int
-    {
-        return $this->spoonacularId;
-    }
-
-    public function setSpoonacularId(?int $spoonacularId): static
-    {
-        $this->spoonacularId = $spoonacularId;
-        return $this;
-    }
-
     public function getSourceUrl(): ?string
     {
         return $this->sourceUrl;
@@ -482,6 +467,64 @@ class Recette
     {
         if ($this->listes->removeElement($liste)) {
             $liste->removeRecette($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Commentaire>
+     */
+    public function getCommentaires(): Collection
+    {
+        return $this->commentaires;
+    }
+
+    public function addCommentaire(Commentaire $commentaire): static
+    {
+        if (!$this->commentaires->contains($commentaire)) {
+            $this->commentaires->add($commentaire);
+            $commentaire->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommentaire(Commentaire $commentaire): static
+    {
+        if ($this->commentaires->removeElement($commentaire)) {
+            if ($commentaire->getRecette() === $this) {
+                $commentaire->setRecette(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, NoteRecette>
+     */
+    public function getNotes(): Collection
+    {
+        return $this->notes;
+    }
+
+    public function addNote(NoteRecette $note): static
+    {
+        if (!$this->notes->contains($note)) {
+            $this->notes->add($note);
+            $note->setRecette($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNote(NoteRecette $note): static
+    {
+        if ($this->notes->removeElement($note)) {
+            if ($note->getRecette() === $this) {
+                $note->setRecette(null);
+            }
         }
 
         return $this;
