@@ -1,0 +1,1687 @@
+
+
+
+
+
+
+
+CREATE TABLE categorie (
+    id integer NOT NULL,
+    categorie_libelle VARCHAR(80) NOT NULL
+);
+
+
+ALTER TABLE categorie OWNER TO app;
+
+
+ALTER TABLE categorie ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE commentaire (
+    id integer NOT NULL,
+    contenu text NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL,
+    is_visible TINYINT(1) NOT NULL,
+    user_id integer NOT NULL,
+    recette_id integer NOT NULL
+);
+
+
+ALTER TABLE commentaire OWNER TO app;
+
+
+ALTER TABLE commentaire ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE contenir (
+    id integer NOT NULL,
+    contenir_quantite double precision,
+    liste_course_id integer,
+    ingredient_id integer,
+    contenir_unite VARCHAR(30) DEFAULT NULL::VARCHAR,
+    recette_id integer,
+    contenir_est_coche TINYINT(1) DEFAULT 0 NOT NULL,
+    contenir_libelle_brut VARCHAR(255) DEFAULT NULL::VARCHAR
+);
+
+
+ALTER TABLE contenir OWNER TO app;
+
+
+ALTER TABLE contenir ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE doctrine_migration_versions (
+    version VARCHAR(191) NOT NULL,
+    executed_at timestamp(0) without time zone DEFAULT NULL::timestamp without time zone,
+    execution_time integer
+);
+
+
+ALTER TABLE doctrine_migration_versions OWNER TO app;
+
+
+CREATE TABLE etape (
+    id integer NOT NULL,
+    etape_numero integer NOT NULL,
+    etape_libelle VARCHAR(150) NOT NULL,
+    etape_description text NOT NULL,
+    etape_duree smallint,
+    recette_id integer
+);
+
+
+ALTER TABLE etape OWNER TO app;
+
+
+ALTER TABLE etape ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE favori (
+    id integer NOT NULL,
+    favori_date timestamp(0) without time zone NOT NULL,
+    favori_user_id integer NOT NULL,
+    favori_recette_id integer NOT NULL
+);
+
+
+ALTER TABLE favori OWNER TO app;
+
+
+ALTER TABLE favori ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE foyer (
+    id integer NOT NULL,
+    foyer_nom VARCHAR(100) NOT NULL,
+    foyer_nombre_pers integer NOT NULL,
+    foyer_date_creation date NOT NULL
+);
+
+
+ALTER TABLE foyer OWNER TO app;
+
+
+ALTER TABLE foyer ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE ingredient (
+    id integer NOT NULL,
+    ingredient_libelle VARCHAR(100) NOT NULL,
+    ingredient_type VARCHAR(50) DEFAULT NULL::VARCHAR
+);
+
+
+ALTER TABLE ingredient OWNER TO app;
+
+
+ALTER TABLE ingredient ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE like_recette (
+    id integer NOT NULL,
+    like_date timestamp(0) without time zone NOT NULL,
+    like_user_id integer NOT NULL,
+    like_recette_id integer NOT NULL
+);
+
+
+ALTER TABLE like_recette OWNER TO app;
+
+
+ALTER TABLE like_recette ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE liste (
+    id integer NOT NULL,
+    nom VARCHAR(255) NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE liste OWNER TO app;
+
+
+CREATE TABLE liste_course (
+    id integer NOT NULL,
+    liste_libelle VARCHAR(100),
+    liste_date_creation timestamp(0) without time zone NOT NULL,
+    liste_statut VARCHAR(20) NOT NULL,
+    user_id integer
+);
+
+
+ALTER TABLE liste_course OWNER TO app;
+
+
+ALTER TABLE liste_course ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+ALTER TABLE liste ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE liste_recette (
+    liste_id integer NOT NULL,
+    recette_id integer NOT NULL
+);
+
+
+ALTER TABLE liste_recette OWNER TO app;
+
+
+CREATE TABLE messenger_messages (
+    id bigint NOT NULL,
+    body text NOT NULL,
+    headers text NOT NULL,
+    queue_name VARCHAR(190) NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL,
+    available_at timestamp(0) without time zone NOT NULL,
+    delivered_at timestamp(0) without time zone DEFAULT NULL::timestamp without time zone
+);
+
+
+ALTER TABLE messenger_messages OWNER TO app;
+
+
+ALTER TABLE messenger_messages ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE note_recette (
+    id integer NOT NULL,
+    valeur integer NOT NULL,
+    created_at timestamp(0) without time zone NOT NULL,
+    user_id integer NOT NULL,
+    recette_id integer NOT NULL
+);
+
+
+ALTER TABLE note_recette OWNER TO app;
+
+
+ALTER TABLE note_recette ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE planning (
+    id integer NOT NULL,
+    planning_jour VARCHAR(10) NOT NULL,
+    planning_moment VARCHAR(20) NOT NULL,
+    user_id integer,
+    planning_recette_id integer
+);
+
+
+ALTER TABLE planning OWNER TO app;
+
+
+ALTER TABLE planning ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE recette (
+    id integer NOT NULL,
+    recette_libelle VARCHAR(150) NOT NULL,
+    recette_description text,
+    recette_difficulte VARCHAR(20),
+    recette_portion integer,
+    recette_temps_prepa smallint,
+    recette_temps_cuisson smallint,
+    recette_photo VARCHAR(255) DEFAULT NULL::VARCHAR,
+    recette_statut VARCHAR(20) NOT NULL,
+    recette_origine VARCHAR(50) DEFAULT NULL::VARCHAR,
+    recette_created_at date NOT NULL,
+    created_by integer,
+    source_url VARCHAR(500) DEFAULT NULL::VARCHAR
+);
+
+
+ALTER TABLE recette OWNER TO app;
+
+
+ALTER TABLE recette ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE recette_regime (
+    recette_id integer NOT NULL,
+    regime_id integer NOT NULL
+);
+
+
+ALTER TABLE recette_regime OWNER TO app;
+
+
+CREATE TABLE regime (
+    id integer NOT NULL,
+    regime_libelle VARCHAR(100) NOT NULL
+);
+
+
+ALTER TABLE regime OWNER TO app;
+
+
+ALTER TABLE regime ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE repas (
+    id integer NOT NULL,
+    repas_date date NOT NULL,
+    repas_type VARCHAR(20) NOT NULL,
+    foyer_id integer
+);
+
+
+ALTER TABLE repas OWNER TO app;
+
+
+ALTER TABLE repas ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE reset_password_request (
+    reset_id integer NOT NULL,
+    selector VARCHAR(20) NOT NULL,
+    hashed_token VARCHAR(100) NOT NULL,
+    requested_at timestamp(0) without time zone NOT NULL,
+    expires_at timestamp(0) without time zone NOT NULL,
+    user_id integer NOT NULL
+);
+
+
+ALTER TABLE reset_password_request OWNER TO app;
+
+
+ALTER TABLE reset_password_request ALTER COLUMN reset_id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE stocker (
+    id integer NOT NULL,
+    stocker_quantite_dispo numeric(10,2) NOT NULL,
+    foyer_id integer,
+    ingredient_id integer,
+    stocker_unite VARCHAR(20) NOT NULL,
+    stocker_seuil numeric(10,2) DEFAULT NULL::numeric,
+    stocker_date_peremption date,
+    user_id integer
+);
+
+
+ALTER TABLE stocker OWNER TO app;
+
+
+ALTER TABLE stocker ALTER COLUMN id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+CREATE TABLE `user` (
+    user_id integer NOT NULL,
+    user_email VARCHAR(180) NOT NULL,
+    user_name VARCHAR(255) NOT NULL,
+    user_firstname VARCHAR(255) NOT NULL,
+    user_roles json NOT NULL,
+    user_password VARCHAR(255) NOT NULL,
+    user_username VARCHAR(255) NOT NULL,
+    is_verified TINYINT(1) NOT NULL,
+    user_date_inscription timestamp(0) without time zone DEFAULT NULL::timestamp without time zone NOT NULL,
+    user_date_suppression timestamp(0) without time zone DEFAULT NULL::timestamp without time zone
+);
+
+
+ALTER TABLE `user` OWNER TO app;
+
+
+CREATE TABLE user_regime (
+    user_id integer NOT NULL,
+    regime_id integer NOT NULL
+);
+
+
+ALTER TABLE user_regime OWNER TO app;
+
+
+ALTER TABLE `user` ALTER COLUMN user_id ADD 
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+
+COPY categorie (id, categorie_libelle) FROM stdin;
+41	Entrée
+42	Plat principal
+43	Dessert
+44	Petit-déjeuner
+45	Snack
+\.
+
+
+
+COPY commentaire (id, contenu, created_at, is_visible, user_id, recette_id) FROM stdin;
+\.
+
+
+
+COPY contenir (id, contenir_quantite, liste_course_id, ingredient_id, contenir_unite, recette_id, contenir_est_coche, contenir_libelle_brut) FROM stdin;
+896	400	\N	254	g	177	f	\N
+897	500	\N	250	g	177	f	\N
+898	3	\N	252	gousse(s)	177	f	\N
+899	3	\N	255	tbsp	177	f	\N
+900	1	\N	258	bouquet	177	f	\N
+901	1	\N	249	tsp	177	f	\N
+902	1	\N	280	pincée	177	f	\N
+903	1500	\N	253	g	178	f	\N
+904	4	\N	255	tbsp	178	f	\N
+905	4	\N	252	gousse(s)	178	f	\N
+906	30	\N	247	g	178	f	\N
+907	2	\N	249	tsp	178	f	\N
+908	1	\N	280	tsp	178	f	\N
+909	200	\N	256	g	179	f	\N
+910	6	\N	245	\N	179	f	\N
+911	60	\N	248	g	179	f	\N
+1109	3	\N	\N	cups	207	f	bow tie pasta
+1110	0.5	\N	\N	cup	207	f	parmigiano reggiano
+1111	5	\N	\N	servings	207	f	recipe makers chicken bruschetta pasta
+1112	1.5	\N	\N	lb	207	f	pork chops
+1134	3	\N	\N	tablespoons	210	f	balsamic vinegar
+1135	1	\N	\N	clove	210	f	garlic
+1136	1	\N	\N	bunch	210	f	curly kale
+1137	2	\N	\N	servings	210	f	olive oil
+1151	1	\N	\N	\N	212	f	anchovy
+1152	500	\N	\N	g	212	f	clams
+1153	1	\N	\N	handful	212	f	flat-leaf parsley
+1154	3	\N	\N	\N	212	f	garlic cloves
+1155	1	\N	\N	\N	212	f	lemon zest
+1156	2	\N	\N	servings	212	f	olive oil
+1157	400	\N	\N	g	212	f	plum tomatoes
+1158	150	\N	\N	g	212	f	spaghetti
+912	30	\N	247	g	179	f	\N
+1113	1	\N	\N	tbsp	208	f	butter
+1114	2	\N	\N	cups	208	f	cauliflower florets
+1115	2	\N	\N	tbsp	208	f	cheese
+1116	1	\N	\N	tbsp	208	f	extra virgin olive oil
+1117	5	\N	\N	cloves	208	f	garlic
+1118	6	\N	\N	ounces	208	f	pasta
+1119	2	\N	\N	pinches	208	f	couple of pepper flakes
+1120	2	\N	\N	servings	208	f	salt and pepper
+1121	3	\N	\N	\N	208	f	scallions
+1122	2	\N	\N	tbsp	208	f	white wine
+1123	0.25	\N	\N	cup	208	f	bread crumbs
+1138	8	\N	\N	servings	211	f	additional toppings: avocado
+1139	3	\N	\N	medium	211	f	carrots
+1140	3	\N	\N	\N	211	f	celery stalks
+1141	2	\N	\N	cups	211	f	chicken breast
+1142	0.5	\N	\N	cup	211	f	flat leaf parsley
+1143	6	\N	\N	cloves	211	f	garlic
+1144	2	\N	\N	tablespoons	211	f	olive oil
+1145	28	\N	\N	ounce	211	f	canned tomatoes
+1146	2	\N	\N	cups	211	f	lentils
+1147	8	\N	\N	servings	211	f	salt and pepper
+1148	1	\N	\N	large	211	f	turnip
+1149	8	\N	\N	cups	211	f	vegetable stock
+1150	1	\N	\N	medium	211	f	onion
+1159	2	\N	\N	ounces	213	f	chocolate
+1160	0.5	\N	\N	cup	213	f	milk
+1161	0.25	\N	\N	cup	213	f	pistachios
+1162	1.75	\N	\N	cups	213	f	ricotta
+1163	1	\N	\N	small pinch	213	f	salt
+1164	0.5	\N	\N	cup	213	f	sugar
+1165	0.5	\N	\N	tsp	213	f	vanilla
+913	1	\N	249	pincée	179	f	\N
+914	800	\N	250	g	180	f	\N
+915	2	\N	251	\N	180	f	\N
+916	3	\N	252	gousse(s)	180	f	\N
+917	2	\N	255	tbsp	180	f	\N
+918	1	\N	258	bouquet	180	f	\N
+919	1	\N	249	tsp	180	f	\N
+920	1	\N	280	pincée	180	f	\N
+921	250	\N	244	g	181	f	\N
+922	3	\N	245	\N	181	f	\N
+923	500	\N	246	ml	181	f	\N
+924	50	\N	247	g	181	f	\N
+925	1	\N	249	pincée	181	f	\N
+926	20	\N	248	g	181	f	\N
+927	320	\N	259	g	182	f	\N
+928	300	\N	268	g	182	f	\N
+929	1	\N	251	\N	182	f	\N
+930	2	\N	252	gousse(s)	182	f	\N
+931	60	\N	247	g	182	f	\N
+932	80	\N	272	g	182	f	\N
+933	2	\N	255	tbsp	182	f	\N
+934	1	\N	249	tsp	182	f	\N
+935	1	\N	280	pincée	182	f	\N
+936	1000	\N	277	g	183	f	\N
+937	250	\N	244	g	183	f	\N
+938	125	\N	247	g	183	f	\N
+939	100	\N	248	g	183	f	\N
+940	1	\N	245	\N	183	f	\N
+941	1	\N	249	pincée	183	f	\N
+942	2	\N	271	tbsp	183	f	\N
+943	2	\N	265	\N	184	f	\N
+944	1	\N	266	\N	184	f	\N
+945	2	\N	267	\N	184	f	\N
+946	1	\N	251	\N	184	f	\N
+947	3	\N	252	gousse(s)	184	f	\N
+948	2	\N	275	tbsp	184	f	\N
+949	400	\N	276	ml	184	f	\N
+950	2	\N	255	tbsp	184	f	\N
+951	1	\N	249	tsp	184	f	\N
+952	300	\N	259	g	184	f	\N
+953	250	\N	244	g	185	f	\N
+954	125	\N	247	g	185	f	\N
+955	4	\N	245	\N	185	f	\N
+956	200	\N	257	ml	185	f	\N
+957	200	\N	260	g	185	f	\N
+958	100	\N	261	g	185	f	\N
+959	1	\N	249	tsp	185	f	\N
+960	1	\N	280	pincée	185	f	\N
+961	2	\N	266	\N	186	f	\N
+962	2	\N	265	\N	186	f	\N
+963	2	\N	267	\N	186	f	\N
+964	500	\N	250	g	186	f	\N
+965	2	\N	251	\N	186	f	\N
+966	4	\N	252	gousse(s)	186	f	\N
+967	4	\N	255	tbsp	186	f	\N
+968	1	\N	249	tsp	186	f	\N
+969	1	\N	280	pincée	186	f	\N
+970	200	\N	274	g	187	f	\N
+971	4	\N	245	\N	187	f	\N
+972	3	\N	250	\N	187	f	\N
+973	1	\N	267	\N	187	f	\N
+974	1	\N	251	\N	187	f	\N
+975	1	\N	270	\N	187	f	\N
+976	3	\N	255	tbsp	187	f	\N
+977	1	\N	282	tbsp	187	f	\N
+978	1	\N	249	tsp	187	f	\N
+979	1	\N	280	pincée	187	f	\N
+980	200	\N	256	g	188	f	\N
+981	150	\N	247	g	188	f	\N
+982	180	\N	248	g	188	f	\N
+983	4	\N	245	\N	188	f	\N
+984	80	\N	244	g	188	f	\N
+985	1	\N	279	tsp	188	f	\N
+986	4	\N	245	\N	189	f	\N
+987	150	\N	268	g	189	f	\N
+988	20	\N	247	g	189	f	\N
+989	1	\N	252	gousse(s)	189	f	\N
+990	1	\N	249	tsp	189	f	\N
+991	1	\N	280	pincée	189	f	\N
+992	1200	\N	262	g	190	f	\N
+993	400	\N	257	ml	190	f	\N
+994	200	\N	246	ml	190	f	\N
+995	3	\N	252	gousse(s)	190	f	\N
+996	20	\N	247	g	190	f	\N
+997	2	\N	249	tsp	190	f	\N
+998	1	\N	280	pincée	190	f	\N
+999	600	\N	263	g	191	f	\N
+1000	2	\N	270	\N	191	f	\N
+1001	100	\N	257	ml	191	f	\N
+1002	2	\N	255	tbsp	191	f	\N
+1003	20	\N	247	g	191	f	\N
+1004	1	\N	249	tsp	191	f	\N
+1005	1	\N	280	pincée	191	f	\N
+1006	300	\N	264	g	192	f	\N
+1007	200	\N	259	g	192	f	\N
+1008	2	\N	245	\N	192	f	\N
+1009	3	\N	252	gousse(s)	192	f	\N
+1010	1	\N	270	\N	192	f	\N
+1011	15	\N	248	g	192	f	\N
+1012	2	\N	255	tbsp	192	f	\N
+1013	1	\N	249	tsp	192	f	\N
+1014	800	\N	250	g	193	f	\N
+1015	2	\N	251	\N	193	f	\N
+1016	3	\N	252	gousse(s)	193	f	\N
+1017	3	\N	255	tbsp	193	f	\N
+1018	500	\N	254	g	193	f	\N
+1019	80	\N	272	g	193	f	\N
+1020	2	\N	249	tsp	193	f	\N
+1021	1	\N	280	pincée	193	f	\N
+1022	6	\N	245	\N	194	f	\N
+1023	150	\N	248	g	194	f	\N
+1024	500	\N	257	g	194	f	\N
+1025	200	\N	273	g	194	f	\N
+1026	1	\N	249	pincée	194	f	\N
+1027	800	\N	265	g	195	f	\N
+1028	1	\N	251	\N	195	f	\N
+1029	2	\N	252	gousse(s)	195	f	\N
+1030	100	\N	257	ml	195	f	\N
+1031	2	\N	255	tbsp	195	f	\N
+1032	1	\N	249	tsp	195	f	\N
+1033	1	\N	280	pincée	195	f	\N
+1034	800	\N	253	g	196	f	\N
+1035	400	\N	276	ml	196	f	\N
+1036	2	\N	275	tbsp	196	f	\N
+1037	1	\N	251	\N	196	f	\N
+1038	3	\N	252	gousse(s)	196	f	\N
+1039	2	\N	255	tbsp	196	f	\N
+1040	300	\N	259	g	196	f	\N
+1041	1	\N	249	tsp	196	f	\N
+1042	1	\N	280	pincée	196	f	\N
+1043	4	\N	270	\N	197	f	\N
+1044	5	\N	245	\N	197	f	\N
+1045	200	\N	248	g	197	f	\N
+1046	120	\N	247	g	197	f	\N
+1047	200	\N	244	g	197	f	\N
+1048	1	\N	249	pincée	197	f	\N
+1049	8	\N	273	tranche(s)	198	f	\N
+1050	500	\N	250	g	198	f	\N
+1051	2	\N	252	gousse(s)	198	f	\N
+1052	1	\N	258	bouquet	198	f	\N
+1053	3	\N	255	tbsp	198	f	\N
+1054	1	\N	249	tsp	198	f	\N
+1055	1	\N	280	pincée	198	f	\N
+1056	1	\N	282	tbsp	198	f	\N
+1057	400	\N	259	g	199	f	\N
+1058	150	\N	260	g	199	f	\N
+1059	3	\N	245	\N	199	f	\N
+1060	2	\N	255	tbsp	199	f	\N
+1061	1	\N	249	tsp	199	f	\N
+1062	1	\N	280	pincée	199	f	\N
+1063	400	\N	264	g	200	f	\N
+1064	4	\N	252	gousse(s)	200	f	\N
+1065	50	\N	247	g	200	f	\N
+1066	1	\N	270	\N	200	f	\N
+1067	1	\N	249	tsp	200	f	\N
+1068	1	\N	280	pincée	200	f	\N
+1069	150	\N	256	g	201	f	\N
+1070	100	\N	247	g	201	f	\N
+1071	3	\N	245	\N	201	f	\N
+1072	100	\N	248	g	201	f	\N
+1073	40	\N	244	g	201	f	\N
+1074	1	\N	249	pincée	201	f	\N
+1075	500	\N	253	g	202	f	\N
+1076	100	\N	273	g	202	f	\N
+1077	80	\N	272	g	202	f	\N
+1078	2	\N	252	gousse(s)	202	f	\N
+1079	1	\N	270	\N	202	f	\N
+1080	80	\N	257	ml	202	f	\N
+1081	3	\N	255	tbsp	202	f	\N
+1082	1	\N	281	tbsp	202	f	\N
+1083	1	\N	249	tsp	202	f	\N
+1084	1	\N	280	pincée	202	f	\N
+1085	500	\N	278	g	203	f	\N
+1086	3	\N	245	\N	203	f	\N
+1087	100	\N	248	g	203	f	\N
+1088	60	\N	244	g	203	f	\N
+1089	250	\N	246	ml	203	f	\N
+1090	30	\N	247	g	203	f	\N
+1091	1	\N	249	pincée	203	f	\N
+1092	600	\N	268	g	204	f	\N
+1093	3	\N	252	gousse(s)	204	f	\N
+1094	30	\N	247	g	204	f	\N
+1095	2	\N	255	tbsp	204	f	\N
+1096	1	\N	249	tsp	204	f	\N
+1097	1	\N	280	pincée	204	f	\N
+1098	200	\N	274	g	205	f	\N
+1099	4	\N	273	tranche(s)	205	f	\N
+1100	2	\N	250	\N	205	f	\N
+1101	1	\N	251	\N	205	f	\N
+1102	1	\N	281	tbsp	205	f	\N
+1103	1	\N	270	\N	205	f	\N
+1104	1	\N	280	pincée	205	f	\N
+1105	300	\N	278	g	206	f	\N
+1106	200	\N	246	ml	206	f	\N
+1107	2	\N	271	tbsp	206	f	\N
+1108	10	\N	248	g	206	f	\N
+1124	2	\N	\N	Tbs	209	f	olive oil
+1125	1	\N	\N	\N	209	f	onion
+1126	2	\N	\N	cloves	209	f	garlic
+1127	3	\N	\N	\N	209	f	carrots
+1128	480	\N	\N	g	209	f	tomatoes
+1129	1	\N	\N	\N	209	f	bay leaf
+1130	1.3	\N	\N	l	209	f	water
+1131	250	\N	\N	g	209	f	lentils
+1132	0.25	\N	\N	tsp	209	f	salt
+1133	1	\N	\N	bunch	209	f	parsley
+\.
+
+
+
+COPY doctrine_migration_versions (version, executed_at, execution_time) FROM stdin;
+DoctrineMigrations\\Version20260408234219	2026-04-08 23:42:30	30
+DoctrineMigrations\\Version20260409090347	2026-04-09 09:03:50	35
+DoctrineMigrations\\Version20260409120808	2026-04-09 12:10:40	13
+DoctrineMigrations\\Version20260410075049	2026-04-10 07:50:51	54
+DoctrineMigrations\\Version20260410080216	2026-04-10 08:02:42	3
+DoctrineMigrations\\Version20260410080450	2026-04-10 08:04:55	15
+DoctrineMigrations\\Version20260410083147	2026-04-10 08:31:57	83
+DoctrineMigrations\\Version20260410083450	2026-04-10 08:35:03	18
+DoctrineMigrations\\Version20260412201354	2026-04-12 20:13:56	35
+DoctrineMigrations\\Version20260412210646	2026-04-12 21:06:48	6
+DoctrineMigrations\\Version20260413153138	2026-04-13 15:33:02	15
+DoctrineMigrations\\Version20260414090515	2026-04-14 09:05:17	39
+DoctrineMigrations\\Version20260414095259	2026-04-14 09:53:01	24
+DoctrineMigrations\\Version20260414110130	2026-04-14 11:01:31	28
+DoctrineMigrations\\Version20260414162050	2026-04-14 16:20:57	41
+DoctrineMigrations\\Version20260414163925	2026-04-14 16:39:31	5
+DoctrineMigrations\\Version20260417073422	2026-04-17 07:34:23	21
+DoctrineMigrations\\Version20260425084919	2026-04-25 09:05:09	15
+DoctrineMigrations\\Version20260425095213	2026-04-25 09:56:02	9
+DoctrineMigrations\\Version20260429163926	2026-06-01 20:09:03	44
+DoctrineMigrations\\Version20260601200856	2026-06-01 20:09:30	9
+DoctrineMigrations\\Version20260601201951	2026-06-01 20:19:57	49
+\.
+
+
+
+COPY etape (id, etape_numero, etape_libelle, etape_description, etape_duree, recette_id) FROM stdin;
+811	1	Étape 1	wash and rinse pork chops and place into the skillet.cut them into bite sized pieces and add half of the Basil Garlic simmer sauce.boil your water and start working on cooking your bow-tie pasta.when you have finished with boiling and draining your pasta, add it to the pork along with the rest of the Basil Garlic Simmering Sauce, mixing lightly.Next you will top with the Chunky Bruschetta Finishing Sauce, cover with Parmesan, and cover. Cooking on low heat 2 to 3 minutes or until heated through.	\N	207
+821	1	Étape 1	To a large dutch oven or soup pot, heat the olive oil over medium heat.	\N	211
+822	2	Étape 2	Add the onion, carrots and celery and cook for 8-10 minutes or until tender, stirring occasionally.	\N	211
+823	3	Étape 3	Add the garlic and cook for an additional 2 minutes, or until fragrant. Season conservatively with a pinch of salt and black pepper.To the pot, add the tomatoes, turnip and red lentils. Stir to combine. Stir in the vegetable stock and increase the heat on the stove to high. Bring the soup to a boil and then reduce to a simmer. Simmer for 20 minutes or until the turnips are tender and the lentils are cooked through.	\N	211
+824	4	Étape 4	Add the chicken breast and parsley. Cook for an additional 5 minutes. Adjust seasoning to taste.	\N	211
+825	5	Étape 5	Serve the soup immediately garnished with fresh parsley and any additional toppings. Enjoy!	\N	211
+812	1	Étape 1	Saut onion and garlic in olive oil for 5 minutes.	\N	209
+813	2	Étape 2	Add the carrot, saut for another 2 minutes.	\N	209
+814	3	Étape 3	Add tomatoes, bay leaf and water, stir and bring to the boil.	\N	209
+815	4	Étape 4	Stir in lentils, season with salt and cook for 5 minutes.	\N	209
+816	5	Étape 5	Before serving sprinkle with chopped parsley.	\N	209
+686	1	Mise en place	Faire bouillir une grande casserole d'eau salée.	5	177
+687	2	Sauce tomate	Faire revenir l'ail et les tomates dans l'huile d'olive.	10	177
+688	3	Cuisson pâtes	Cuire les pâtes al dente selon les indications du paquet.	10	177
+689	4	Dressage	Mélanger les pâtes avec la sauce et servir avec du basilic.	2	177
+690	1	Marinade	Mélanger huile d'olive, herbes de Provence, sel et poivre.	10	178
+691	2	Préparation	Badigeonner le poulet de la marinade et laisser reposer.	10	178
+692	3	Cuisson	Enfourner à 200°C pendant 60 minutes en arrosant régulièrement.	60	178
+693	4	Repos	Laisser reposer 10 minutes avant de découper.	10	178
+694	1	Fonte chocolat	Faire fondre le chocolat noir au bain-marie.	5	179
+695	2	Jaunes d'oeufs	Incorporer les jaunes d'oeufs au chocolat fondu.	3	179
+696	3	Blancs en neige	Monter les blancs en neige ferme avec une pincée de sel.	5	179
+697	4	Assemblage	Incorporer délicatement les blancs au mélange chocolaté.	5	179
+698	5	Réfrigération	Répartir en verrines et réfrigérer au moins 2 heures.	5	179
+699	1	Préparation	Éplucher et couper les tomates et l'oignon en morceaux.	5	180
+700	2	Cuisson	Faire revenir l'oignon puis ajouter les tomates et l'ail.	10	180
+701	3	Mijotage	Laisser mijoter 20 minutes à feu doux avec le bouillon.	20	180
+702	4	Mixage	Mixer la soupe et ajuster l'assaisonnement. Ajouter le basilic.	3	180
+703	1	Pâte	Mélanger farine, oeufs, lait et beurre fondu jusqu'à obtenir une pâte lisse.	5	181
+704	2	Repos	Laisser reposer la pâte 30 minutes au réfrigérateur.	30	181
+705	3	Cuisson	Cuire les crêpes dans une poêle beurrée à feu moyen.	20	181
+706	4	Service	Servir avec garnitures sucrées ou salées au choix.	2	181
+707	1	Bouillon	Chauffer le bouillon de légumes dans une casserole à part.	5	182
+708	2	Soffritto	Faire revenir l'oignon dans le beurre jusqu'à transparence.	5	182
+709	3	Toast du riz	Ajouter le riz et faire toaster 2 minutes en remuant.	3	182
+710	4	Cuisson du riz	Ajouter le bouillon louche par louche en remuant constamment.	25	182
+711	5	Finition	Incorporer parmesan, beurre et champignons sautés.	5	182
+712	1	Pâte brisée	Mélanger farine, beurre froid et eau pour former la pâte. Réfrigérer 30 min.	15	183
+713	2	Préparation	Éplucher les pommes et les couper en fines lamelles.	10	183
+714	3	Fonçage	Étaler la pâte et foncer le moule. Piquer le fond.	5	183
+715	4	Garniture	Disposer les lamelles de pommes en rosace sur la pâte.	5	183
+716	5	Cuisson	Enfourner à 180°C pendant 40 minutes jusqu'à dorure.	40	183
+717	1	Préparation	Couper courgettes, poivrons et aubergines en dés réguliers.	10	184
+718	2	Épices	Faire revenir oignon, ail et curry en poudre dans l'huile.	5	184
+719	3	Légumes	Ajouter les légumes et faire revenir 5 minutes.	5	184
+720	4	Sauce	Verser le lait de coco et laisser mijoter 20 minutes.	20	184
+721	5	Service	Servir avec du riz basmati et de la coriandre fraîche.	2	184
+722	1	Pâte	Étaler la pâte brisée et foncer le moule. Précuire 10 minutes à blanc.	10	185
+723	2	Appareil	Battre les oeufs avec la crème fraîche, sel, poivre et muscade.	5	185
+724	3	Garniture	Faire revenir les lardons et les disposer sur le fond de tarte.	5	185
+725	4	Assemblage	Verser l'appareil sur les lardons et parsemer de gruyère râpé.	5	185
+726	5	Cuisson	Enfourner à 180°C pendant 35 minutes jusqu'à prise et dorure.	35	185
+727	1	Préparation	Couper aubergines, courgettes, poivrons et tomates en rondelles.	20	186
+728	2	Cuisson base	Faire revenir oignon et ail dans l'huile d'olive.	5	186
+729	3	Légumes	Ajouter les légumes couche par couche et mijoter à feu doux.	40	186
+730	4	Assaisonnement	Ajouter herbes de Provence, sel, poivre et huile d'olive.	5	186
+731	1	Cuisson	Cuire les oeufs durs et les haricots verts.	10	187
+732	2	Préparation	Couper tomates, poivrons et oignons.	10	187
+733	3	Assemblage	Dresser la salade avec tous les ingrédients.	5	187
+734	4	Vinaigrette	Préparer une vinaigrette à l'huile d'olive et au citron.	3	187
+735	1	Fonte	Faire fondre chocolat et beurre ensemble au micro-ondes.	5	188
+736	2	Appareil	Mélanger sucre, oeufs puis incorporer le chocolat fondu.	5	188
+737	3	Farine	Ajouter farine et levure tamisées et mélanger sans travailler la pâte.	3	188
+738	4	Cuisson	Verser dans un moule beurré et cuire 30 minutes à 170°C.	30	188
+739	1	Champignons	Faire sauter les champignons avec l'ail dans le beurre.	5	189
+740	2	Oeufs	Battre les oeufs avec sel, poivre et herbes fraîches.	2	189
+741	3	Cuisson	Cuire l'omelette à feu moyen en la laissant baveuse.	5	189
+742	4	Garniture	Ajouter les champignons et plier l'omelette.	1	189
+743	1	Pommes de terre	Éplucher et couper les pommes de terre en fines rondelles.	15	190
+744	2	Infusion	Chauffer la crème avec l'ail écrasé et la noix de muscade.	5	190
+745	3	Montage	Disposer les rondelles en couches dans un plat beurré, sel et poivre.	10	190
+746	4	Cuisson	Verser la crème et cuire 60 minutes à 160°C jusqu'à dorure.	60	190
+747	1	Marinade	Mariner le saumon avec jus de citron, huile d'olive et aneth 15 min.	15	191
+748	2	Cuisson	Saisir le saumon côté peau 6 min puis retourner 4 min.	10	191
+749	3	Sauce	Déglacer la poêle avec le jus de citron restant et la crème fraîche.	3	191
+750	4	Service	Napper le saumon de sauce et décorer d'aneth frais.	2	191
+751	1	Trempage	Faire tremper les nouilles de riz dans l'eau tiède 20 minutes.	20	192
+752	2	Sauce	Mélanger sauce poisson, sauce soja, sucre et jus de citron.	5	192
+753	3	Wok	Faire chauffer l'huile dans le wok et faire sauter ail et crevettes.	5	192
+754	4	Assemblage	Ajouter les nouilles, la sauce et les oeufs brouillés.	5	192
+755	5	Service	Garnir de cacahuètes concassées, citron vert et ciboulette.	2	192
+756	1	Soffritto	Faire revenir oignon, carotte et céleri finement hachés.	10	193
+757	2	Viande	Ajouter le boeuf haché et faire dorer en cassant les grumeaux.	10	193
+758	3	Tomates	Incorporer tomates concassées, vin rouge et concentré de tomate.	5	193
+759	4	Mijotage	Laisser mijoter à feu très doux pendant 90 minutes en remuant.	90	193
+760	5	Service	Servir sur des tagliatelles avec parmesan râpé.	3	193
+761	1	Café	Préparer un café fort et le laisser refroidir.	5	194
+762	2	Crème	Battre jaunes d'oeufs et sucre jusqu'à blanchiment, incorporer mascarpone.	10	194
+763	3	Blancs	Monter les blancs en neige et les incorporer délicatement à la crème.	8	194
+764	4	Montage	Tremper les biscuits dans le café et alterner couches biscuits/crème.	10	194
+765	5	Repos	Réfrigérer au moins 4 heures et saupoudrer de cacao avant service.	5	194
+766	1	Préparation	Laver et couper les courgettes en rondelles sans les éplucher.	5	195
+767	2	Cuisson	Faire revenir oignon et ail puis ajouter les courgettes.	5	195
+768	3	Bouillon	Couvrir d'eau bouillante et cuire 15 minutes.	15	195
+769	4	Mixage	Mixer finement, incorporer la crème fraîche et assaisonner.	3	195
+770	1	Découpe	Couper le poulet en morceaux réguliers.	5	196
+771	2	Saisir	Faire dorer le poulet dans l'huile avec l'oignon et l'ail.	10	196
+772	3	Épices	Ajouter curry, cumin et gingembre et faire revenir 2 minutes.	3	196
+773	4	Sauce	Verser le lait de coco et laisser mijoter 25 minutes à feu doux.	25	196
+774	5	Service	Servir avec du riz basmati et de la coriandre fraîche.	2	196
+775	1	Pâte sablée	Préparer et cuire la pâte sablée à blanc 15 minutes.	15	197
+776	2	Crème citron	Mélanger jus de citron, zestes, oeufs, sucre et beurre. Cuire à feu doux.	15	197
+777	3	Garnissage	Verser la crème citron refroidie sur le fond de tarte.	5	197
+778	4	Meringue	Préparer la meringue et la pocher sur la tarte.	10	197
+779	5	Dorure	Dorer la meringue au chalumeau ou au four en position grill.	3	197
+780	1	Tomates	Couper les tomates en dés, assaisonner avec sel, basilic et huile d'olive.	5	198
+781	2	Pain	Griller les tranches de pain et les frotter avec une gousse d'ail.	5	198
+782	3	Assemblage	Garnir les toasts de la préparation aux tomates et servir immédiatement.	2	198
+783	1	Riz	Cuire le riz la veille et le réfrigérer pour qu'il soit bien sec.	30	199
+784	2	Lardons	Faire revenir les lardons à feu vif jusqu'à dorure.	5	199
+785	3	Oeufs	Pousser les lardons sur le côté et brouiller les oeufs.	3	199
+786	4	Assemblage	Ajouter le riz froid, les petits pois et la sauce soja. Sauter à feu vif.	7	199
+787	1	Préparation	Décortiquer les crevettes et les sécher avec du papier absorbant.	5	200
+788	2	Cuisson	Faire fondre le beurre et faire sauter les crevettes 3 min par face.	6	200
+789	3	Finition	Ajouter l'ail émincé, le persil haché et un filet de citron.	2	200
+790	1	Préparation	Beurrer et fariner les ramequins. Préchauffer le four à 200°C.	5	201
+791	2	Fonte	Faire fondre chocolat et beurre ensemble.	5	201
+792	3	Appareil	Battre oeufs et sucre, incorporer le chocolat puis la farine.	5	201
+793	4	Cuisson	Verser dans les ramequins et cuire exactement 12 minutes.	12	201
+794	5	Service	Démouler délicatement et servir immédiatement avec glace vanille.	2	201
+795	1	Croûtons	Couper le pain en dés et les faire dorer à la poêle avec ail et huile.	8	202
+796	2	Poulet	Griller les filets de poulet assaisonnés et les couper en lamelles.	15	202
+797	3	Sauce	Préparer la sauce Caesar : ail, anchois, citron, parmesan, crème.	5	202
+798	4	Assemblage	Mélanger la salade avec sauce, croûtons, poulet et copeaux de parmesan.	3	202
+799	1	Appareil	Mixer oeufs, sucre, farine, lait et beurre fondu jusqu'à pâte lisse.	5	203
+800	2	Fraises	Laver, équeuter et couper les fraises en deux.	5	203
+801	3	Montage	Beurrer le plat, disposer les fraises et verser l'appareil.	3	203
+802	4	Cuisson	Cuire 35 minutes à 180°C jusqu'à dorure et prise de l'appareil.	35	203
+803	1	Nettoyage	Nettoyer les champignons avec un papier humide et les couper en quartiers.	5	204
+804	2	Cuisson	Faire chauffer beurre et huile à feu vif et saisir les champignons.	8	204
+805	3	Finition	Ajouter ail et persil en fin de cuisson, assaisonner.	2	204
+806	1	Garniture	Égoutter le thon et le mélanger avec moutarde, citron et poivre.	3	205
+807	2	Légumes	Couper tomates, concombre et oignons en fines rondelles.	5	205
+808	3	Montage	Assembler le sandwich et servir avec des chips.	2	205
+809	1	Préparation	Laver et équeuter les fraises, peler la banane.	2	206
+810	2	Mixage	Mixer fraises, banane, lait et miel jusqu'à consistance lisse.	3	206
+817	1	Étape 1	Heat the olive oil in a large pot over medium heat.	\N	210
+818	2	Étape 2	Add the kale and cover.Stir occasionally until the volume of the kale is reduced by half. Uncover.	\N	210
+819	3	Étape 3	Add garlic and basalmic.Allow to cook for about another 30 seconds or so, mixing well so that the garlic and vinegar are well distributed.	\N	210
+820	4	Étape 4	Serve hot.	\N	210
+\.
+
+
+
+COPY favori (id, favori_date, favori_user_id, favori_recette_id) FROM stdin;
+111	2026-04-26 14:38:46	56	213
+98	2026-03-27 10:14:54	56	177
+99	2026-04-01 10:14:54	56	178
+100	2026-04-14 10:14:54	56	182
+101	2026-03-30 10:14:54	56	201
+102	2026-04-20 10:14:54	57	179
+103	2026-04-18 10:14:54	57	181
+104	2026-04-13 10:14:54	57	184
+105	2026-04-22 10:14:54	57	203
+106	2026-04-19 10:14:54	58	180
+107	2026-04-03 10:14:54	58	193
+108	2026-03-27 10:14:54	58	192
+109	2026-03-28 10:14:54	54	188
+110	2026-04-13 10:14:54	55	185
+\.
+
+
+
+COPY foyer (id, foyer_nom, foyer_nombre_pers, foyer_date_creation) FROM stdin;
+\.
+
+
+
+COPY ingredient (id, ingredient_libelle, ingredient_type) FROM stdin;
+244	Farine	Épicerie
+245	Oeufs	Produits frais
+246	Lait	Produits laitiers
+247	Beurre	Produits laitiers
+248	Sucre	Épicerie
+249	Sel	Épicerie
+250	Tomates	Légumes
+251	Oignons	Légumes
+252	Ail	Légumes
+253	Poulet	Viandes
+254	Pâtes	Épicerie
+255	Huile d'olive	Épicerie
+256	Chocolat noir	Épicerie
+257	Crème fraîche	Produits laitiers
+258	Basilic	Herbes
+259	Riz	Épicerie
+260	Lardons	Viandes
+261	Gruyère	Produits laitiers
+262	Pommes de terre	Légumes
+263	Saumon	Poissons
+264	Crevettes	Poissons
+265	Courgette	Légumes
+266	Aubergine	Légumes
+267	Poivron	Légumes
+268	Champignons	Légumes
+269	Épinards	Légumes
+270	Citron	Fruits
+271	Miel	Épicerie
+272	Parmesan	Produits laitiers
+273	Pain	Boulangerie
+274	Thon en boîte	Épicerie
+275	Curry en poudre	Épicerie
+276	Lait de coco	Épicerie
+277	Pommes	Fruits
+278	Fraises	Fruits
+279	Levure chimique	Épicerie
+280	Poivre	Épicerie
+281	Moutarde	Épicerie
+282	Vinaigre balsamique	Épicerie
+\.
+
+
+
+COPY like_recette (id, like_date, like_user_id, like_recette_id) FROM stdin;
+198	2026-04-26 14:38:45	56	213
+199	2026-04-27 19:35:31	56	212
+200	2026-04-27 19:35:34	56	209
+175	2026-04-01 10:14:54	56	177
+176	2026-04-23 10:14:54	56	179
+177	2026-03-05 10:14:54	56	181
+178	2026-03-15 10:14:54	56	182
+179	2026-04-06 10:14:54	56	194
+180	2026-03-26 10:14:54	56	201
+181	2026-03-27 10:14:54	57	180
+182	2026-04-15 10:14:54	57	181
+183	2026-03-13 10:14:54	57	184
+184	2026-02-24 10:14:54	57	195
+185	2026-04-10 10:14:54	57	186
+186	2026-04-24 10:14:54	57	203
+187	2026-02-27 10:14:54	58	178
+188	2026-03-02 10:14:54	58	177
+189	2026-03-16 10:14:54	58	179
+190	2026-03-25 10:14:54	58	193
+191	2026-04-07 10:14:54	58	192
+192	2026-04-22 10:14:54	58	199
+193	2026-03-23 10:14:54	58	202
+194	2026-03-12 10:14:54	54	188
+195	2026-03-28 10:14:54	54	197
+196	2026-04-03 10:14:54	55	185
+197	2026-03-07 10:14:54	55	190
+\.
+
+
+
+COPY liste (id, nom, user_id) FROM stdin;
+\.
+
+
+
+COPY liste_course (id, liste_libelle, liste_date_creation, liste_statut, user_id) FROM stdin;
+\.
+
+
+
+COPY liste_recette (liste_id, recette_id) FROM stdin;
+\.
+
+
+
+COPY messenger_messages (id, body, headers, queue_name, created_at, available_at, delivered_at) FROM stdin;
+30	O:36:\\"Symfony\\\\Component\\\\Messenger\\\\Envelope\\":2:{s:44:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0stamps\\";a:5:{s:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\";a:1:{i:0;O:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\":1:{s:55:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\0busName\\";s:21:\\"messenger.bus.default\\";}}s:51:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\";a:1:{i:0;O:51:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\":4:{s:67:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0exceptionClass\\";s:53:\\"Symfony\\\\Component\\\\Mailer\\\\Exception\\\\TransportException\\";s:66:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0exceptionCode\\";i:0;s:69:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0exceptionMessage\\";s:175:\\"Connection could not be established with host \\"sandbox.smtp.mailtrap.io:2525\\": stream_socket_client(): Unable to connect to sandbox.smtp.mailtrap.io:2525 (Operation timed out)\\";s:69:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0flattenException\\";O:57:\\"Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\":12:{s:66:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0message\\";s:175:\\"Connection could not be established with host \\"sandbox.smtp.mailtrap.io:2525\\": stream_socket_client(): Unable to connect to sandbox.smtp.mailtrap.io:2525 (Operation timed out)\\";s:63:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0code\\";i:0;s:67:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0previous\\";N;s:64:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0trace\\";a:1:{i:0;a:8:{s:9:\\"namespace\\";s:0:\\"\\";s:11:\\"short_class\\";s:0:\\"\\";s:5:\\"class\\";s:0:\\"\\";s:4:\\"type\\";s:0:\\"\\";s:8:\\"function\\";s:0:\\"\\";s:4:\\"file\\";s:112:\\"/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/Stream/SocketStream.php\\";s:4:\\"line\\";i:154;s:4:\\"args\\";a:0:{}}}s:72:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0traceAsString\\";s:8062:\\"#0 [internal function]: Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\Stream\\\\SocketStream->{closure:Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\Stream\\\\SocketStream::initialize():153}(2, \\'stream_socket_c...\\', \\'/Users/etienne/...\\', 157)\n#1 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/Stream/SocketStream.php(157): stream_socket_client(\\'sandbox.smtp.ma...\\', 0, \\'\\', 60.0, 4, Resource id #1371)\n#2 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/SmtpTransport.php(268): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\Stream\\\\SocketStream->initialize()\n#3 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/SmtpTransport.php(200): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\SmtpTransport->start()\n#4 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/AbstractTransport.php(90): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\SmtpTransport->doSend(Object(Symfony\\\\Component\\\\Mailer\\\\SentMessage))\n#5 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/SmtpTransport.php(138): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\AbstractTransport->send(Object(Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail), Object(Symfony\\\\Component\\\\Mailer\\\\DelayedEnvelope))\n#6 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Transports.php(51): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\SmtpTransport->send(Object(Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail), NULL)\n#7 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Messenger/MessageHandler.php(29): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Transports->send(Object(Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail), NULL)\n#8 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/HandleMessageMiddleware.php(148): Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\MessageHandler->__invoke(Object(Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage))\n#9 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/HandleMessageMiddleware.php(90): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\HandleMessageMiddleware->callHandler(Object(Closure), Object(Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage), NULL, NULL)\n#10 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/SendMessageMiddleware.php(75): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\HandleMessageMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#11 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/FailedMessageProcessingMiddleware.php(34): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\SendMessageMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#12 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/DispatchAfterCurrentBusMiddleware.php(68): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\FailedMessageProcessingMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#13 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/RejectRedeliveredMessageMiddleware.php(41): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\DispatchAfterCurrentBusMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#14 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/AddBusNameStampMiddleware.php(35): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\RejectRedeliveredMessageMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#15 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/AddDefaultStampsMiddleware.php(33): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\AddBusNameStampMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#16 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/TraceableMiddleware.php(36): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\AddDefaultStampsMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#17 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/MessageBus.php(69): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#18 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/TraceableMessageBus.php(30): Symfony\\\\Component\\\\Messenger\\\\MessageBus->dispatch(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Array)\n#19 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/RoutableMessageBus.php(51): Symfony\\\\Component\\\\Messenger\\\\TraceableMessageBus->dispatch(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Array)\n#20 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Worker.php(169): Symfony\\\\Component\\\\Messenger\\\\RoutableMessageBus->dispatch(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope))\n#21 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Worker.php(118): Symfony\\\\Component\\\\Messenger\\\\Worker->handleMessage(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), \\'async\\')\n#22 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Command/ConsumeMessagesCommand.php(283): Symfony\\\\Component\\\\Messenger\\\\Worker->run(Array)\n#23 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Command/Command.php(291): Symfony\\\\Component\\\\Messenger\\\\Command\\\\ConsumeMessagesCommand->execute(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#24 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Application.php(1107): Symfony\\\\Component\\\\Console\\\\Command\\\\Command->run(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#25 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/framework-bundle/Console/Application.php(123): Symfony\\\\Component\\\\Console\\\\Application->doRunCommand(Object(Symfony\\\\Component\\\\Messenger\\\\Command\\\\ConsumeMessagesCommand), Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#26 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Application.php(356): Symfony\\\\Bundle\\\\FrameworkBundle\\\\Console\\\\Application->doRunCommand(Object(Symfony\\\\Component\\\\Messenger\\\\Command\\\\ConsumeMessagesCommand), Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#27 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/framework-bundle/Console/Application.php(77): Symfony\\\\Component\\\\Console\\\\Application->doRun(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#28 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Application.php(195): Symfony\\\\Bundle\\\\FrameworkBundle\\\\Console\\\\Application->doRun(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#29 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/runtime/Runner/Symfony/ConsoleApplicationRunner.php(49): Symfony\\\\Component\\\\Console\\\\Application->run(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#30 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/autoload_runtime.php(32): Symfony\\\\Component\\\\Runtime\\\\Runner\\\\Symfony\\\\ConsoleApplicationRunner->run()\n#31 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/bin/console(15): require_once(\\'/Users/etienne/...\\')\n#32 {main}\\";s:64:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0class\\";s:53:\\"Symfony\\\\Component\\\\Mailer\\\\Exception\\\\TransportException\\";s:69:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0statusCode\\";i:500;s:69:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0statusText\\";s:21:\\"Internal Server Error\\";s:66:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0headers\\";a:0:{}s:63:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0file\\";s:112:\\"/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/Stream/SocketStream.php\\";s:63:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0line\\";i:154;s:67:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0asString\\";N;}}}s:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\";a:3:{i:0;O:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\":1:{s:51:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\0delay\\";i:991;}i:1;O:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\":1:{s:51:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\0delay\\";i:2082;}i:2;O:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\":1:{s:51:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\0delay\\";i:3824;}}s:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\";a:3:{i:0;O:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\":2:{s:64:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0redeliveredAt\\";O:17:\\"DateTimeImmutable\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 13:10:55.211652\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0retryCount\\";i:1;}i:1;O:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\":2:{s:64:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0redeliveredAt\\";O:17:\\"DateTimeImmutable\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 13:12:55.255248\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0retryCount\\";i:2;}i:2;O:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\":2:{s:64:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0redeliveredAt\\";O:17:\\"DateTimeImmutable\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 13:14:55.329766\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0retryCount\\";i:3;}}s:57:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\TransportMessageIdStamp\\";a:1:{i:0;O:57:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\TransportMessageIdStamp\\":1:{s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\TransportMessageIdStamp\\0id\\";i:28;}}}s:45:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0message\\";O:51:\\"Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\":2:{s:60:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0message\\";O:39:\\"Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail\\":5:{i:0;s:41:\\"registration/confirmation_email.html.twig\\";i:1;N;i:2;a:3:{s:9:\\"signedUrl\\";s:164:\\"http://127.0.0.1:8000/verify/email?expires=1776693551&signature=ZKA5mBYXajIhQkyVpYsnsbAnKmAcDxSsfYLUxX6rnt0&token=cTO3ZvMIKZ4ruoU2p0E31uohWSYKv%2BMvvnm%2FNYpxoKc%3D\\";s:19:\\"expiresAtMessageKey\\";s:26:\\"%count% hour|%count% hours\\";s:20:\\"expiresAtMessageData\\";a:1:{s:7:\\"%count%\\";i:1;}}i:3;a:6:{i:0;N;i:1;N;i:2;N;i:3;N;i:4;a:0:{}i:5;a:2:{i:0;O:37:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\":2:{s:46:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0headers\\";a:3:{s:4:\\"from\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:4:\\"From\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:19:\\"no-reply@fridge.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:10:\\"Fridge Bot\\";}}}}s:2:\\"to\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:2:\\"To\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:16:\\"lalala@gmail.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:0:\\"\\";}}}}s:7:\\"subject\\";a:1:{i:0;O:48:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:7:\\"Subject\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:55:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\0value\\";s:29:\\"Confirmez votre compte Fridge\\";}}}s:49:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0lineLength\\";i:76;}i:1;N;}}i:4;N;}s:61:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0envelope\\";N;}}	[]	default	2026-04-20 13:14:55	2026-04-20 13:14:58	\N
+29	O:36:\\"Symfony\\\\Component\\\\Messenger\\\\Envelope\\":2:{s:44:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0stamps\\";a:5:{s:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\";a:1:{i:0;O:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\":1:{s:55:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\0busName\\";s:21:\\"messenger.bus.default\\";}}s:51:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\";a:1:{i:0;O:51:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\":4:{s:67:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0exceptionClass\\";s:53:\\"Symfony\\\\Component\\\\Mailer\\\\Exception\\\\TransportException\\";s:66:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0exceptionCode\\";i:0;s:69:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0exceptionMessage\\";s:175:\\"Connection could not be established with host \\"sandbox.smtp.mailtrap.io:2525\\": stream_socket_client(): Unable to connect to sandbox.smtp.mailtrap.io:2525 (Operation timed out)\\";s:69:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\ErrorDetailsStamp\\0flattenException\\";O:57:\\"Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\":12:{s:66:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0message\\";s:175:\\"Connection could not be established with host \\"sandbox.smtp.mailtrap.io:2525\\": stream_socket_client(): Unable to connect to sandbox.smtp.mailtrap.io:2525 (Operation timed out)\\";s:63:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0code\\";i:0;s:67:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0previous\\";N;s:64:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0trace\\";a:1:{i:0;a:8:{s:9:\\"namespace\\";s:0:\\"\\";s:11:\\"short_class\\";s:0:\\"\\";s:5:\\"class\\";s:0:\\"\\";s:4:\\"type\\";s:0:\\"\\";s:8:\\"function\\";s:0:\\"\\";s:4:\\"file\\";s:112:\\"/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/Stream/SocketStream.php\\";s:4:\\"line\\";i:154;s:4:\\"args\\";a:0:{}}}s:72:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0traceAsString\\";s:8062:\\"#0 [internal function]: Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\Stream\\\\SocketStream->{closure:Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\Stream\\\\SocketStream::initialize():153}(2, \\'stream_socket_c...\\', \\'/Users/etienne/...\\', 157)\n#1 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/Stream/SocketStream.php(157): stream_socket_client(\\'sandbox.smtp.ma...\\', 0, \\'\\', 60.0, 4, Resource id #1367)\n#2 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/SmtpTransport.php(268): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\Stream\\\\SocketStream->initialize()\n#3 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/SmtpTransport.php(200): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\SmtpTransport->start()\n#4 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/AbstractTransport.php(90): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\SmtpTransport->doSend(Object(Symfony\\\\Component\\\\Mailer\\\\SentMessage))\n#5 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/SmtpTransport.php(138): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\AbstractTransport->send(Object(Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail), Object(Symfony\\\\Component\\\\Mailer\\\\DelayedEnvelope))\n#6 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Transports.php(51): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Smtp\\\\SmtpTransport->send(Object(Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail), NULL)\n#7 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Messenger/MessageHandler.php(29): Symfony\\\\Component\\\\Mailer\\\\Transport\\\\Transports->send(Object(Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail), NULL)\n#8 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/HandleMessageMiddleware.php(148): Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\MessageHandler->__invoke(Object(Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage))\n#9 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/HandleMessageMiddleware.php(90): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\HandleMessageMiddleware->callHandler(Object(Closure), Object(Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage), NULL, NULL)\n#10 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/SendMessageMiddleware.php(75): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\HandleMessageMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#11 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/FailedMessageProcessingMiddleware.php(34): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\SendMessageMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#12 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/DispatchAfterCurrentBusMiddleware.php(68): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\FailedMessageProcessingMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#13 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/RejectRedeliveredMessageMiddleware.php(41): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\DispatchAfterCurrentBusMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#14 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/AddBusNameStampMiddleware.php(35): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\RejectRedeliveredMessageMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#15 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/AddDefaultStampsMiddleware.php(33): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\AddBusNameStampMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#16 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Middleware/TraceableMiddleware.php(36): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\AddDefaultStampsMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#17 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/MessageBus.php(69): Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableMiddleware->handle(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Object(Symfony\\\\Component\\\\Messenger\\\\Middleware\\\\TraceableStack))\n#18 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/TraceableMessageBus.php(30): Symfony\\\\Component\\\\Messenger\\\\MessageBus->dispatch(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Array)\n#19 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/RoutableMessageBus.php(51): Symfony\\\\Component\\\\Messenger\\\\TraceableMessageBus->dispatch(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), Array)\n#20 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Worker.php(169): Symfony\\\\Component\\\\Messenger\\\\RoutableMessageBus->dispatch(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope))\n#21 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Worker.php(118): Symfony\\\\Component\\\\Messenger\\\\Worker->handleMessage(Object(Symfony\\\\Component\\\\Messenger\\\\Envelope), \\'async\\')\n#22 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/messenger/Command/ConsumeMessagesCommand.php(283): Symfony\\\\Component\\\\Messenger\\\\Worker->run(Array)\n#23 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Command/Command.php(291): Symfony\\\\Component\\\\Messenger\\\\Command\\\\ConsumeMessagesCommand->execute(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#24 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Application.php(1107): Symfony\\\\Component\\\\Console\\\\Command\\\\Command->run(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#25 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/framework-bundle/Console/Application.php(123): Symfony\\\\Component\\\\Console\\\\Application->doRunCommand(Object(Symfony\\\\Component\\\\Messenger\\\\Command\\\\ConsumeMessagesCommand), Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#26 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Application.php(356): Symfony\\\\Bundle\\\\FrameworkBundle\\\\Console\\\\Application->doRunCommand(Object(Symfony\\\\Component\\\\Messenger\\\\Command\\\\ConsumeMessagesCommand), Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#27 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/framework-bundle/Console/Application.php(77): Symfony\\\\Component\\\\Console\\\\Application->doRun(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#28 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/console/Application.php(195): Symfony\\\\Bundle\\\\FrameworkBundle\\\\Console\\\\Application->doRun(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#29 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/runtime/Runner/Symfony/ConsoleApplicationRunner.php(49): Symfony\\\\Component\\\\Console\\\\Application->run(Object(Symfony\\\\Component\\\\Console\\\\Input\\\\ArgvInput), Object(Symfony\\\\Component\\\\Console\\\\Output\\\\ConsoleOutput))\n#30 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/autoload_runtime.php(32): Symfony\\\\Component\\\\Runtime\\\\Runner\\\\Symfony\\\\ConsoleApplicationRunner->run()\n#31 /Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/bin/console(15): require_once(\\'/Users/etienne/...\\')\n#32 {main}\\";s:64:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0class\\";s:53:\\"Symfony\\\\Component\\\\Mailer\\\\Exception\\\\TransportException\\";s:69:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0statusCode\\";i:500;s:69:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0statusText\\";s:21:\\"Internal Server Error\\";s:66:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0headers\\";a:0:{}s:63:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0file\\";s:112:\\"/Users/etienne/CODE/Fridge_V.0.1_WebApp/Fridge_V0.1/vendor/symfony/mailer/Transport/Smtp/Stream/SocketStream.php\\";s:63:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0line\\";i:154;s:67:\\"\\0Symfony\\\\Component\\\\ErrorHandler\\\\Exception\\\\FlattenException\\0asString\\";N;}}}s:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\";a:3:{i:0;O:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\":1:{s:51:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\0delay\\";i:990;}i:1;O:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\":1:{s:51:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\0delay\\";i:1905;}i:2;O:44:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\":1:{s:51:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\DelayStamp\\0delay\\";i:4049;}}s:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\";a:3:{i:0;O:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\":2:{s:64:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0redeliveredAt\\";O:17:\\"DateTimeImmutable\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 13:09:55.143107\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0retryCount\\";i:1;}i:1;O:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\":2:{s:64:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0redeliveredAt\\";O:17:\\"DateTimeImmutable\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 13:12:44.769000\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0retryCount\\";i:2;}i:2;O:49:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\":2:{s:64:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0redeliveredAt\\";O:17:\\"DateTimeImmutable\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 13:13:55.274607\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\RedeliveryStamp\\0retryCount\\";i:3;}}s:57:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\TransportMessageIdStamp\\";a:1:{i:0;O:57:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\TransportMessageIdStamp\\":1:{s:61:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\TransportMessageIdStamp\\0id\\";i:27;}}}s:45:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0message\\";O:51:\\"Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\":2:{s:60:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0message\\";O:39:\\"Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail\\":5:{i:0;s:41:\\"registration/confirmation_email.html.twig\\";i:1;N;i:2;a:3:{s:9:\\"signedUrl\\";s:164:\\"http://127.0.0.1:8000/verify/email?expires=1776693267&signature=i1emKaeaBjvSJD-DnXT5iMMMWXKqhZOWDGPWz26C0ec&token=Y2WA24josTqqgKpXxY%2FbkM3itB7blzW98bL0tT%2BFGqI%3D\\";s:19:\\"expiresAtMessageKey\\";s:26:\\"%count% hour|%count% hours\\";s:20:\\"expiresAtMessageData\\";a:1:{s:7:\\"%count%\\";i:1;}}i:3;a:6:{i:0;N;i:1;N;i:2;N;i:3;N;i:4;a:0:{}i:5;a:2:{i:0;O:37:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\":2:{s:46:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0headers\\";a:3:{s:4:\\"from\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:4:\\"From\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:19:\\"no-reply@fridge.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:10:\\"Fridge Bot\\";}}}}s:2:\\"to\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:2:\\"To\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:20:\\"e.ferry607@gmail.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:0:\\"\\";}}}}s:7:\\"subject\\";a:1:{i:0;O:48:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:7:\\"Subject\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:55:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\0value\\";s:29:\\"Confirmez votre compte Fridge\\";}}}s:49:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0lineLength\\";i:76;}i:1;N;}}i:4;N;}s:61:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0envelope\\";N;}}	[]	default	2026-04-20 13:13:55	2026-04-20 13:13:59	2026-04-20 13:14:55
+31	O:36:\\"Symfony\\\\Component\\\\Messenger\\\\Envelope\\":2:{s:44:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0stamps\\";a:1:{s:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\";a:1:{i:0;O:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\":1:{s:55:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\0busName\\";s:21:\\"messenger.bus.default\\";}}}s:45:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0message\\";O:51:\\"Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\":2:{s:60:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0message\\";O:39:\\"Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail\\":5:{i:0;s:41:\\"registration/confirmation_email.html.twig\\";i:1;N;i:2;a:3:{s:9:\\"signedUrl\\";s:162:\\"http://127.0.0.1:8000/verify/email?expires=1776695075&signature=l-k4deQWF-qKSjNmvXZ4Q-PDrRW78DdqR5sQsxxMkOs&token=krDwou1wMKOJ7m9uUmpagtuD%2FmPZdhWndbsD2QXaCdQ%3D\\";s:19:\\"expiresAtMessageKey\\";s:26:\\"%count% hour|%count% hours\\";s:20:\\"expiresAtMessageData\\";a:1:{s:7:\\"%count%\\";i:1;}}i:3;a:6:{i:0;N;i:1;N;i:2;N;i:3;N;i:4;a:0:{}i:5;a:2:{i:0;O:37:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\":2:{s:46:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0headers\\";a:3:{s:4:\\"from\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:4:\\"From\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:19:\\"no-reply@fridge.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:10:\\"Fridge Bot\\";}}}}s:2:\\"to\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:2:\\"To\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:13:\\"eza@gmail.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:0:\\"\\";}}}}s:7:\\"subject\\";a:1:{i:0;O:48:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:7:\\"Subject\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:55:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\0value\\";s:29:\\"Confirmez votre compte Fridge\\";}}}s:49:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0lineLength\\";i:76;}i:1;N;}}i:4;N;}s:61:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0envelope\\";N;}}	[]	default	2026-04-20 13:24:35	2026-04-20 13:24:35	\N
+32	O:36:\\"Symfony\\\\Component\\\\Messenger\\\\Envelope\\":2:{s:44:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0stamps\\";a:1:{s:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\";a:1:{i:0;O:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\":1:{s:55:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\0busName\\";s:21:\\"messenger.bus.default\\";}}}s:45:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0message\\";O:51:\\"Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\":2:{s:60:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0message\\";O:39:\\"Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail\\":5:{i:0;s:30:\\"reset_password/email.html.twig\\";i:1;N;i:2;a:1:{s:10:\\"resetToken\\";O:58:\\"SymfonyCasts\\\\Bundle\\\\ResetPassword\\\\Model\\\\ResetPasswordToken\\":4:{s:65:\\"\\0SymfonyCasts\\\\Bundle\\\\ResetPassword\\\\Model\\\\ResetPasswordToken\\0token\\";s:40:\\"V3dNQ7O4UoZaMKUlH8pOxSNyybkxwW2BIkZ42mCZ\\";s:69:\\"\\0SymfonyCasts\\\\Bundle\\\\ResetPassword\\\\Model\\\\ResetPasswordToken\\0expiresAt\\";O:33:\\"Symfony\\\\Component\\\\Clock\\\\DatePoint\\":3:{s:4:\\"date\\";s:26:\\"2026-04-20 14:26:26.936263\\";s:13:\\"timezone_type\\";i:3;s:8:\\"timezone\\";s:3:\\"UTC\\";}s:71:\\"\\0SymfonyCasts\\\\Bundle\\\\ResetPassword\\\\Model\\\\ResetPasswordToken\\0generatedAt\\";i:1776691586;s:73:\\"\\0SymfonyCasts\\\\Bundle\\\\ResetPassword\\\\Model\\\\ResetPasswordToken\\0transInterval\\";i:1;}}i:3;a:6:{i:0;N;i:1;N;i:2;N;i:3;N;i:4;a:0:{}i:5;a:2:{i:0;O:37:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\":2:{s:46:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0headers\\";a:3:{s:4:\\"from\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:4:\\"From\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:19:\\"no-reply@fridge.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:14:\\"Fridge Support\\";}}}}s:2:\\"to\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:2:\\"To\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:20:\\"e.ferry607@gmail.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:0:\\"\\";}}}}s:7:\\"subject\\";a:1:{i:0;O:48:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:7:\\"Subject\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:55:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\0value\\";s:27:\\"Your password reset request\\";}}}s:49:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0lineLength\\";i:76;}i:1;N;}}i:4;N;}s:61:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0envelope\\";N;}}	[]	default	2026-04-20 13:26:26	2026-04-20 13:26:26	\N
+33	O:36:\\"Symfony\\\\Component\\\\Messenger\\\\Envelope\\":2:{s:44:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0stamps\\";a:1:{s:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\";a:1:{i:0;O:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\":1:{s:55:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\0busName\\";s:21:\\"messenger.bus.default\\";}}}s:45:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0message\\";O:51:\\"Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\":2:{s:60:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0message\\";O:39:\\"Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail\\":5:{i:0;s:41:\\"registration/confirmation_email.html.twig\\";i:1;N;i:2;a:3:{s:9:\\"signedUrl\\";s:166:\\"http://127.0.0.1:8000/verify/email?expires=1776695671&signature=a9f4JZzXKUdIlWLjFTyvnZzAb1vNi3A_eQBN_ZRvmLY&token=fZvof%2FicBTYJrh4IDuVDNsPMuMeFUG21%2F%2FGlQDjn1NI%3D\\";s:19:\\"expiresAtMessageKey\\";s:26:\\"%count% hour|%count% hours\\";s:20:\\"expiresAtMessageData\\";a:1:{s:7:\\"%count%\\";i:1;}}i:3;a:6:{i:0;N;i:1;N;i:2;N;i:3;N;i:4;a:0:{}i:5;a:2:{i:0;O:37:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\":2:{s:46:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0headers\\";a:3:{s:4:\\"from\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:4:\\"From\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:19:\\"no-reply@fridge.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:10:\\"Fridge Bot\\";}}}}s:2:\\"to\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:2:\\"To\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:14:\\"xyui@gmail.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:0:\\"\\";}}}}s:7:\\"subject\\";a:1:{i:0;O:48:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:7:\\"Subject\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:55:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\0value\\";s:29:\\"Confirmez votre compte Fridge\\";}}}s:49:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0lineLength\\";i:76;}i:1;N;}}i:4;N;}s:61:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0envelope\\";N;}}	[]	default	2026-04-20 13:34:31	2026-04-20 13:34:31	\N
+34	O:36:\\"Symfony\\\\Component\\\\Messenger\\\\Envelope\\":2:{s:44:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0stamps\\";a:1:{s:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\";a:1:{i:0;O:46:\\"Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\":1:{s:55:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Stamp\\\\BusNameStamp\\0busName\\";s:21:\\"messenger.bus.default\\";}}}s:45:\\"\\0Symfony\\\\Component\\\\Messenger\\\\Envelope\\0message\\";O:51:\\"Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\":2:{s:60:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0message\\";O:39:\\"Symfony\\\\Bridge\\\\Twig\\\\Mime\\\\TemplatedEmail\\":5:{i:0;s:41:\\"registration/confirmation_email.html.twig\\";i:1;N;i:2;a:3:{s:9:\\"signedUrl\\";s:162:\\"http://127.0.0.1:8000/verify/email?expires=1776695855&signature=fOJvWup9z-H-7PiTZfSBFVpamJdPxCDUwfXzs4yC9xU&token=A7ak8znuak2JWS3vXhn3BkjN6Dd%2BySyZ4GsWUUuxjuo%3D\\";s:19:\\"expiresAtMessageKey\\";s:26:\\"%count% hour|%count% hours\\";s:20:\\"expiresAtMessageData\\";a:1:{s:7:\\"%count%\\";i:1;}}i:3;a:6:{i:0;N;i:1;N;i:2;N;i:3;N;i:4;a:0:{}i:5;a:2:{i:0;O:37:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\":2:{s:46:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0headers\\";a:3:{s:4:\\"from\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:4:\\"From\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:19:\\"no-reply@fridge.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:10:\\"Fridge Bot\\";}}}}s:2:\\"to\\";a:1:{i:0;O:47:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:2:\\"To\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:58:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\MailboxListHeader\\0addresses\\";a:1:{i:0;O:30:\\"Symfony\\\\Component\\\\Mime\\\\Address\\":2:{s:39:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0address\\";s:13:\\"asx@gmail.com\\";s:36:\\"\\0Symfony\\\\Component\\\\Mime\\\\Address\\0name\\";s:0:\\"\\";}}}}s:7:\\"subject\\";a:1:{i:0;O:48:\\"Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\":5:{s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0name\\";s:7:\\"Subject\\";s:56:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lineLength\\";i:76;s:50:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0lang\\";N;s:53:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\AbstractHeader\\0charset\\";s:5:\\"utf-8\\";s:55:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\UnstructuredHeader\\0value\\";s:29:\\"Confirmez votre compte Fridge\\";}}}s:49:\\"\\0Symfony\\\\Component\\\\Mime\\\\Header\\\\Headers\\0lineLength\\";i:76;}i:1;N;}}i:4;N;}s:61:\\"\\0Symfony\\\\Component\\\\Mailer\\\\Messenger\\\\SendEmailMessage\\0envelope\\";N;}}	[]	default	2026-04-20 13:37:35	2026-04-20 13:37:35	\N
+\.
+
+
+
+COPY note_recette (id, valeur, created_at, user_id, recette_id) FROM stdin;
+\.
+
+
+
+COPY planning (id, planning_jour, planning_moment, user_id, planning_recette_id) FROM stdin;
+27	lundi	dejeuner	56	177
+28	mardi	dejeuner	56	194
+29	vendredi	dejeuner	56	177
+30	mardi	petit_dejeuner	56	209
+\.
+
+
+
+COPY recette (id, recette_libelle, recette_description, recette_difficulte, recette_portion, recette_temps_prepa, recette_temps_cuisson, recette_photo, recette_statut, recette_origine, recette_created_at, created_by, source_url) FROM stdin;
+177	Pâtes à la tomate maison	Une recette simple et savoureuse de pâtes avec une sauce tomate maison.	Facile	4	15	20	pates-tomate.jpg	prive	it	2026-04-25	54	\N
+178	Poulet rôti aux herbes	Un poulet rôti doré et parfumé aux herbes de Provence.	Moyen	4	20	60	\N	prive	fr	2026-04-25	54	\N
+179	Mousse au chocolat	Une mousse au chocolat onctueuse et légère, prête en 20 minutes.	Facile	6	20	0	mousse-chocolat.jpg	prive	fr	2026-04-25	57	\N
+180	Soupe de tomates basilic	Une soupe veloutée de tomates fraîches au basilic.	Facile	4	10	25	soupe-tomates.jpg	prive	fr	2026-04-25	58	\N
+181	Crêpes maison	La recette traditionnelle des crêpes bretonnes.	Facile	8	10	20	crepes-maison.jpg	prive	fr	2026-04-25	56	\N
+182	Risotto aux champignons	Un risotto crémeux aux champignons parfumé au parmesan.	Difficile	4	15	35	risotto-champignons.jpg	prive	it	2026-04-25	57	\N
+183	Tarte aux pommes classique	Une tarte aux pommes dorée avec une pâte brisée maison.	Moyen	8	30	40	\N	prive	fr	2026-04-25	58	\N
+184	Curry de légumes au lait de coco	Un curry végétarien parfumé aux épices, doux et onctueux.	Facile	4	20	25	curry-legumes.jpg	prive	asia	2026-04-25	57	\N
+185	Quiche lorraine traditionnelle	La vraie quiche lorraine avec lardons, crème et gruyère.	Moyen	6	20	35	quiche-lorraine.jpg	prive	fr	2026-04-25	56	\N
+186	Ratatouille provençale	La ratatouille traditionnelle avec ses légumes du soleil.	Moyen	6	30	45	ratatouille.jpg	prive	fr	2026-04-25	58	\N
+187	Salade niçoise	La salade niçoise authentique avec thon, anchois et légumes frais.	Facile	4	20	10	salade-nicoise.jpg	prive	fr	2026-04-25	54	\N
+188	Gâteau au chocolat moelleux	Un gâteau au chocolat ultra moelleux et fondant.	Facile	8	15	30	gateau-chocolat.jpg	prive	fr	2026-04-25	56	\N
+189	Omelette aux champignons et fines herbes	Une omelette baveuse aux champignons sautés et aux herbes fraîches.	Facile	2	5	8	omelette-champignons.jpg	prive	fr	2026-04-25	57	\N
+190	Gratin dauphinois	Le gratin dauphinois traditionnel, fondant et crémeux.	Facile	6	20	60	gratin-dauphinois.jpg	prive	fr	2026-04-25	58	\N
+191	Pavé de saumon au citron et aneth	Des pavés de saumon fondants avec une sauce légère au citron.	Facile	4	10	12	saumon-citron.jpg	prive	fr	2026-04-25	54	\N
+192	Pad Thaï aux crevettes	Le célèbre plat thaïlandais de nouilles sautées aux crevettes.	Moyen	4	20	15	pad-thai.jpg	prive	asia	2026-04-25	56	\N
+193	Sauce bolognaise maison	Une sauce bolognaise mijotée longuement avec boeuf haché et tomates.	Moyen	6	15	90	bolognese.jpg	prive	it	2026-04-25	58	\N
+194	Tiramisu classique	Le tiramisu original italien avec mascarpone, savoiardi et café.	Moyen	8	30	0	tiramisu.jpg	prive	it	2026-04-25	57	\N
+195	Velouté de courgettes	Un velouté léger et onctueux de courgettes.	Facile	4	10	20	veloute-courgette.jpg	prive	fr	2026-04-25	56	\N
+196	Poulet au curry et lait de coco	Un poulet fondant dans une sauce curry crémeuse au lait de coco.	Facile	4	15	30	poulet-curry.jpg	prive	asia	2026-04-25	58	\N
+197	Tarte au citron meringuée	Une tarte au citron acidulée avec une meringue italienne dorée.	Difficile	8	45	25	tarte-citron.jpg	prive	fr	2026-04-25	54	\N
+198	Bruschetta aux tomates et basilic	Des toasts grillés garnis de tomates fraîches marinées, ail et basilic.	Facile	4	15	5	bruschetta.jpg	prive	it	2026-04-25	56	\N
+199	Riz cantonais	Le classique riz cantonais avec oeufs brouillés, petits pois et lardons.	Facile	4	10	15	riz-cantonais.jpg	prive	asia	2026-04-25	57	\N
+200	Crevettes sautées à l'ail et au beurre	Des crevettes juteuses sautées dans un beurre aillé et parfumé au persil.	Facile	2	10	8	crevettes-ail.jpg	prive	fr	2026-04-25	58	\N
+201	Fondant au chocolat coeur coulant	Le fondant au chocolat avec son coeur coulant.	Difficile	4	20	12	fondant-chocolat.jpg	prive	fr	2026-04-25	54	\N
+202	Salade Caesar au poulet grillé	La salade Caesar avec poulet grillé, croûtons maison et sauce César crémeuse.	Moyen	4	20	15	salade-caesar.jpg	prive	fr	2026-04-25	56	\N
+203	Clafoutis aux fraises	Un clafoutis moelleux aux fraises fraîches.	Facile	6	15	35	clafoutis-fraise.jpg	prive	fr	2026-04-25	57	\N
+204	Poêlée de champignons à l'ail et persil	Une poêlée de champignons dorés et parfumés à l'ail.	Facile	4	10	10	poele-champignons.jpg	prive	fr	2026-04-25	58	\N
+205	Sandwich au thon et crudités	Un sandwich généreux au thon avec légumes croquants.	Facile	2	10	0	sandwich-thon.jpg	prive	fr	2026-04-25	56	\N
+206	Smoothie fraises et banane	Un smoothie onctueux aux fraises et banane.	Facile	2	5	0	smoothie-fraise.jpg	prive	fr	2026-04-25	57	\N
+209	Tomato and lentil soup	Tomato and lentil soup might be a good recipe to expand your main course recipe box. This recipe makes 4 servings with 340 calories, 18g of protein, and 8g of fat each. For $1.16 per serving, this recipe covers 34% of your daily requirements of vitamins and minerals. It is perfect for Autumn. This recipe from Foodista requires bay leaf, onion, garlic, and carrots. 11 person were glad they tried this recipe. From preparation to the plate, this recipe takes about 45 minutes. It is a good option if you're following a gluten free, dairy free, lacto ovo vegetarian, and vegan diet. With a spoonacular score of 96%, this dish is great. Users who liked this recipe also liked Tomato and Lentil Soup, Lentil-Tomato Soup, and Lentil & Tomato Soup.	\N	4	0	45	https://img.spoonacular.com/recipes/663559-556x370.jpg	publie	\N	2026-04-25	59	https://www.foodista.com/recipe/5V4PTMT2/tomato-and-lentil-soup
+212	Spaghetti With Clams & Gremolata	Spaghetti With Clams & Gremolata might be a good recipe to expand your main course repertoire. Watching your figure? This dairy free and pescatarian recipe has 486 calories, 18g of protein, and 16g of fat per serving. This recipe serves 2. For $1.85 per serving, this recipe covers 24% of your daily requirements of vitamins and minerals. 1 person has tried and liked this recipe. Head to the store and pick up olive oil, garlic cloves, spaghetti, and a few other things to make it today. It is brought to you by BBC Good Food. From preparation to the plate, this recipe takes approximately 40 minutes. With a spoonacular score of 77%, this dish is good. Crab Ravioli With Scallops and Gremolata, Clams In Spicy Salami Sauce, and Clams With Spanish Sausage are very similar to this recipe.	\N	2	0	40	https://img.spoonacular.com/recipes/775-556x370.jpg	publie	\N	2026-04-26	59	http://www.bbcgoodfood.com/recipes/12268/
+207	What to make for dinner tonight?? Bruschetta Style Pork & Pasta	What to make for dinner tonight?? Bruschetta Style Pork & Pasta takes roughly 35 minutes from beginning to end. This recipe serves 5 and costs $1.96 per serving. This main course has 591 calories, 45g of protein, and 13g of fat per serving. If you have bow tie pasta, parmigiano reggiano, recipe makers chicken bruschetta pasta, and a few other ingredients on hand, you can make it. 163 people have made this recipe and would make it again. It is brought to you by Pink When. Plenty of people really liked this Mediterranean dish. With a spoonacular score of 90%, this dish is outstanding. Similar recipes are Dinner Tonight: Grilled Romesco-Style Pork, Dinner Tonight: Chickpea Bruschetta, and Dinner Tonight: Shrimp Bruschetta from 'da Zaccaria.	\N	5	0	35	https://img.spoonacular.com/recipes/715538-556x370.jpg	publie	me	2026-04-25	59	http://www.pinkwhen.com/make-dinner-tonight/
+210	Garlicky Kale	Garlicky Kale requires approximately 45 minutes from start to finish. This side dish has 170 calories, 2g of protein, and 15g of fat per serving. This recipe serves 2. For 69 cents per serving, this recipe covers 17% of your daily requirements of vitamins and minerals. 19 people have made this recipe and would make it again. This recipe from Foodista requires balsamic vinegar, garlic, curly kale, and olive oil. It is a good option if you're following a gluten free, dairy free, paleolithic, and lacto ovo vegetarian diet. With a spoonacular score of 99%, this dish is outstanding. Try Garlicky Kale, Garlicky Kale, and Garlicky Kale for similar recipes.	\N	2	0	45	https://img.spoonacular.com/recipes/644387-556x370.jpg	publie	\N	2026-04-25	59	https://www.foodista.com/recipe/J2FTJBF7/garlicky-kale
+213	Cannoli Ice Cream w. Pistachios & Dark Chocolate	Cannoli Ice Cream w. Pistachios & Dark Chocolate requires approximately 45 minutes from start to finish. This recipe serves 3 and costs $1.55 per serving. Watching your figure? This gluten free and lacto ovo vegetarian recipe has 575 calories, 21g of protein, and 33g of fat per serving. 19636 people have tried and liked this recipe. Several people really liked this dessert. This recipe from fullbellysisters.blogspot.com requires salt, milk, vanilla, and ricotta. It can be enjoyed any time, but it is especially good for Summer. With a spoonacular score of 65%, this dish is pretty good. If you like this recipe, take a look at these similar recipes: Chocolate-Dipped Cannoli with Pistachios, Mounds Bar n’ Cream – Coconut and Dark Chocolate Chunk Ice Cream, and IceCreamWeek: Dark Chocolate Cookies and Cream Ice Cream.	\N	3	0	45	https://img.spoonacular.com/recipes/716410-556x370.jpg	publie	\N	2026-04-26	59	https://fullbellysisters.blogspot.com/2012/08/cannoli-ice-cream-w-pistachios-dark.html
+208	Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs	You can never have too many main course recipes, so give Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs a try. One serving contains 543 calories, 17g of protein, and 16g of fat. For $1.57 per serving, this recipe covers 22% of your daily requirements of vitamins and minerals. This recipe serves 2. A mixture of butter, white wine, pasta, and a handful of other ingredients are all it takes to make this recipe so yummy. 209 people have tried and liked this recipe. It is brought to you by fullbellysisters.blogspot.com. From preparation to the plate, this recipe takes approximately 45 minutes. Taking all factors into account, this recipe earns a spoonacular score of 83%, which is tremendous. If you like this recipe, take a look at these similar recipes: Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs, Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs, and Pasta with Garlic, Scallions, Cauliflower & Breadcrumbs.	\N	2	0	45	https://img.spoonacular.com/recipes/716429-556x370.jpg	publie	\N	2026-04-25	59	https://fullbellysisters.blogspot.com/2012/06/pasta-with-garlic-scallions-cauliflower.html
+211	Red Lentil Soup with Chicken and Turnips	Red Lentil Soup with Chicken and Turnips might be a good recipe to expand your main course repertoire. This recipe serves 8 and costs $3.0 per serving. One serving contains 477 calories, 27g of protein, and 20g of fat. It is brought to you by Pink When. 1866 people have tried and liked this recipe. It can be enjoyed any time, but it is especially good for Autumn. From preparation to the plate, this recipe takes approximately 55 minutes. It is a good option if you're following a gluten free and dairy free diet. Head to the store and pick up salt and pepper, canned tomatoes, flat leaf parsley, and a few other things to make it today. Overall, this recipe earns a spectacular spoonacular score of 99%. If you like this recipe, you might also like recipes such as Red Lentil and Chicken Soup, Red Lentil and Chicken Soup, and Red-Lentil Soup.	\N	8	0	55	https://img.spoonacular.com/recipes/715415-556x370.jpg	publie	\N	2026-04-25	59	https://www.pinkwhen.com/red-lentil-soup-with-chicken-and-turnips/
+\.
+
+
+
+COPY recette_regime (recette_id, regime_id) FROM stdin;
+177	41
+177	42
+178	41
+179	41
+179	42
+180	41
+180	42
+180	43
+181	41
+181	42
+182	41
+182	42
+183	41
+183	42
+184	41
+184	42
+184	43
+184	44
+185	41
+186	41
+186	42
+186	43
+186	44
+187	41
+188	41
+188	42
+189	41
+189	42
+189	44
+190	41
+190	42
+190	44
+191	41
+191	44
+192	41
+193	41
+194	41
+194	42
+195	41
+195	42
+195	44
+196	41
+196	44
+197	41
+197	42
+198	41
+198	42
+199	41
+200	41
+200	44
+201	41
+201	42
+202	41
+203	41
+203	42
+204	41
+204	42
+204	43
+204	44
+205	41
+206	41
+206	42
+206	43
+206	45
+207	41
+208	41
+209	43
+209	42
+209	44
+209	45
+210	43
+210	42
+210	44
+210	45
+211	44
+211	45
+212	45
+213	42
+213	44
+\.
+
+
+
+COPY regime (id, regime_libelle) FROM stdin;
+41	Omnivore
+42	Végétarien
+43	Vegan
+44	Sans gluten
+45	Sans lactose
+\.
+
+
+
+COPY repas (id, repas_date, repas_type, foyer_id) FROM stdin;
+\.
+
+
+
+COPY reset_password_request (reset_id, selector, hashed_token, requested_at, expires_at, user_id) FROM stdin;
+\.
+
+
+
+COPY stocker (id, stocker_quantite_dispo, foyer_id, ingredient_id, stocker_unite, stocker_seuil, stocker_date_peremption, user_id) FROM stdin;
+\.
+
+
+
+COPY `user` (user_id, user_email, user_name, user_firstname, user_roles, user_password, user_username, is_verified, user_date_inscription, user_date_suppression) FROM stdin;
+54	admin@fridge.fr	Admin	Super	["ROLE_ADMIN"]	$2y$13$a/wKyh7SPFDFBAceEJ2LGefrb8v8H3FvZDY8/3z82Aw7ZezsRbbqO	admin_fridge	t	2026-04-25 10:14:48	\N
+55	modo@fridge.fr	Moderateur	Jean	["ROLE_MODERATOR"]	$2y$13$yUuxoDfwRlHKgKlFA0W/sefow8eT5ag9LmRogK7dKLe1w5RbK4Gj2	modo_fridge	t	2026-04-25 10:14:49	\N
+56	etienne@fridge.fr	Ferry	Etienne	["ROLE_USER"]	$2y$13$oLUkLNJ668yf4ya16xW7FegSKinQRwT.vmLEwWQmB914R0GqJQWS.	etienne_ferry	t	2026-04-25 10:14:50	\N
+57	alice@fridge.fr	Dupont	Alice	["ROLE_USER"]	$2y$13$Ff4ZrirzB.rIVrQVxj1K1OTFz9WQRThTQZdoAyuN1XRio6vqeP.xK	alice_dupont	t	2026-04-25 10:14:50	\N
+58	bob@fridge.fr	Martin	Bob	["ROLE_USER"]	$2y$13$RnY.sGlrJ5eyyP20fSM0xOsaCYQPnvGadFaOMCglwOIOLfA0jXT2G	bob_martin	t	2026-04-25 10:14:51	\N
+59	spoonacular@system.local	Spoonacular	Système	["ROLE_SYSTEM"]	$2y$13$ARTpdSHggY7dQTvRhocA1e2ZEgipCr2h2Hhcpkypihfk1GrMqid8m	spoonacular	t	2026-04-25 10:14:52	\N
+\.
+
+
+
+COPY user_regime (user_id, regime_id) FROM stdin;
+54	41
+55	41
+56	42
+56	44
+57	43
+58	41
+\.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ALTER TABLE ONLY categorie
+    ADD CONSTRAINT categorie_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY commentaire
+    ADD CONSTRAINT commentaire_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY contenir
+    ADD CONSTRAINT contenir_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY doctrine_migration_versions
+    ADD CONSTRAINT doctrine_migration_versions_pkey PRIMARY KEY (version);
+
+
+
+ALTER TABLE ONLY etape
+    ADD CONSTRAINT etape_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY favori
+    ADD CONSTRAINT favori_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY foyer
+    ADD CONSTRAINT foyer_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY ingredient
+    ADD CONSTRAINT ingredient_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY like_recette
+    ADD CONSTRAINT like_recette_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY liste_course
+    ADD CONSTRAINT liste_course_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY liste
+    ADD CONSTRAINT liste_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY liste_recette
+    ADD CONSTRAINT liste_recette_pkey PRIMARY KEY (liste_id, recette_id);
+
+
+
+ALTER TABLE ONLY messenger_messages
+    ADD CONSTRAINT messenger_messages_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY note_recette
+    ADD CONSTRAINT note_recette_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY planning
+    ADD CONSTRAINT planning_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY recette
+    ADD CONSTRAINT recette_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY recette_regime
+    ADD CONSTRAINT recette_regime_pkey PRIMARY KEY (recette_id, regime_id);
+
+
+
+ALTER TABLE ONLY regime
+    ADD CONSTRAINT regime_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY repas
+    ADD CONSTRAINT repas_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY reset_password_request
+    ADD CONSTRAINT reset_password_request_pkey PRIMARY KEY (reset_id);
+
+
+
+ALTER TABLE ONLY stocker
+    ADD CONSTRAINT stocker_pkey PRIMARY KEY (id);
+
+
+
+ALTER TABLE ONLY `user`
+    ADD CONSTRAINT user_pkey PRIMARY KEY (user_id);
+
+
+
+ALTER TABLE ONLY user_regime
+    ADD CONSTRAINT user_regime_pkey PRIMARY KEY (user_id, regime_id);
+
+
+
+CREATE INDEX idx_1a3629b32aa58f11 ON like_recette USING btree (like_recette_id);
+
+
+
+CREATE INDEX idx_1a3629b3f4e399b6 ON like_recette USING btree (like_user_id);
+
+
+
+CREATE INDEX idx_27ef1a82a76ed395 ON liste_course USING btree (user_id);
+
+
+
+CREATE INDEX idx_285f75dd89312fe9 ON etape USING btree (recette_id);
+
+
+
+CREATE INDEX idx_3c914dfd4680fcb ON contenir USING btree (liste_course_id);
+
+
+
+CREATE INDEX idx_3c914dfd89312fe9 ON contenir USING btree (recette_id);
+
+
+
+CREATE INDEX idx_3c914dfd933fe08c ON contenir USING btree (ingredient_id);
+
+
+
+CREATE INDEX idx_49bb6390de12ab56 ON recette USING btree (created_by);
+
+
+
+CREATE INDEX idx_67f068bc89312fe9 ON commentaire USING btree (recette_id);
+
+
+
+CREATE INDEX idx_67f068bca76ed395 ON commentaire USING btree (user_id);
+
+
+
+CREATE INDEX idx_75ea56e0fb7336f0e3bd61ce16ba31dbbf396750 ON messenger_messages USING btree (queue_name, available_at, delivered_at, id);
+
+
+
+CREATE INDEX idx_7ce748aa76ed395 ON reset_password_request USING btree (user_id);
+
+
+
+CREATE INDEX idx_a8d351b32b919a58 ON repas USING btree (foyer_id);
+
+
+
+CREATE INDEX idx_ad495d2b919a58 ON stocker USING btree (foyer_id);
+
+
+
+CREATE INDEX idx_ad495d933fe08c ON stocker USING btree (ingredient_id);
+
+
+
+CREATE INDEX idx_ad495da76ed395 ON stocker USING btree (user_id);
+
+
+
+CREATE INDEX idx_b316888535e7d534 ON recette_regime USING btree (regime_id);
+
+
+
+CREATE INDEX idx_b316888589312fe9 ON recette_regime USING btree (recette_id);
+
+
+
+CREATE INDEX idx_c81da70a89312fe9 ON note_recette USING btree (recette_id);
+
+
+
+CREATE INDEX idx_c81da70aa76ed395 ON note_recette USING btree (user_id);
+
+
+
+CREATE INDEX idx_cfd4514135e7d534 ON user_regime USING btree (regime_id);
+
+
+
+CREATE INDEX idx_cfd45141a76ed395 ON user_regime USING btree (user_id);
+
+
+
+CREATE INDEX idx_d499bff610902e89 ON planning USING btree (planning_recette_id);
+
+
+
+CREATE INDEX idx_d499bff6a76ed395 ON planning USING btree (user_id);
+
+
+
+CREATE INDEX idx_ef85a2cc9a56c907 ON favori USING btree (favori_recette_id);
+
+
+
+CREATE INDEX idx_ef85a2cccae277b2 ON favori USING btree (favori_user_id);
+
+
+
+CREATE INDEX idx_f881fbc189312fe9 ON liste_recette USING btree (recette_id);
+
+
+
+CREATE INDEX idx_f881fbc1e85441d8 ON liste_recette USING btree (liste_id);
+
+
+
+CREATE INDEX idx_fcf22af4a76ed395 ON liste USING btree (user_id);
+
+
+
+CREATE UNIQUE INDEX uniq_8d93d64918d3e277 ON `user` USING btree (user_username);
+
+
+
+CREATE UNIQUE INDEX uniq_c81da70aa76ed39589312fe9 ON note_recette USING btree (user_id, recette_id);
+
+
+
+CREATE UNIQUE INDEX uniq_identifier_email ON `user` USING btree (user_email);
+
+
+
+ALTER TABLE ONLY like_recette
+    ADD CONSTRAINT fk_1a3629b32aa58f11 FOREIGN KEY (like_recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY like_recette
+    ADD CONSTRAINT fk_1a3629b3f4e399b6 FOREIGN KEY (like_user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY liste_course
+    ADD CONSTRAINT fk_27ef1a82a76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY etape
+    ADD CONSTRAINT fk_285f75dd89312fe9 FOREIGN KEY (recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY contenir
+    ADD CONSTRAINT fk_3c914dfd4680fcb FOREIGN KEY (liste_course_id) REFERENCES liste_course(id);
+
+
+
+ALTER TABLE ONLY contenir
+    ADD CONSTRAINT fk_3c914dfd89312fe9 FOREIGN KEY (recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY contenir
+    ADD CONSTRAINT fk_3c914dfd933fe08c FOREIGN KEY (ingredient_id) REFERENCES ingredient(id);
+
+
+
+ALTER TABLE ONLY recette
+    ADD CONSTRAINT fk_49bb6390de12ab56 FOREIGN KEY (created_by) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY commentaire
+    ADD CONSTRAINT fk_67f068bc89312fe9 FOREIGN KEY (recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY commentaire
+    ADD CONSTRAINT fk_67f068bca76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY reset_password_request
+    ADD CONSTRAINT fk_7ce748aa76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY repas
+    ADD CONSTRAINT fk_a8d351b32b919a58 FOREIGN KEY (foyer_id) REFERENCES foyer(id);
+
+
+
+ALTER TABLE ONLY stocker
+    ADD CONSTRAINT fk_ad495d2b919a58 FOREIGN KEY (foyer_id) REFERENCES foyer(id);
+
+
+
+ALTER TABLE ONLY stocker
+    ADD CONSTRAINT fk_ad495d933fe08c FOREIGN KEY (ingredient_id) REFERENCES ingredient(id);
+
+
+
+ALTER TABLE ONLY stocker
+    ADD CONSTRAINT fk_ad495da76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY recette_regime
+    ADD CONSTRAINT fk_b316888535e7d534 FOREIGN KEY (regime_id) REFERENCES regime(id) ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY recette_regime
+    ADD CONSTRAINT fk_b316888589312fe9 FOREIGN KEY (recette_id) REFERENCES recette(id) ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY note_recette
+    ADD CONSTRAINT fk_c81da70a89312fe9 FOREIGN KEY (recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY note_recette
+    ADD CONSTRAINT fk_c81da70aa76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY user_regime
+    ADD CONSTRAINT fk_cfd4514135e7d534 FOREIGN KEY (regime_id) REFERENCES regime(id);
+
+
+
+ALTER TABLE ONLY user_regime
+    ADD CONSTRAINT fk_cfd45141a76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY planning
+    ADD CONSTRAINT fk_d499bff610902e89 FOREIGN KEY (planning_recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY planning
+    ADD CONSTRAINT fk_d499bff6a76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY favori
+    ADD CONSTRAINT fk_ef85a2cc9a56c907 FOREIGN KEY (favori_recette_id) REFERENCES recette(id);
+
+
+
+ALTER TABLE ONLY favori
+    ADD CONSTRAINT fk_ef85a2cccae277b2 FOREIGN KEY (favori_user_id) REFERENCES `user`(user_id);
+
+
+
+ALTER TABLE ONLY liste_recette
+    ADD CONSTRAINT fk_f881fbc189312fe9 FOREIGN KEY (recette_id) REFERENCES recette(id) ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY liste_recette
+    ADD CONSTRAINT fk_f881fbc1e85441d8 FOREIGN KEY (liste_id) REFERENCES liste(id) ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY liste
+    ADD CONSTRAINT fk_fcf22af4a76ed395 FOREIGN KEY (user_id) REFERENCES `user`(user_id);
+
+
+
+
